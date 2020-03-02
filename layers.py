@@ -48,7 +48,8 @@ class ResidualBlock(nn.Module):
         stride=1,
         dilation=1,
         bias=True,
-        dropout=0.5):
+        dropout=0.5,
+        leveledinit=False   ):
 
         super(ResidualBlock, self).__init__()
 
@@ -56,11 +57,29 @@ class ResidualBlock(nn.Module):
         self.out_channels = out_channels
 
         self.dcc1 = weight_norm(DilatedCausalConv(
-            in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size, stride=stride, dilation=dilation, bias=True))
+            in_channels=in_channels,
+            out_channels=out_channels,
+            kernel_size=kernel_size,
+            stride=stride,
+            dilation=dilation,
+            bias=True))
         self.drop1 = nn.Dropout(dropout)
         self.dcc2 = weight_norm(DilatedCausalConv(
-            in_channels=out_channels, out_channels=out_channels, kernel_size=kernel_size, stride=stride, dilation=dilation, bias=True))
+            in_channels=out_channels,
+            out_channels=out_channels,
+            kernel_size=kernel_size,
+            stride=stride,
+            dilation=dilation,
+            bias=True))
         self.drop2 = nn.Dropout(dropout)
+
+        if leveledinit:
+            with torch.no_grad():
+                self.dcc1.weight.copy_(torch.tensor(1.0/kernel_size))
+                self.dcc2.weight.copy_(torch.tensor(1.0/kernel_size))
+                if bias:
+                    self.dcc1.bias.copy_(torch.tensor(0.0))
+                    self.dcc2.bias.copy_(torch.tensor(0.0))
 
     def forward(self, x):
         residual = x
@@ -100,7 +119,8 @@ class TCN(nn.Module):
         kernel_size=3,
         bias=True,
         dropout=0.5,
-        stride=1
+        stride=1,
+        leveledinit=False
     ):
         super(TCN, self).__init__()
 
@@ -122,7 +142,8 @@ class TCN(nn.Module):
             stride=stride,
             dilation=dilations[0],
             bias=bias,
-            dropout=dropout)
+            dropout=dropout,
+            leveledinit=leveledinit)
         self.res_blocks.append(init_block)
 
         for i in range(1, num_layers):
@@ -133,14 +154,14 @@ class TCN(nn.Module):
                 stride=stride,
                 dilation=dilations[i],
                 bias=bias,
-                dropout=dropout)
+                dropout=dropout,
+                leveledinit=leveledinit)
             self.res_blocks.append(block)
 
     def forward(self, x):
         for block in self.res_blocks:
             x = block(x)
         return x
-
 
 
 if __name__ == "__main__":
@@ -175,7 +196,8 @@ if __name__ == "__main__":
             residual_blocks_channel_size=[16, 16, 1],
             bias=True,
             dropout=0.5,
-            stride=1)
+            stride=1,
+            leveledinit=False)
         print(tcn.forward(samples))
     
 

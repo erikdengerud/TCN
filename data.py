@@ -157,7 +157,7 @@ class AddTwoDataSet(Dataset):
     def __getitem__(self, idx):
         if torch.is_tensor(idx):
             idx = idx.tolist()
-        return self.X[idx, 0, :], self.Y[idx, 0]
+        return self.X[idx, :, :], self.Y[idx, 0]
 
 if __name__ == "__main__":
     electricity = False

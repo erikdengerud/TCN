@@ -141,13 +141,13 @@ class AddTwoDataSet(Dataset):
 
         X_rand = torch.rand(N, 1, seq_length)
         X_add = torch.zeros(N, 1, seq_length)
-        self.Y = torch.zeros(N, 1)
+        self.Y = torch.zeros(N, 1, 1)
 
         for i in range(N):
             ones = np.random.choice(seq_length, size=2, replace=False)
             X_add[i, 0, ones[0]] = 1
             X_add[i, 0, ones[1]] = 1
-            self.Y[i, 0] = X_rand[i, 0, ones[0]] + X_rand[i, 0, ones[1]]
+            self.Y[i, 0, 0] = X_rand[i, 0, ones[0]] + X_rand[i, 0, ones[1]]
 
         self.X = torch.cat((X_rand, X_add), dim=1)
 
@@ -157,7 +157,7 @@ class AddTwoDataSet(Dataset):
     def __getitem__(self, idx):
         if torch.is_tensor(idx):
             idx = idx.tolist()
-        return self.X[idx, :, :], self.Y[idx, 0]
+        return self.X[idx, :, :], self.Y[idx, :, :]
 
 if __name__ == "__main__":
     electricity = False

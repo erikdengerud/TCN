@@ -129,94 +129,69 @@ class ElectricityDataSet(Dataset):
         else:
             return torch.from_numpy(self.Y[idx, :]), idx, self.Z
 
-class RandomDataSet(Dataset):
-    def __init__(self, N, D_in, D_out, conv=False):
-        self.x = np.abs(100*np.random.rand(N, D_in))
-        self.y = np.abs(100*np.random.rand(N, D_out))
-        self.conv = conv
-    def __len__(self):
-        return  len(self.x)
-    def __getitem__(self, idx):
-        if torch.is_tensor(idx):
-            idx = idx.tolist()
-        if self.conv:
-            x = torch.from_numpy(self.x[idx]).view(1, -1)
-            y = torch.from_numpy(self.y[idx]).view(1, -1)
-            #x = x.view( 1, -1)
-            #y = y.view( 1, -1)
-            return x, y
-        else:
-            return torch.from_numpy(self.x[idx]), torch.from_numpy(self.y[idx])
+class AddTwoDataSet(Dataset):
+    """ 
+    Adding dataset as described in https://arxiv.org/abs/1803.01271.
+    Implementation based on:
+    https://github.com/locuslab/TCN/blob/master/TCN/adding_problem/utils.py
+    """
+    def __init__(self, N, seq_length):
+        self.N = N
+        self.seq_length = seq_length
 
-class RandomMatrix(Dataset):
-    def __init__(self, rows, cols, conv=False):
-        self.X = np.abs(100*np.random.rand(rows, cols))
-        self.cols = cols
-        self.rows = rows
-        self.conv = conv
+        X_rand = torch.rand(N, 1, seq_length)
+        X_add = torch.zeros(N, 1, seq_length)
+        self.Y = torch.zeros(N, 1)
+
+        for i in range(N):
+            ones = np.random.choice(seq_length, size=2, replace=False)
+            X_add[i, 0, ones[0]] = 1
+            X_add[i, 0, ones[1]] = 1
+            self.Y[i, 0] = X_rand[i, 0, ones[0]] + X_rand[i, 0, ones[1]]
+
+        self.X = torch.cat((X_rand, X_add), dim=1)
+
     def __len__(self):
-        return  self.rows
+        return self.N
+
     def __getitem__(self, idx):
         if torch.is_tensor(idx):
             idx = idx.tolist()
-        if self.conv:
-            X = torch.from_numpy(self.X[idx, :]).view(1, -1)
-            return X
-        else:
-            return torch.from_numpy(self.X[idx, :])
+        return self.X[idx, 0, :], self.Y[idx, 0]
 
 if __name__ == "__main__":
-    '''
-    print("RandomDataset Without channels: ")
-    dataset = RandomDataSet(N=64, D_in=1000, D_out=10)
-    dataloader = DataLoader(
-        dataset, batch_size=4, shuffle=False, num_workers=0)
-    dataiter = iter(dataloader)
-    inputs, labels = dataiter.next()
-    print("Inputs: ", inputs)
-    print("Inputs: ", labels)
-    print("Shapes: ")
-    print("Inputs: ", inputs.shape)
-    print("Inputs: ", labels.shape)
+    electricity = False
+    add = True
 
-    print("RandomDataset With channels: ")
-    dataset = RandomDataSet(N=64, D_in=1000, D_out=10, conv=True)
-    dataloader = DataLoader(
-        dataset, batch_size=4, shuffle=False, num_workers=0)
-    dataiter = iter(dataloader)
-    inputs, labels = dataiter.next()
-    print("Inputs: ", inputs)
-    print("Inputs: ", labels)
-    print("Shapes: ")
-    print("Inputs: ", inputs.shape)
-    print("Inputs: ", labels.shape)
+    if electricity:
+        # Electricity dataset
+        print("Electricity dataset: ")
+        dataset = ElectricityDataSet(
+        '.\data\LD2011_2014_hourly.txt', 
+        conv=True, 
+        include_covariates=True,
+        start_date='2013-03-03',
+        end_date='2014-02-03')
+        loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
+        dataiter = iter(loader)
+        samples, indices , covariates = dataiter.next()
+        print('Samples : ', samples)
+        print('Indices : ', indices)
+        print('Covariates : ', covariates)
+        print('Shape of samples : ', samples.shape)
+        print('Length of dataset: ', dataset.__len__())
+        print('Shape of input: ', samples.shape)
+        print('Input length?: ', samples.shape[2])
 
-    # Random Matrix
-    print("RandomMatrix With channels: ")
-    dataset = RandomMatrix(rows=370, cols=25000, conv=True)
-    dataloader = DataLoader(
-        dataset, batch_size=4, shuffle=False, num_workers=0)
-    dataiter = iter(dataloader)
-    inputs = dataiter.next()
-    print("Inputs: ", inputs)
-    print("Shapes: ")
-    print("Inputs: ", inputs.shape)
-    '''
-    # Electricity dataset
-    print("Electricity dataset: ")
-    dataset = ElectricityDataSet(
-    '.\data\LD2011_2014_hourly.txt', 
-    conv=True, 
-    include_covariates=True,
-    start_date='2013-03-03',
-    end_date='2014-02-03')
-    loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
-    dataiter = iter(loader)
-    samples, indices , covariates = dataiter.next()
-    print('Samples : ', samples)
-    print('Indices : ', indices)
-    print('Covariates : ', covariates)
-    print('Shape of samples : ', samples.shape)
-    print('Length of dataset: ', dataset.__len__())
-    print('Shape of input: ', samples.shape)
-    print('Input length?: ', samples.shape[2])
+    if add:
+        # Add two dataset
+        print("Add Two dataset: ")
+        dataset = AddTwoDataSet(N=1000, seq_length=64)
+        loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
+        dataiter = iter(loader)
+        samples, labels = dataiter.next()
+        print('Samples : ', samples)
+        print('Labels : ', labels)
+        print('Shape of samples : ', samples.shape)
+        print('Length of dataset: ', dataset.__len__())
+        print('Shape of input: ', samples.shape)

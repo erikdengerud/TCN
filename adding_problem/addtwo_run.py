@@ -4,55 +4,47 @@ Train and test a TCN on the add two dataset.
 Trying to reproduce https://arxiv.org/abs/1803.01271.
 """
 
-class Network(object):
-    def __init__(self):
-        pass
-    
-    def train(self):
-        pass
-
-    def test(self):
-        pass
-
-    def save(self):
-        pass
 
 if __name__ == "__main__":
-    from data import AddTwoDataSet
+    from adding_problem.data import AddTwoDataSet
     from torch.utils.data import DataLoader
 
+    import torch
     import torch.nn as nn
     import torch.optim as optim
+    import torch.nn.functional as F
     from torch.utils.tensorboard import SummaryWriter
 
-    from layers import TCN
+    from tcn import TCN
+
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    # Assuming that we are on a CUDA machine, this should print a CUDA device:
+    print(device)
 
     """ Dataset """
     N_train = 50000
     N_test = 1000
     seq_length = 200
-    batch_size = 4
+    batch_size = 32
 
     train_dataset = AddTwoDataSet(N=N_train, seq_length=seq_length)
     test_dataset = AddTwoDataSet(N=N_test, seq_length=seq_length)
     train_loader = DataLoader(
-        dataset=train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
-    train_loader = DataLoader(
-        dataset=test_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
-    train_iter = iter(train_loader)
-    samples, labels = train_iter.next()
+        dataset=train_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
+    test_loader = DataLoader(
+        dataset=test_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
 
     """ TCN """
-    num_layers=9
+    num_layers=8
     in_channels=2
     out_channels=1
-    kernel_size=3
-    residual_blocks_channel_size=[16, 16, 16, 16, 16, 16, 16, 16, 1]
+    kernel_size=7
+    residual_blocks_channel_size=[30, 30, 30, 30, 30, 30, 30, 30]
     bias=True
-    dropout=0.2
+    dropout=0.0
     stride=1
     leveledinit=False
-    
+
     tcn = TCN(
             num_layers=num_layers,
             in_channels=in_channels,
@@ -65,70 +57,71 @@ if __name__ == "__main__":
             dilations=None,
             leveledinit=False)
 
+    tcn.to(device)
+
     pytorch_total_params = sum(
         p.numel() for p in tcn.parameters() if p.requires_grad)
     print(f"Number of learnable parameters : {pytorch_total_params}")
-    MODEL_SAVE_PATH = "models/tcn_addtwo_small.pt"
+    MODEL_SAVE_PATH = "models/tcn_addtwo.pt"
 
     """ Training parameters"""
-    num_epochs = 300
+    epochs = 10
     lr = 0.002
     momentum = 0.9
     criterion = nn.MSELoss()
     optimizer = optim.Adam(tcn.parameters(), lr=lr)
+    clip = False
+    log_interval = 100
 
     """ Tensorboard """
+    train_iter = iter(train_loader)
+    x, y = train_iter.next()
     writer = SummaryWriter('runs/add_two_1')
-    writer.add_graph(tcn, samples)
+    writer.add_graph(tcn, x)
 
-
-    """ Training """
-    print("Starting training")
-    running_loss = 0.0
-    for epoch in range(1, num_epochs):
-
+    def train(epoch):
+        global lr
+        tcn.train()
+        total_loss = 0
         for i, data in enumerate(train_loader):
-            # get the inputs; data is a list of [inputs, labels]
-            inputs, labels = data
+            x, y = data[0].to(device), data[1].to(device)
 
-            # zero the parameter gradients
             optimizer.zero_grad()
-
-            # forward + backward + optimize
-            outputs = tcn(inputs)
-            loss = criterion(outputs, labels)
+            output = tcn(x)
+            loss = F.mse_loss(output, y)
             loss.backward()
+            if clip > 0:
+                torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
             optimizer.step()
+            total_loss += loss.item()
 
-            running_loss += loss.item()
-            if i % 100 == 99:    # every 10 mini-batches...
+            if i % log_interval == 0:
+                cur_loss = total_loss / log_interval
+                processed = min(i*batch_size, N_train)
+                writer.add_scalar('training_loss', cur_loss, processed)
+                print('Train Epoch: {:2d} [{:6d}/{:6d} ({:.0f}%)]\tLearning rate: {:.4f}\tLoss: {:.6f}'.format(
+                    epoch, processed, N_train, 100.*processed/N_train, lr, cur_loss))
+                total_loss = 0
 
-                # ...log the running loss
-                writer.add_scalar('training_loss',
-                                running_loss / 100,
-                                epoch * len(train_loader) + i)
+    def evaluate():
+        tcn.eval()
+        with torch.no_grad():
+            for data in test_loader:
+                x, y = data[0].cuda(), data[1].cuda()
+                output = tcn(x)
+                test_loss = F.mse_loss(output, y)
+                print('\nTest set: Average loss: {:.6f}\n'.format(test_loss.item()))
+                return test_loss.item()
+    
+    for ep in range(1, epochs+1):
+        train(ep)
+        tloss = evaluate()
+        writer.add_scalar('test_loss', tloss , epoch)
 
-                print(f"[{epoch:3} , {i+1:4}] : {running_loss}")
-                running_loss = 0.0
-
-    torch.save(tcn.state_dict(), MODEL_SAVE_PATH)
     writer.close()
+    torch.save(tcn.state_dict(), MODEL_SAVE_PATH)
     print('Finished Training')
 
-
-    """ Model laod and test """
-    tcn = TCN(*args, **kwargs)
-    model.load_state_dict(torch.load(MODEL_SAVE_PATH))
-    model.eval()
-
-    loss = 0.0
-    with torch.no_grad():
-        for data in test_loader:
-            inputs, labels = data
-            outputs = tcn(inputs)
-            loss += criterion(outputs, inputs)
-
-    print(f"Accuracy of the network on the test set: {loss}")
 
 
 

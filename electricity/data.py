@@ -1,9 +1,4 @@
 # data.py
-""" 
-Dataset classes.
-* Random dataset
-* Electricity dataset
-""" 
 from torch.utils.data import Dataset, DataLoader
 import torch
 
@@ -26,13 +21,19 @@ class ElectricityDataSet(Dataset):
     Load and prepare the electricity data set.
     https://archive.ics.uci.edu/ml/datasets/ElectricityLoadDiagrams20112014
     Aggregating to hourly values.
+
+    Parameters:
+        file_path           : file path to the hourly aggregated file
+        start_date          : start of the wanted dataset as YYYY-MM-DD 
+        end_date            : end of the wanted dataset as YYYY-MM-DD 
+        conv=False,
+        include_covariates  : including time covariates from gluonts or not
     '''
     def __init__(
         self, 
         file_path, 
         start_date='2012-01-01', # YYYY-MM-DD 
         end_date='2014-05-26',   # YYYY-MM-DD
-        conv=False,
         include_covariates=False
         ):
 
@@ -46,7 +47,6 @@ class ElectricityDataSet(Dataset):
         self.daterange = pd.date_range(
             start=start_date, end=end_date, freq='H')
 
-        self.conv = conv
         self.include_covariates = include_covariates
 
         self.Y = None
@@ -54,12 +54,12 @@ class ElectricityDataSet(Dataset):
         self.num_covariates = 0
 
         if os.path.isfile(
-            '.\data\LD2011_2014_aggr_hourly_from_{}_to_{}.txt'.format(
+            '.\electricity\data\LD2011_2014_aggr_hourly_from_{}_to_{}.txt'.format(
                     self.start_date, self.end_date
                     )
             ): 
             df = pd.read_csv(
-                '.\data\LD2011_2014_aggr_hourly_from_{}_to_{}.txt'.format(
+                '.\ectricity\data\LD2011_2014_aggr_hourly_from_{}_to_{}.txt'.format(
                     self.start_date, self.end_date
                     )
                 , sep=';', low_memory=False)
@@ -67,14 +67,14 @@ class ElectricityDataSet(Dataset):
 
         else:
             df_hourly = pd.read_csv(
-                '.\data\LD2011_2014_hourly.txt', sep=';', low_memory=False)
+                file_path, sep=';', low_memory=False)
             print(df_hourly.head())
             # Cut off at start and end date
             df_hourly.index = df_hourly['date'] 
             df_hourly = df_hourly.loc[str(self.start_date):str(self.end_date)]
             df = df_hourly.reset_index(drop=True)
             df_hourly.drop('date', axis=1, inplace=True)
-            df.to_csv('.\data\LD2011_2014_aggr_hourly_from_{}_to_{}.txt'.format(
+            df.to_csv('.\electricity\data\LD2011_2014_aggr_hourly_from_{}_to_{}.txt'.format(
                     self.start_date, self.end_date
                     ))
             print(df.head())
@@ -129,69 +129,21 @@ class ElectricityDataSet(Dataset):
         else:
             return torch.from_numpy(self.Y[idx, :]), idx, self.Z
 
-class AddTwoDataSet(Dataset):
-    """ 
-    Adding dataset as described in https://arxiv.org/abs/1803.01271.
-    Implementation based on:
-    https://github.com/locuslab/TCN/blob/master/TCN/adding_problem/utils.py
-    """
-    def __init__(self, N, seq_length):
-        self.N = N
-        self.seq_length = seq_length
-
-        X_rand = torch.rand(N, 1, seq_length)
-        X_add = torch.zeros(N, 1, seq_length)
-        self.Y = torch.zeros(N, 1, 1)
-
-        for i in range(N):
-            ones = np.random.choice(seq_length, size=2, replace=False)
-            X_add[i, 0, ones[0]] = 1
-            X_add[i, 0, ones[1]] = 1
-            self.Y[i, 0, 0] = X_rand[i, 0, ones[0]] + X_rand[i, 0, ones[1]]
-
-        self.X = torch.cat((X_rand, X_add), dim=1)
-
-    def __len__(self):
-        return self.N
-
-    def __getitem__(self, idx):
-        if torch.is_tensor(idx):
-            idx = idx.tolist()
-        return self.X[idx, :, :], self.Y[idx, :, :]
-
 if __name__ == "__main__":
-    electricity = False
-    add = True
-
-    if electricity:
-        # Electricity dataset
-        print("Electricity dataset: ")
-        dataset = ElectricityDataSet(
-        '.\data\LD2011_2014_hourly.txt', 
-        conv=True, 
-        include_covariates=True,
-        start_date='2013-03-03',
-        end_date='2014-02-03')
-        loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
-        dataiter = iter(loader)
-        samples, indices , covariates = dataiter.next()
-        print('Samples : ', samples)
-        print('Indices : ', indices)
-        print('Covariates : ', covariates)
-        print('Shape of samples : ', samples.shape)
-        print('Length of dataset: ', dataset.__len__())
-        print('Shape of input: ', samples.shape)
-        print('Input length?: ', samples.shape[2])
-
-    if add:
-        # Add two dataset
-        print("Add Two dataset: ")
-        dataset = AddTwoDataSet(N=1000, seq_length=64)
-        loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
-        dataiter = iter(loader)
-        samples, labels = dataiter.next()
-        print('Samples : ', samples)
-        print('Labels : ', labels)
-        print('Shape of samples : ', samples.shape)
-        print('Length of dataset: ', dataset.__len__())
-        print('Shape of input: ', samples.shape)
+    # Electricity dataset
+    print("Electricity dataset: ")
+    dataset = ElectricityDataSet(
+    '.\electricity\data\LD2011_2014_hourly.txt', 
+    include_covariates=True,
+    start_date='2013-03-03',
+    end_date='2014-02-03')
+    loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
+    dataiter = iter(loader)
+    samples, indices , covariates = dataiter.next()
+    print('Samples : ', samples)
+    print('Indices : ', indices)
+    print('Covariates : ', covariates)
+    print('Shape of samples : ', samples.shape)
+    print('Length of dataset: ', dataset.__len__())
+    print('Shape of input: ', samples.shape)
+    print('Input length?: ', samples.shape[2])

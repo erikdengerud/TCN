@@ -34,10 +34,9 @@ class ElectricityDataSet(Dataset):
         file_path, 
         start_date='2012-01-01', # YYYY-MM-DD 
         end_date='2014-05-26',   # YYYY-MM-DD
-        vbsize=0,
         include_time_covariates=False,
         predict_ahead=1,
-        v_batch=0
+        h_batch=0
         ):
 
         # Check dates
@@ -51,7 +50,7 @@ class ElectricityDataSet(Dataset):
 
         self.include_time_covariates = include_time_covariates
         self.predict_ahead = predict_ahead
-        self.v_batch = v_batch
+        self.h_batch = h_batch
 
         df, dates = self.get_time_range_df(
             file_path, start_date=start_date, end_date=end_date)
@@ -63,14 +62,15 @@ class ElectricityDataSet(Dataset):
         X.resize_(self.num_ts, 1, self.length_ts)
         Y = torch.zeros(self.num_ts, 1, self.length_ts)
         pad_end = torch.zeros(self.num_ts,1,self.predict_ahead).double()
-        self.Y = Y.copy_(torch.cat((X[:,:,self.predict_ahead:], pad_end), 2))
+        self.Y = Y.copy_(torch.cat((X[:,:,self.predict_ahead:], pad_end), 2)).to(dtype=torch.float32)
 
         if self.include_time_covariates:
             Z, num_covariates = self.get_time_covariates(dates)
             Z = Z.repeat(self.num_ts, 1, 1)
             X = torch.cat((X, Z), 1)
-        
-        self.X = X
+        self.X = X.to(dtype=torch.float32)
+        X = X.to(dtype=torch.float32)
+
         print("Dimension of X : ", self.X.shape)
         print("Dimension of Y : ", self.Y.shape)
         
@@ -78,12 +78,12 @@ class ElectricityDataSet(Dataset):
         return self.num_ts
 
     def __getitem__(self, idx):
-        if self.v_batch ==0:
-            self.X[idx], self.Y[idx]
+        if self.h_batch == 0:
+            return self.X[idx], self.Y[idx]
         else:
             j = np.random.randint(
-                0, self.length_ts-self.v_batch-self.predict_ahead)
-            return self.X[idx,:,j:j+self.v_batch], self.Y[idx,:,j:j+self.v_batch]
+                0, self.length_ts-self.h_batch-self.predict_ahead)
+            return self.X[idx,:,j:j+self.h_batch], self.Y[idx,:,j:j+self.h_batch]
 
     def get_time_range_df(self, file_path, start_date, end_date):
         df_hourly = pd.read_csv(file_path, sep=';', low_memory=False)
@@ -129,17 +129,18 @@ if __name__ == "__main__":
     start_date='2013-03-03',
     end_date='2014-02-03',
     predict_ahead=3,
-    v_batch=10)
+    h_batch=0)
 
     loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
     dataiter = iter(loader)
     x, y = dataiter.next()
 
-    print('Samples : ', x)
+    #print('Samples : ', x)
     print('Shape of samples : ', x.shape)
-    print('Labels : ', y)
+    #print('Labels : ', y)
     print('Shape of labels : ', y.shape)
     print('Length of dataset: ', dataset.__len__())
-
+    print("Type x : ", x.dtype)
+    print("Type y : ", y.dtype)
     print(x[0, 0, -5:])
     print(y[0, 0, -5:])

@@ -68,6 +68,9 @@ class TCN(nn.Module):
             res_blocks += [block]
         self.net = nn.Sequential(*res_blocks)
         self.linear = nn.Linear(residual_blocks_channel_size[-1], out_channels)
+        self.conv1d = nn.Conv1d(
+            in_channels=residual_blocks_channel_size[-1],
+            out_channels=out_channels, kernel_size=1)
         self.init_weights()
 
     def init_weights(self):
@@ -75,7 +78,9 @@ class TCN(nn.Module):
 
     def forward(self, x):
         out = self.net(x)
-        out = self.linear(out[:, :, -1])
+        #out = self.linear(out[:, :, -1])
+        #self.linear(out)
+        out = self.conv1d(out)
         return out
 
 

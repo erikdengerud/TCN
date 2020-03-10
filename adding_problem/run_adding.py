@@ -3,126 +3,156 @@
 Train and test a TCN on the add two dataset.
 Trying to reproduce https://arxiv.org/abs/1803.01271.
 """
+print('Importing modules')
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torch.nn.functional as F
+from torch.utils.tensorboard import SummaryWriter
+from torch.utils.data import DataLoader
 
+import argparse
+import sys
+sys.path.append('')
+sys.path.append("../../")
 
-if __name__ == "__main__":
-    from adding_problem.data import AddTwoDataSet
-    from torch.utils.data import DataLoader
+from data import AddTwoDataSet
+from model import TCN
+print('modules imported')
 
-    import torch
-    import torch.nn as nn
-    import torch.optim as optim
-    import torch.nn.functional as F
-    from torch.utils.tensorboard import SummaryWriter
+def parse():
+    parser = argparse.ArgumentParser(description='Adding Problem')
+    parser.add_argument(
+        '--N_train', type=int, default=50000, metavar='N_train')
+    parser.add_argument(
+        '--N_test', type=int, default=1000, metavar='N_test')
+    parser.add_argument(
+        '--seq_length', type=int, default=200, metavar='seq_length')
+    parser.add_argument(
+        '--batch_size', type=int, default=32, metavar='batch_size')
+    parser.add_argument(
+        '--num_layers', type=int, default=8, metavar='num_layers')
+    parser.add_argument(
+        '--in_channels', type=int, default=2, metavar='in_channels')
+    parser.add_argument(
+        '--out_channels', type=int, default=1, metavar='out_channels')
+    parser.add_argument(
+        '--kernel_size', type=int, default=7, metavar='kernel_size')
+    parser.add_argument(
+        '--res_block_size', type=int, default=30, metavar='res_block_size')
+    parser.add_argument(
+        '--bias', type=bool, default=True, metavar='bias')
+    parser.add_argument(
+        '--dropout', type=float, default=0.0, metavar='dropout')
+    parser.add_argument(
+        '--stride', type=int, default=1, metavar='stride')
+    parser.add_argument(
+        '--leveledinit', type=bool, default=False, metavar='leveledinit')
+    parser.add_argument(
+        '--model_save_path', type=str, default='adding_problem/models/tcn_addtwo.pt', 
+        metavar='model_save_path')
+    parser.add_argument(
+        '--epochs', type=int, default=10, metavar='epochs')
+    parser.add_argument(
+        '--lr', type=float, default=2e-3, metavar='lr')
+    parser.add_argument(
+        '--clip', type=bool, default=False, metavar='clip')
+    parser.add_argument(
+        '--log_interval', type=int, default=100, metavar='log_interval')
+    parser.add_argument(
+        '--writer_path', type=str, default='adding_problem/sruns/add_two1', 
+        metavar='writer_path')
+    parser.add_argument(
+        '--print', type=bool, default=False, metavar='print')
+    parser.add_argument(
+        '--num_workers', type=int, default=0, metavar='num_workers')
+    args = parser.parse_args()
+    return args
 
-    from tcn import TCN
-
+def run():
+    torch.manual_seed(1729)
+        
+    """ Setup """
+    args = parse()
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    # Assuming that we are on a CUDA machine, this should print a CUDA device:
     print(device)
 
     """ Dataset """
-    N_train = 50000
-    N_test = 1000
-    seq_length = 200
-    batch_size = 32
-
-    train_dataset = AddTwoDataSet(N=N_train, seq_length=seq_length)
-    test_dataset = AddTwoDataSet(N=N_test, seq_length=seq_length)
+    train_dataset = AddTwoDataSet(N=args.N_train, seq_length=args.seq_length)
+    test_dataset = AddTwoDataSet(N=args.N_test, seq_length=args.seq_length)
     train_loader = DataLoader(
-        dataset=train_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
+        dataset=train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
     test_loader = DataLoader(
-        dataset=test_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
+        dataset=test_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
 
     """ TCN """
-    num_layers=8
-    in_channels=2
-    out_channels=1
-    kernel_size=7
-    residual_blocks_channel_size=[30, 30, 30, 30, 30, 30, 30, 30]
-    bias=True
-    dropout=0.0
-    stride=1
-    leveledinit=False
-
     tcn = TCN(
-            num_layers=num_layers,
-            in_channels=in_channels,
-            out_channels=out_channels,
-            kernel_size=kernel_size,
-            residual_blocks_channel_size=residual_blocks_channel_size,
-            bias=bias,
-            dropout=dropout,
-            stride=1,
+            num_layers=args.num_layers,
+            in_channels=args.in_channels,
+            out_channels=args.out_channels,
+            kernel_size=args.kernel_size,
+            residual_blocks_channel_size=[args.res_block_size] * args.num_layers,
+            bias=args.bias,
+            dropout=args.dropout,
+            stride=args.stride,
             dilations=None,
-            leveledinit=False)
-
+            leveledinit=args.leveledinit)
     tcn.to(device)
-
-    pytorch_total_params = sum(
-        p.numel() for p in tcn.parameters() if p.requires_grad)
-    print(f"Number of learnable parameters : {pytorch_total_params}")
-    MODEL_SAVE_PATH = "models/tcn_addtwo.pt"
+    if args.print:
+        print(
+            f"""Number of learnable parameters : {
+                sum(p.numel() for p in tcn.parameters() if p.requires_grad)}""")
 
     """ Training parameters"""
-    epochs = 10
-    lr = 0.002
-    momentum = 0.9
     criterion = nn.MSELoss()
-    optimizer = optim.Adam(tcn.parameters(), lr=lr)
-    clip = False
-    log_interval = 100
+    optimizer = optim.Adam(tcn.parameters(), lr=args.lr)
 
     """ Tensorboard """
-    train_iter = iter(train_loader)
-    x, y = train_iter.next()
-    writer = SummaryWriter('runs/add_two_1')
-    writer.add_graph(tcn, x)
+    writer = SummaryWriter(args.writer_path)
 
-    def train(epoch):
-        global lr
+    for ep in range(1, args.epochs+1):
+        """ TRAIN """
         tcn.train()
         total_loss = 0
         for i, data in enumerate(train_loader):
             x, y = data[0].to(device), data[1].to(device)
-
             optimizer.zero_grad()
             output = tcn(x)
             loss = F.mse_loss(output, y)
             loss.backward()
-            if clip > 0:
+            if args.clip > 0:
                 torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
             optimizer.step()
             total_loss += loss.item()
 
-            if i % log_interval == 0:
-                cur_loss = total_loss / log_interval
-                processed = min(i*batch_size, N_train)
+            if i % args.log_interval == 0:
+                cur_loss = total_loss / args.log_interval
+                processed = min(i*args.batch_size, args.N_train)
                 writer.add_scalar('training_loss', cur_loss, processed)
-                print('Train Epoch: {:2d} [{:6d}/{:6d} ({:.0f}%)]\tLearning rate: {:.4f}\tLoss: {:.6f}'.format(
-                    epoch, processed, N_train, 100.*processed/N_train, lr, cur_loss))
+                if args.print:
+                    print(
+                        (f"Train Epoch: {ep:2d}"
+                        f"[{processed:6d}/{args.N_train:6d}"
+                        f"({100.*processed/args.N_train:.0f}%)]"
+                        f"\tLearning rate: {args.lr:.4f}\tLoss: {cur_loss:.6f}"))
                 total_loss = 0
-
-    def evaluate():
+        """ EVALUATE """
         tcn.eval()
         with torch.no_grad():
             for data in test_loader:
-                x, y = data[0].cuda(), data[1].cuda()
+                x, y = data[0].to(device), data[1].to(device)
                 output = tcn(x)
-                test_loss = F.mse_loss(output, y)
-                print('\nTest set: Average loss: {:.6f}\n'.format(test_loss.item()))
-                return test_loss.item()
-    
-    for ep in range(1, epochs+1):
-        train(ep)
-        tloss = evaluate()
-        writer.add_scalar('test_loss', tloss , epoch)
+                test_loss = criterion(output, y)
+                if args.print:
+                    print(
+                        f'\nTest set: Average loss: {test_loss.item():.6f}\n')
+        writer.add_scalar('test_loss', test_loss.item() , ep)
 
     writer.close()
-    torch.save(tcn.state_dict(), MODEL_SAVE_PATH)
+    torch.save(tcn.state_dict(), args.model_save_path)
     print('Finished Training')
+    return 0
 
-
-
-
+if __name__ == "__main__":
+    run()
 

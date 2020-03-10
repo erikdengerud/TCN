@@ -5,9 +5,11 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.utils import weight_norm
 
-from layers import ResidualBlock
+import sys
+sys.path.append('')
+from .layers import ResidualBlock
 
-class TCN(nn.Module):
+class TemporalConvolutionalNetwork(nn.Module):
     """
     num_layers                      : int
     dilations                       : list of dilations for each layer
@@ -32,7 +34,7 @@ class TCN(nn.Module):
         stride=1,
         leveledinit=False):
 
-        super(TCN, self).__init__()
+        super(TemporalConvolutionalNetwork, self).__init__()
 
         if dilations is None:
             dilations = [2**i for i in range(num_layers)]
@@ -67,27 +69,15 @@ class TCN(nn.Module):
                 leveledinit=leveledinit)
             res_blocks += [block]
         self.net = nn.Sequential(*res_blocks)
-        self.linear = nn.Linear(residual_blocks_channel_size[-1], out_channels)
-        self.conv1d = nn.Conv1d(
-            in_channels=residual_blocks_channel_size[-1],
-            out_channels=out_channels, kernel_size=1)
-        self.init_weights()
-
-    def init_weights(self):
-        self.linear.weight.data.normal_(0, 0.01)
 
     def forward(self, x):
         out = self.net(x)
-        #out = self.linear(out[:, :, -1])
-        #self.linear(out)
-        out = self.conv1d(out)
         return out
 
-
-
 if __name__ == "__main__":
-
-    from adding_problem.data import AddTwoDataSet
+    import sys
+    sys.path.append('')
+    from .. adding_problem.data import AddTwoDataSet
     from torch.utils.data import DataLoader
     # Add two dataset
     print("Add Two dataset: ")
@@ -96,7 +86,7 @@ if __name__ == "__main__":
     dataiter = iter(loader)
     samples, labels = dataiter.next()
 
-    tcn = TCN(
+    tcn = TemporalConvolutionalNetwork(
         num_layers=3,
         in_channels=2,
         out_channels=1,

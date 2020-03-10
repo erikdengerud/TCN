@@ -77,7 +77,11 @@ class ResidualBlock(nn.Module):
             self.res_conv = nn.Conv1d(in_channels, out_channels, 1)
         else:
             self.res_conv = None
+        
+        # Init weights
+        self.leveledinit_weights(leveledinit, kernel_size, bias)
 
+    def leveledinit_weights(self, leveledinit, kernel_size, bias):
         if leveledinit:
             with torch.no_grad():
                 self.dcc1.weight.copy_(torch.tensor(1.0/kernel_size))

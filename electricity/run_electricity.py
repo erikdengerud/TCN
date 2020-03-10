@@ -103,15 +103,17 @@ def evaluate():
             x, y = data[0].to(device), data[1].to(device)
             output = tcn(x)
             test_loss = test_loss = criterion(output, y)
+            y = y.cpu()
+            output = output.cpu()
             mape = MAPE(y, output)
             wape = WAPE(y, output)
             smape = SMAPE(y, output)
             if args.print:
-                print('Test set: Loss: {:.6f}\n'.format(test_loss.item()))
-                print('Test set: WAPE: {:.6f}\n'.format(wape))
-                print('Test set: MAPE: {:.6f}\n'.format(mape))
-                print('Test set: SMAPE: {:.6f}\n'.format(smape))
-                return test_loss.item(), wape, mape, smape
+                print('Test set: Loss: {:.6f}'.format(test_loss.item()))
+                print('Test set: WAPE: {:.6f}'.format(wape))
+                print('Test set: MAPE: {:.6f}'.format(mape))
+                print('Test set: SMAPE: {:.6f}'.format(smape))
+            return test_loss.item(), wape, mape, smape
 
 if __name__ == "__main__":
     args = parse()

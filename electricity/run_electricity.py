@@ -142,6 +142,9 @@ def evaluate_final():
         predictions_tensor = torch.cat(all_predictions, 0)
         real_values_tensor = torch.cat(all_real_values, 0)
 
+        predictions_tensor = predictions_tensor.cpu()
+        real_values_tensor = real_values_tensor.cpu()
+        
         mape = MAPE(real_values_tensor, predictions_tensor)
         smape = SMAPE(real_values_tensor, predictions_tensor)
         wape = WAPE(real_values_tensor, predictions_tensor)

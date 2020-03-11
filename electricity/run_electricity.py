@@ -130,6 +130,8 @@ def evaluate_final():
             x, y = data[0].to(device), data[1].to(device)
 
             predictions, real_values = tcn.rolling_prediction(x)
+            print('predictions.shape', predictions.shape)
+            print('real_values.shape', real_values.shape)
             all_predictions.append(predictions)
             all_real_values.append(real_values)
             
@@ -137,18 +139,20 @@ def evaluate_final():
             test_loss = test_loss = criterion(output, y)
             all_test_loss.append(test_loss.item())
 
-        predictions_tensor = torch.stack(all_predictions)
-        real_values_tensor = torch.stack(all_real_values)
+        predictions_tensor = torch.cat(all_predictions, 0)
+        real_values_tensor = torch.cat(all_real_values, 0)
+
         mape = MAPE(real_values_tensor, predictions_tensor)
         smape = SMAPE(real_values_tensor, predictions_tensor)
         wape = WAPE(real_values_tensor, predictions_tensor)
-        test_loss = np.mean(all_test_loss)
+        test_loss = np.sum(all_test_loss)
 
         if args.print:
-            print('Test set: Loss: {:.6f}'.format(test_loss))
-            print('Test set: WAPE: {:.6f}'.format(wape))
-            print('Test set: MAPE: {:.6f}'.format(mape))
-            print('Test set: SMAPE: {:.6f}'.format(smape))
+            print('Random batch of test set:')
+            print('Loss: {:.6f}'.format(test_loss))
+            print('WAPE: {:.6f}'.format(wape))
+            print('MAPE: {:.6f}'.format(mape))
+            print('SMAPE: {:.6f}'.format(smape))
         return test_loss, wape, mape, smape
 
 if __name__ == "__main__":
@@ -213,7 +217,7 @@ if __name__ == "__main__":
 
     tloss, wape, mape, smape = evaluate_final()
     print('Test set:')
-    print('Loss: {:.6f}'.format(test_loss))
+    print('Loss: {:.6f}'.format(tloss))
     print('WAPE: {:.6f}'.format(wape))
     print('MAPE: {:.6f}'.format(mape))
     print('SMAPE: {:.6f}'.format(smape))

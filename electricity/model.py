@@ -70,14 +70,9 @@ class TCN(nn.Module):
         # divide x into the rolling windows
         for i in range(num_windows):
             t_i = net_lookback + i*tau
-            #print('t_i', t_i)
-            3print('x.shape', x.shape)
             x_window = x[:,:,:t_i]
             x_cov_window = x[:,1:,t_i:(t_i+tau)]
-            #print('x_window.shape',x_window.shape)
-            #print('x_cov_window', x_cov_window.shape)
             assert(x_cov_window.shape[2]==tau)
-            
             # multi step prediction of that window
             _, preds = self.multi_step_prediction(x_window, x_cov_window, tau)
             predictions_list.append(preds)
@@ -87,31 +82,15 @@ class TCN(nn.Module):
         predictions = torch.cat(predictions_list, 1)
         real_values = torch.cat(real_values, 1)
         return predictions, real_values
-        '''
-        # calculate metrics
-        real_values = real_values.cpu()
-        predictions = predictions.cpu()
-        mape = MAPE(real_values, predictions)
-        smape = SMAPE(real_values, predictions)
-        wape = WAPE(real_values, predictions)
-        return mape, smape, wape
-        '''
-
+ 
     def multi_step_prediction(self, x, x_cov, num_steps):
         """ x_cov should be the covariates for the next num_steps """
         for i in range(num_steps):
-            x_next = self.forward(x)[:,:,-1]#.view(-1,1,1)
+            x_next = self.forward(x)[:,:,-1]
             # add covariates
-            #print(x_next.shape)
-            #print(x_cov.shape)
-            #print(x_cov[:,:,i].shape)#.view(-1,1,1).shape)
-            x_next = torch.cat((x_next, x_cov[:,:,i]),1)#.view(-1,1,1)), 1)
-            #print(x_next.shape)
-            #print(x_next.unsqueeze(2).shape)
-            #print(x_next)
-            #print(x_next.unsqueeze(2))
+            x_next = torch.cat((x_next, x_cov[:,:,i]),1)
             x_next = x_next.unsqueeze(2)
-
+            # Add back onto x
             x = torch.cat((x, x_next), 2)
         # Return predicted x with covariates and just the predictions
         return x[:,:,-num_steps:], x[:,0,-num_steps:]

@@ -63,19 +63,19 @@ class TCN(nn.Module):
         Rolling prediction. Returns MAPE, SMAPE, WAPE on the predictions.
         x is the matrix of the test set. Needs the covariates.
         """
-        print('Rolling predictions')
+        #print('Rolling predictions')
         net_lookback = self.lookback
         predictions_list = []
         real_values = []
         # divide x into the rolling windows
         for i in range(num_windows):
             t_i = net_lookback + i*tau
-            print('t_i', t_i)
-            print('x.shape', x.shape)
+            #print('t_i', t_i)
+            3print('x.shape', x.shape)
             x_window = x[:,:,:t_i]
             x_cov_window = x[:,1:,t_i:(t_i+tau)]
-            print('x_window.shape',x_window.shape)
-            print('x_cov_window', x_cov_window.shape)
+            #print('x_window.shape',x_window.shape)
+            #print('x_cov_window', x_cov_window.shape)
             assert(x_cov_window.shape[2]==tau)
             
             # multi step prediction of that window

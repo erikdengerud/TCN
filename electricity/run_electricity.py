@@ -99,21 +99,57 @@ def train(epoch):
 def evaluate():
     tcn.eval()
     with torch.no_grad():
-        for data in test_loader:
+        for i, data in enumerate(test_loader):
+            print(i)
             x, y = data[0].to(device), data[1].to(device)
             output = tcn(x)
             test_loss = test_loss = criterion(output, y)
-            y = y.cpu()
-            output = output.cpu()
-            mape = MAPE(y, output)
-            wape = WAPE(y, output)
-            smape = SMAPE(y, output)
+
+            predictions, real_values = tcn.rolling_prediction(x)
+            real_values = real_values.cpu()
+            predictions = predictions.cpu()
+
+            mape = MAPE(real_values, predictions)
+            smape = SMAPE(real_values, predictions)
+            wape = WAPE(real_values, predictions)
+            
             if args.print:
                 print('Test set: Loss: {:.6f}'.format(test_loss.item()))
                 print('Test set: WAPE: {:.6f}'.format(wape))
                 print('Test set: MAPE: {:.6f}'.format(mape))
                 print('Test set: SMAPE: {:.6f}'.format(smape))
             return test_loss.item(), wape, mape, smape
+
+def evaluate_final():
+    tcn.eval()
+    with torch.no_grad():
+        all_predictions = []
+        all_real_values = []
+        all_test_loss = []
+        for data in test_loader:
+            x, y = data[0].to(device), data[1].to(device)
+
+            predictions, real_values = tcn.rolling_prediction(x)
+            all_predictions.append(predictions)
+            all_real_values.append(real_values)
+            
+            output = tcn(x)
+            test_loss = test_loss = criterion(output, y)
+            all_test_loss.append(test_loss.item())
+
+        predictions_tensor = torch.stack(all_predictions)
+        real_values_tensor = torch.stack(all_real_values)
+        mape = MAPE(real_values_tensor, predictions_tensor)
+        smape = SMAPE(real_values_tensor, predictions_tensor)
+        wape = WAPE(real_values_tensor, predictions_tensor)
+        test_loss = np.mean(all_test_loss)
+
+        if args.print:
+            print('Test set: Loss: {:.6f}'.format(test_loss))
+            print('Test set: WAPE: {:.6f}'.format(wape))
+            print('Test set: MAPE: {:.6f}'.format(mape))
+            print('Test set: SMAPE: {:.6f}'.format(smape))
+        return test_loss, wape, mape, smape
 
 if __name__ == "__main__":
     args = parse()
@@ -134,7 +170,7 @@ if __name__ == "__main__":
         'electricity/data/LD2011_2014_hourly.txt', 
         start_date=args.test_start,
         end_date=args.test_end,
-        h_batch=args.h_batch_size,
+        h_batch=0,
         include_time_covariates=True)
     train_loader = DataLoader(
         dataset=train_dataset, batch_size=args.v_batch_size, shuffle=True, num_workers=args.num_workers)
@@ -174,6 +210,13 @@ if __name__ == "__main__":
         writer.add_scalar('wape', wape , ep)
         writer.add_scalar('mape', mape , ep)
         writer.add_scalar('smape', smape , ep)
+
+    tloss, wape, mape, smape = evaluate_final()
+    print('Test set:')
+    print('Loss: {:.6f}'.format(test_loss))
+    print('WAPE: {:.6f}'.format(wape))
+    print('MAPE: {:.6f}'.format(mape))
+    print('SMAPE: {:.6f}'.format(smape))
 
     writer.close()
     torch.save(tcn.state_dict(), args.model_save_path)

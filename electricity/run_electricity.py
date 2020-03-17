@@ -130,8 +130,6 @@ def evaluate_final():
             x, y = data[0].to(device), data[1].to(device)
 
             predictions, real_values = tcn.rolling_prediction(x)
-            print('predictions.shape', predictions.shape)
-            print('real_values.shape', real_values.shape)
             all_predictions.append(predictions)
             all_real_values.append(real_values)
             

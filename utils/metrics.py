@@ -4,31 +4,27 @@ import torch
 
 def WAPE(Y, Y_hat):
     """ Weighted Absolute Percent Error """
-    numerator = abs(Y-Y_hat).sum()
-    denominator = abs(Y).sum()
-    return (numerator / denominator).item()
+    Y = Y.numpy()
+    Y_hat = Y_hat.numpy()
+    return np.mean(np.abs(Y_hat - Y)) / np.mean(np.abs(Y_hat))
 
 def MAPE(Y, Y_hat):
-    nz = np.where(abs(Y)>0)
-    Y = Y[nz]
-    Y_hat = Y_hat[nz]
-    numerator = abs(Y-Y_hat)
-    denominator = abs(Y)
-    divided = torch.div(numerator, denominator)
-    tot = divided.sum()
-    z = Y.nonzero().shape[0]
-    return tot.div(z).item()
+    Y = Y.numpy()
+    Y_hat = Y_hat.numpy()
+    nz = np.where(Y_hat > 0)
+    Pz = Y[nz]
+    Az = Y_hat[nz]
+
+    return np.mean(np.abs(Az - Pz) / np.abs(Az))
 
 def SMAPE(Y, Y_hat):
-    nz = np.where(abs(Y)>0)
-    Y = Y[nz]
-    Y_hat = Y_hat[nz]
-    numerator = 2*abs(Y-Y_hat)
-    denominator = abs(Y+Y_hat)
-    divided = torch.div(numerator, denominator)
-    tot = divided.sum()
-    z = Y.nonzero().shape[0]
-    return tot.div(z).item()
+    Y = Y.numpy()
+    Y_hat = Y_hat.numpy()
+    nz = np.where(Y_hat > 0)
+    Pz = Y[nz]
+    Az = Y_hat[nz]
+
+    return np.mean(2 * np.abs(Az - Pz) / (np.abs(Az) + np.abs(Pz)))
 
 
 if __name__ == "__main__":

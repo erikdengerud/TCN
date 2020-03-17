@@ -113,6 +113,7 @@ def evaluate():
             smape = SMAPE(real_values, predictions)
             wape = WAPE(real_values, predictions)
             if args.print:
+                print('Random batch of test set:')
                 print('Test set: Loss: {:.6f}'.format(test_loss.item()))
                 print('Test set: WAPE: {:.6f}'.format(wape))
                 print('Test set: MAPE: {:.6f}'.format(mape))
@@ -147,12 +148,11 @@ def evaluate_final():
         wape = WAPE(real_values_tensor, predictions_tensor)
         test_loss = np.sum(all_test_loss)
 
-        if args.print:
-            print('Random batch of test set:')
-            print('Loss: {:.6f}'.format(test_loss))
-            print('WAPE: {:.6f}'.format(wape))
-            print('MAPE: {:.6f}'.format(mape))
-            print('SMAPE: {:.6f}'.format(smape))
+        #if args.print:
+        #    print('Loss: {:.6f}'.format(test_loss))
+        #    print('WAPE: {:.6f}'.format(wape))
+        #    print('MAPE: {:.6f}'.format(mape))
+        #    print('SMAPE: {:.6f}'.format(smape))
         return test_loss, wape, mape, smape
 
 if __name__ == "__main__":
@@ -200,7 +200,7 @@ if __name__ == "__main__":
             sum(p.numel() for p in tcn.parameters() if p.requires_grad)}""")
 
     """ Training parameters"""
-    "criterion = nn.MSELoss()
+    #criterion = nn.MSELoss()
     criterion = nn.L1Loss()
     optimizer = optim.Adam(tcn.parameters(), lr=args.lr)
 

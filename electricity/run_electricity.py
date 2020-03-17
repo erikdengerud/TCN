@@ -77,7 +77,7 @@ def train(epoch):
         x, y = d[0].to(device), d[1].to(device)
         optimizer.zero_grad()
         output = tcn(x)
-        loss = criterion(output, y)
+        loss = criterion(output, y) / torch.abs(y).mean()
         loss.backward()
         if args.clip > 0:
             torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
@@ -103,7 +103,7 @@ def evaluate():
             x, y = d[0].to(device), d[1].to(device)
 
             output = tcn(x)
-            test_loss = test_loss = criterion(output, y)
+            test_loss = criterion(output, y) / torch.abs(y).mean()
 
             predictions, real_values = tcn.rolling_prediction(x)
             real_values = real_values.cpu()
@@ -112,7 +112,6 @@ def evaluate():
             mape = MAPE(real_values, predictions)
             smape = SMAPE(real_values, predictions)
             wape = WAPE(real_values, predictions)
-            print('dsga')
             if args.print:
                 print('Test set: Loss: {:.6f}'.format(test_loss.item()))
                 print('Test set: WAPE: {:.6f}'.format(wape))
@@ -134,7 +133,7 @@ def evaluate_final():
             all_real_values.append(real_values)
             
             output = tcn(x)
-            test_loss = test_loss = criterion(output, y)
+            test_loss = criterion(output, y) / torch.abs(y).mean()
             all_test_loss.append(test_loss.item())
 
         predictions_tensor = torch.cat(all_predictions, 0)
@@ -201,7 +200,8 @@ if __name__ == "__main__":
             sum(p.numel() for p in tcn.parameters() if p.requires_grad)}""")
 
     """ Training parameters"""
-    criterion = nn.MSELoss()
+    "criterion = nn.MSELoss()
+    criterion = nn.L1Loss()
     optimizer = optim.Adam(tcn.parameters(), lr=args.lr)
 
     """ Tensorboard """

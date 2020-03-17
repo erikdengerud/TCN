@@ -1,7 +1,6 @@
 # Data 
 data/
 .vscode/
-runs/
 models/
 
 # Byte-compiled / optimized / DLL files

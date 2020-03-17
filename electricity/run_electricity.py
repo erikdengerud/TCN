@@ -112,7 +112,6 @@ def evaluate():
             mape = MAPE(real_values, predictions)
             smape = SMAPE(real_values, predictions)
             wape = WAPE(real_values, predictions)
-            print('dsga')
             if args.print:
                 print('Test set: Loss: {:.6f}'.format(test_loss.item()))
                 print('Test set: WAPE: {:.6f}'.format(wape))

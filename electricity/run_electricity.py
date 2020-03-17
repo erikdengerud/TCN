@@ -15,7 +15,7 @@ sys.path.append('../../')
 
 from model import TCN
 from data import ElectricityDataSet
-from utils.metrics import WAPE, MAPE, SMAPE
+from utils.metrics import WAPE, MAPE, SMAPE, MAE, RMSE
 
 def parse():
     parser = argparse.ArgumentParser(description='Adding Problem')
@@ -112,13 +112,17 @@ def evaluate():
             mape = MAPE(real_values, predictions)
             smape = SMAPE(real_values, predictions)
             wape = WAPE(real_values, predictions)
+            mae = MAE(real_values, predictions)
+            rmse = RMSE(real_values, predictions)
             if args.print:
                 print('Random batch of test set:')
                 print('Test set: Loss: {:.6f}'.format(test_loss.item()))
                 print('Test set: WAPE: {:.6f}'.format(wape))
                 print('Test set: MAPE: {:.6f}'.format(mape))
                 print('Test set: SMAPE: {:.6f}'.format(smape))
-            return test_loss.item(), wape, mape, smape
+                print('Test set: MAE: {:.6f}'.format(mae))
+                print('Test set: RMSE: {:.6f}'.format(rmse))
+            return test_loss.item(), wape, mape, smape, mae, rmse
 
 def evaluate_final():
     tcn.eval()
@@ -147,13 +151,15 @@ def evaluate_final():
         smape = SMAPE(real_values_tensor, predictions_tensor)
         wape = WAPE(real_values_tensor, predictions_tensor)
         test_loss = np.sum(all_test_loss)
+        mae = MAE(real_values_tensor, predictions_tensor)
+        rmse = RMSE(real_values_tensor, predictions_tensor)
 
         #if args.print:
         #    print('Loss: {:.6f}'.format(test_loss))
         #    print('WAPE: {:.6f}'.format(wape))
         #    print('MAPE: {:.6f}'.format(mape))
         #    print('SMAPE: {:.6f}'.format(smape))
-        return test_loss, wape, mape, smape
+        return test_loss, wape, mape, smape, mae, rmse
 
 if __name__ == "__main__":
     args = parse()
@@ -210,18 +216,22 @@ if __name__ == "__main__":
     """ Training """
     for ep in range(1, args.epochs+1):
         train(ep)
-        tloss, wape, mape, smape = evaluate()
+        tloss, wape, mape, smape, mae, rmse = evaluate()
         writer.add_scalar('test_loss', tloss , ep)
         writer.add_scalar('wape', wape , ep)
         writer.add_scalar('mape', mape , ep)
         writer.add_scalar('smape', smape , ep)
+        writer.add_scalar('mae', ,mae , ep)
+        writer.add_scalar('rmse', rmse , ep)
 
-    tloss, wape, mape, smape = evaluate_final()
+    tloss, wape, mape, smape, maem rmse = evaluate_final()
     print('Test set:')
     print('Loss: {:.6f}'.format(tloss))
     print('WAPE: {:.6f}'.format(wape))
     print('MAPE: {:.6f}'.format(mape))
     print('SMAPE: {:.6f}'.format(smape))
+    print('MAE: {:.6f}'.format(mae))
+    print('RMSE: {:.6f}'.format(rmse))
 
     writer.close()
     torch.save(tcn.state_dict(), args.model_save_path)

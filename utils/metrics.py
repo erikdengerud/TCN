@@ -6,26 +6,36 @@ def WAPE(Y, Y_hat):
     """ Weighted Absolute Percent Error """
     Y = Y.numpy()
     Y_hat = Y_hat.numpy()
-    return np.mean(np.abs(Y_hat - Y)) / np.mean(np.abs(Y_hat))
+    return np.mean(np.abs(Y - Y_hat)) / np.mean(np.abs(Y))
 
 def MAPE(Y, Y_hat):
     Y = Y.numpy()
     Y_hat = Y_hat.numpy()
-    nz = np.where(Y_hat > 0)
-    Pz = Y[nz]
-    Az = Y_hat[nz]
+    nz = np.where(Y > 0)
+    Pz = Y_hat[nz]
+    Az = Y[nz]
 
     return np.mean(np.abs(Az - Pz) / np.abs(Az))
 
 def SMAPE(Y, Y_hat):
     Y = Y.numpy()
     Y_hat = Y_hat.numpy()
-    nz = np.where(Y_hat > 0)
-    Pz = Y[nz]
-    Az = Y_hat[nz]
+    nz = np.where(Y > 0)
+    Pz = Y_hat[nz]
+    Az = Y[nz]
 
     return np.mean(2 * np.abs(Az - Pz) / (np.abs(Az) + np.abs(Pz)))
 
+def MAE(Y, Y_hat):
+    Y = Y.numpy()
+    Y_hat = Y_hat.numpy()
+    return np.abs(Y_hat - Y).mean()
+
+def RMSE(Y, Y_hat):
+    Y = Y.numpy()
+    Y_hat = Y_hat.numpy()
+    return np.sqrt(((Y_hat - Y) ** 2).mean())
+    real_values_tensor, predictions_tensor
 
 if __name__ == "__main__":
     import torch

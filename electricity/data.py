@@ -126,8 +126,8 @@ if __name__ == "__main__":
     dataset = ElectricityDataSet(
     'electricity/data/LD2011_2014_hourly.txt', 
     include_time_covariates=True,
-    start_date='2013-03-03',
-    end_date='2014-02-03',
+    start_date='2012-01-01',
+    end_date='2014-12-18',
     predict_ahead=3,
     h_batch=0)
 

@@ -8,67 +8,16 @@ from torch.utils.tensorboard import SummaryWriter
 from torch.utils.data import DataLoader
 
 import numpy as np
-import argparse
 import sys
 sys.path.append('')
 sys.path.append('../../')
+from datetime import date, timedelta
 
 from model import TCN
 from data import ElectricityDataSet
 from utils.metrics import WAPE, MAPE, SMAPE, MAE, RMSE
+from utils.parser import parse
 
-def parse():
-    parser = argparse.ArgumentParser(description='Adding Problem')
-    parser.add_argument(
-        '--train_start', type=str, default='2012-01-01', metavar='train_start')
-    parser.add_argument(
-        '--train_end', type=str, default='2014-08-01', metavar='train_end')
-    parser.add_argument(
-        '--test_start', type=str, default='2014-08-01', metavar='test_start')
-    parser.add_argument(
-        '--test_end', type=str, default='2014-10-01', metavar='test_end')
-    parser.add_argument(
-        '--v_batch_size', type=int, default=32, metavar='v_batch_size')
-    parser.add_argument(
-        '--h_batch_size', type=int, default=256, metavar='h_batch_size')
-    parser.add_argument(
-        '--num_layers', type=int, default=5, metavar='num_layers')
-    parser.add_argument(
-        '--in_channels', type=int, default=8, metavar='in_channels')
-    parser.add_argument(
-        '--out_channels', type=int, default=1, metavar='out_channels')
-    parser.add_argument(
-        '--kernel_size', type=int, default=7, metavar='kernel_size')
-    parser.add_argument(
-        '--res_block_size', type=int, default=32, metavar='res_block_size')
-    parser.add_argument(
-        '--bias', type=bool, default=True, metavar='bias')
-    parser.add_argument(
-        '--dropout', type=float, default=0.0, metavar='dropout')
-    parser.add_argument(
-        '--stride', type=int, default=1, metavar='stride')
-    parser.add_argument(
-        '--leveledinit', type=bool, default=False, metavar='leveledinit')
-    parser.add_argument(
-        '--model_save_path', type=str, default='electricity/models/tcn_electricity.pt', 
-        metavar='model_save_path')
-    parser.add_argument(
-        '--epochs', type=int, default=300, metavar='epochs')
-    parser.add_argument(
-        '--lr', type=float, default=5e-4, metavar='lr')
-    parser.add_argument(
-        '--clip', type=bool, default=False, metavar='clip')
-    parser.add_argument(
-        '--log_interval', type=int, default=5, metavar='log_interval')
-    parser.add_argument(
-        '--writer_path', type=str, default='electricity/runs/electricity_1', 
-        metavar='writer_path')
-    parser.add_argument(
-        '--print', type=bool, default=False, metavar='print')
-    parser.add_argument(
-        '--num_workers', type=int, default=0, metavar='num_workers')
-    args = parser.parse_args()
-    return args
 
 def train(epoch):
     tcn.train()
@@ -87,7 +36,7 @@ def train(epoch):
         if i % args.log_interval == 0:
             cur_loss = total_loss / args.log_interval
             processed = min(i*args.v_batch_size, length_dataset)
-            writer.add_scalar('training_loss', cur_loss, processed + length_dataset*epoch)
+            writer.add_scalar('Loss/train', cur_loss, processed + length_dataset*epoch)
             if args.print:
                 print(
                     (f"Train Epoch: {epoch:2d}"
@@ -154,11 +103,6 @@ def evaluate_final():
         mae = MAE(real_values_tensor, predictions_tensor)
         rmse = RMSE(real_values_tensor, predictions_tensor)
 
-        #if args.print:
-        #    print('Loss: {:.6f}'.format(test_loss))
-        #    print('WAPE: {:.6f}'.format(wape))
-        #    print('MAPE: {:.6f}'.format(mape))
-        #    print('SMAPE: {:.6f}'.format(smape))
         return test_loss, wape, mape, smape, mae, rmse
 
 if __name__ == "__main__":
@@ -170,6 +114,24 @@ if __name__ == "__main__":
 
     """ Dataset """
     print("Creating dataset.")
+    # Lookback of the TCN
+    look_back = 1 + 2 * (args.kernel_size -1) * 2**(args.num_layers-1)
+    look_back_timedelta = timedelta(hours=look_back)
+    # Num rolling periods * Length of rolling period
+    rolling_validation_length_days = timedelta(
+        hours=args.num_rolling_periods*args.length_rolling)
+
+    test_start = (
+        date.fromisoformat(args.train_end) - 
+        look_back_timedelta +
+        timedelta(days=1)
+        ).isoformat()
+    test_end = (
+        date.fromisoformat(args.train_end) + 
+        rolling_validation_length_days + 
+        timedelta(days=2)
+        ).isoformat()
+
     train_dataset = ElectricityDataSet(
         'electricity/data/LD2011_2014_hourly.txt', 
         start_date=args.train_start,
@@ -178,8 +140,8 @@ if __name__ == "__main__":
         include_time_covariates=True)
     test_dataset = ElectricityDataSet(
         'electricity/data/LD2011_2014_hourly.txt', 
-        start_date=args.test_start,
-        end_date=args.test_end,
+        start_date=test_start,
+        end_date=test_end,
         h_batch=0,
         include_time_covariates=True)
     train_loader = DataLoader(
@@ -211,13 +173,13 @@ if __name__ == "__main__":
     optimizer = optim.Adam(tcn.parameters(), lr=args.lr)
 
     """ Tensorboard """
-    writer = SummaryWriter(args.writer_path)
+    writer = SummaryWriter(log_dir=args.writer_path, comment=args.writer_comment)
 
     """ Training """
     for ep in range(1, args.epochs+1):
         train(ep)
         tloss, wape, mape, smape, mae, rmse = evaluate()
-        writer.add_scalar('test_loss', tloss , ep)
+        writer.add_scalar('Loss/test', tloss , ep)
         writer.add_scalar('wape', wape , ep)
         writer.add_scalar('mape', mape , ep)
         writer.add_scalar('smape', smape , ep)

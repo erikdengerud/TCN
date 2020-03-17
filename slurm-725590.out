@@ -1,0 +1,25 @@
+/var/spool/slurmd/job725590/slurm_script: line 12: $'\302\240\302\240': command not found
+/var/spool/slurmd/job725590/slurm_script: line 13: echo we are running from this directory: /lustre1/home/erikde/TCN: No such file or directory
+/var/spool/slurmd/job725590/slurm_script: line 14: $'echo\302\240 the name of the job is: electricity-pytorch': command not found
+/var/spool/slurmd/job725590/slurm_script: line 15: $'echo\302\240Th job ID is 725590': command not found
+/var/spool/slurmd/job725590/slurm_script: line 16: $'echo\302\240The job was run on these nodes: compute-4-0-15': command not found
+/var/spool/slurmd/job725590/slurm_script: line 17: $'echo\302\240Number of nodes: 1': command not found
+/var/spool/slurmd/job725590/slurm_script: line 18: $'echo\302\240We are using 1 cores': command not found
+/var/spool/slurmd/job725590/slurm_script: line 19: $'echo\302\240We are using 1 cores per node': command not found
+/var/spool/slurmd/job725590/slurm_script: line 20: $'echo\302\240Total of 1 cores': command not found
+/var/spool/slurmd/job725590/slurm_script: line 21: $'\302\240': command not found
+cuda:0
+Creating dataset.
+Dimension of X :  torch.Size([370, 8, 25944])
+Dimension of Y :  torch.Size([370, 1, 25944])
+Dimension of X :  torch.Size([370, 8, 384])
+Dimension of Y :  torch.Size([370, 1, 384])
+Number of learnable parameters : 67457
+Test set:
+Loss: 2.546633
+WAPE: 0.216300
+MAPE: 0.938434
+SMAPE: 0.373691
+MAE: 452.865723
+RMSE: 3044.219482
+Finished Training

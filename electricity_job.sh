@@ -21,4 +21,4 @@ echo "Total of $SLURM_NTASKS cores"
  
 module load GCC/8.3.0  CUDA/10.1.243  OpenMPI/3.1.4 PyTorch/1.3.1-Python-3.7.4 
 
-python3 electricity/run_electricity.py --num_workers=4 --model_save_path='electricity/models/tcn_electrity_idun_4.pt' --writer_path='electricity/runs/' --writer_comment='test' --epochs=500
+python3 electricity/run_electricity.py --num_workers=4 --model_save_path='electricity/models/tcn_electrity_500ep_leveledinit.pt' --writer_path='electricity/runs/' --writer_comment='deepglo_local_500ep_leveledinit' --epochs=500 --leveledinit=True

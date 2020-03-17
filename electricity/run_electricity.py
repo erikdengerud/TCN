@@ -221,10 +221,10 @@ if __name__ == "__main__":
         writer.add_scalar('wape', wape , ep)
         writer.add_scalar('mape', mape , ep)
         writer.add_scalar('smape', smape , ep)
-        writer.add_scalar('mae', ,mae , ep)
+        writer.add_scalar('mae', mae, ep)
         writer.add_scalar('rmse', rmse , ep)
 
-    tloss, wape, mape, smape, maem rmse = evaluate_final()
+    tloss, wape, mape, smape, mae, rmse = evaluate_final()
     print('Test set:')
     print('Loss: {:.6f}'.format(tloss))
     print('WAPE: {:.6f}'.format(wape))

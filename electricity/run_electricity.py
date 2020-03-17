@@ -22,11 +22,11 @@ def parse():
     parser.add_argument(
         '--train_start', type=str, default='2012-01-01', metavar='train_start')
     parser.add_argument(
-        '--train_end', type=str, default='2014-06-01', metavar='train_end')
+        '--train_end', type=str, default='2014-08-01', metavar='train_end')
     parser.add_argument(
-        '--test_start', type=str, default='2014-06-15', metavar='test_start')
+        '--test_start', type=str, default='2014-08-01', metavar='test_start')
     parser.add_argument(
-        '--test_end', type=str, default='2014-12-31', metavar='test_end')
+        '--test_end', type=str, default='2014-10-01', metavar='test_end')
     parser.add_argument(
         '--v_batch_size', type=int, default=32, metavar='v_batch_size')
     parser.add_argument(
@@ -87,7 +87,7 @@ def train(epoch):
         if i % args.log_interval == 0:
             cur_loss = total_loss / args.log_interval
             processed = min(i*args.v_batch_size, length_dataset)
-            writer.add_scalar('training_loss', cur_loss, processed)
+            writer.add_scalar('training_loss', cur_loss, processed + length_dataset*epoch)
             if args.print:
                 print(
                     (f"Train Epoch: {epoch:2d}"
@@ -99,9 +99,9 @@ def train(epoch):
 def evaluate():
     tcn.eval()
     with torch.no_grad():
-        for i, data in enumerate(test_loader):
-            print(i)
-            x, y = data[0].to(device), data[1].to(device)
+        for i, d in enumerate(test_loader):
+            x, y = d[0].to(device), d[1].to(device)
+
             output = tcn(x)
             test_loss = test_loss = criterion(output, y)
 
@@ -112,7 +112,7 @@ def evaluate():
             mape = MAPE(real_values, predictions)
             smape = SMAPE(real_values, predictions)
             wape = WAPE(real_values, predictions)
-            
+            print('dsga')
             if args.print:
                 print('Test set: Loss: {:.6f}'.format(test_loss.item()))
                 print('Test set: WAPE: {:.6f}'.format(wape))
@@ -126,12 +126,10 @@ def evaluate_final():
         all_predictions = []
         all_real_values = []
         all_test_loss = []
-        for data in test_loader:
+        for i, data in enumerate(test_loader):
             x, y = data[0].to(device), data[1].to(device)
 
             predictions, real_values = tcn.rolling_prediction(x)
-            print('predictions.shape', predictions.shape)
-            print('real_values.shape', real_values.shape)
             all_predictions.append(predictions)
             all_real_values.append(real_values)
             
@@ -144,7 +142,7 @@ def evaluate_final():
 
         predictions_tensor = predictions_tensor.cpu()
         real_values_tensor = real_values_tensor.cpu()
-        
+
         mape = MAPE(real_values_tensor, predictions_tensor)
         smape = SMAPE(real_values_tensor, predictions_tensor)
         wape = WAPE(real_values_tensor, predictions_tensor)

@@ -5,7 +5,8 @@ import torch
 import numpy as np
 import pandas as pd
 import os
-from datetime import date
+from datetime import date, timedelta
+import matplotlib.pyplot as plt
 
 from gluonts.time_feature import (
     MinuteOfHour, 
@@ -119,10 +120,47 @@ class ElectricityDataSet(Dataset):
         num_covariates = Z.shape[0]
         return Z, num_covariates
 
+    def plot_examples(self, ids=[], n=3, length_plot=48, save_path='electricity/figures/ts_examples.pdf', logy=True):
+        if ids:
+            time_series = []
+            for i in ids:
+                start_point = np.random.randint(0, int((self.length_ts-length_plot)/24))*24
+                s = self.X[i, 0, start_point:start_point+length_plot].numpy()
+                time_series.append(np.transpose(s))
+        else:
+            # Choose n randomly selected series and a random start point
+            examples_ids = np.random.choice(370, size=n, replace=False)
+            start_point = np.random.randint(0, int((self.length_ts-length_plot)/24))*24
+            time_series = []
+            for example_id in examples_ids:
+                s = self.X[example_id, 0, start_point:start_point+length_plot].numpy()
+                time_series.append(np.transpose(s))
+    
+        # Create df
+        df = pd.DataFrame(time_series).T
+
+        # Get datetime start
+        start_date = self.start_date + timedelta(hours=start_point)
+        t_range = timedelta(hours=length_plot)
+        end_date = start_date + t_range
+        start_date = start_date.isoformat()
+        end_date = end_date.isoformat()
+
+        d_range = pd.date_range(start=start_date, end=end_date, freq='H')[:-1]
+        df.index = d_range
+
+        df.plot(subplots=True, figsize=(10,5), logy=logy)
+        plt.savefig(save_path)
+        plt.show()
+
+        return 0
+
+
+
 if __name__ == "__main__":
     # Electricity dataset
     print("Electricity dataset: ")
-
+    np.random.seed(1729)
     dataset = ElectricityDataSet(
     'electricity/data/LD2011_2014_hourly.txt', 
     include_time_covariates=True,
@@ -131,6 +169,9 @@ if __name__ == "__main__":
     predict_ahead=3,
     h_batch=0)
 
+    dataset.plot_examples(ids=[16, 22, 26], n=3, logy=False)
+
+    '''
     loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
     dataiter = iter(loader)
     x, y = dataiter.next()
@@ -144,3 +185,4 @@ if __name__ == "__main__":
     print("Type y : ", y.dtype)
     print(x[0, 0, -5:])
     print(y[0, 0, -5:])
+    '''

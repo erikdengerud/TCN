@@ -57,6 +57,21 @@ def parse():
         '--num_rolling_periods', type=int, default=7, metavar='num_rolling')
     parser.add_argument(
         '--length_rolling', type=int, default=24, metavar='length_rolling')
+    parser.add_argument(
+        '--time_covariates', type=bool, default=True, metavar='time_covariates'
+    )
 
     args = parser.parse_args()
     return args
+
+def print_args(args):
+    dic = vars(args)
+    #print(dic)
+    for key in dic.keys():
+        print(f"{key:20s} : {dic[key]}")
+
+
+
+if __name__ == "__main__":
+    args = parse()
+    print_args(args)

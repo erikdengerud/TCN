@@ -16,7 +16,7 @@ from datetime import date, timedelta
 from model import TCN
 from data import ElectricityDataSet
 from utils.metrics import WAPE, MAPE, SMAPE, MAE, RMSE
-from utils.parser import parse
+from utils.parser import parse, print_args
 
 
 def train(epoch):
@@ -107,6 +107,7 @@ def evaluate_final():
 
 if __name__ == "__main__":
     args = parse()
+    print_args(args)
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     # Assuming that we are on a CUDA machine, this should print a CUDA device:
@@ -115,7 +116,8 @@ if __name__ == "__main__":
     """ Dataset """
     print("Creating dataset.")
     # Lookback of the TCN
-    look_back = 1 + 2 * (args.kernel_size -1) * 2**(args.num_layers-1)
+    look_back = 1 + 2 * (args.kernel_size -1) * 2**((args.num_layers+1)-1)
+    print(f'Receptive field of the model is {look_back} time points.')
     look_back_timedelta = timedelta(hours=look_back)
     # Num rolling periods * Length of rolling period
     rolling_validation_length_days = timedelta(
@@ -131,19 +133,20 @@ if __name__ == "__main__":
         rolling_validation_length_days + 
         timedelta(days=2)
         ).isoformat()
-
+    print('Train dataset')
     train_dataset = ElectricityDataSet(
         'electricity/data/LD2011_2014_hourly.txt', 
         start_date=args.train_start,
         end_date=args.train_end,
         h_batch=args.h_batch_size,
-        include_time_covariates=True)
+        include_time_covariates=args.time_covariates)
+    print('Test dataset')
     test_dataset = ElectricityDataSet(
         'electricity/data/LD2011_2014_hourly.txt', 
         start_date=test_start,
         end_date=test_end,
         h_batch=0,
-        include_time_covariates=True)
+        include_time_covariates=args.time_covariates)
     train_loader = DataLoader(
         dataset=train_dataset, batch_size=args.v_batch_size, shuffle=True, num_workers=args.num_workers)
     test_loader = DataLoader(
@@ -152,11 +155,11 @@ if __name__ == "__main__":
 
     """ TCN """
     tcn = TCN(
-            num_layers=args.num_layers,
+            num_layers=args.num_layers+1,
             in_channels=args.in_channels,
             out_channels=args.out_channels,
             kernel_size=args.kernel_size,
-            residual_blocks_channel_size=[args.res_block_size]*args.num_layers,
+            residual_blocks_channel_size=[args.res_block_size]*args.num_layers + [1],
             bias=args.bias,
             dropout=args.dropout,
             stride=args.stride,
@@ -173,7 +176,7 @@ if __name__ == "__main__":
     optimizer = optim.Adam(tcn.parameters(), lr=args.lr)
 
     """ Tensorboard """
-    writer = SummaryWriter(log_dir=args.writer_path, comment=args.writer_comment)
+    writer = SummaryWriter(log_dir=args.writer_path)
 
     """ Training """
     for ep in range(1, args.epochs+1):

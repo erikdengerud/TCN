@@ -1,3 +1,4 @@
+# parser.py
 import argparse
 
 def add_bool_arg(parser, name, default=False):
@@ -8,54 +9,38 @@ def add_bool_arg(parser, name, default=False):
 
 def parse():
     parser = argparse.ArgumentParser(description='Adding Problem')
-    parser.add_argument(
-        '--train_start', type=str, default='2012-01-01', metavar='train_start')
-    parser.add_argument(
-        '--train_end', type=str, default='2014-12-17', metavar='train_end')
-    parser.add_argument(
-        '--v_batch_size', type=int, default=32, metavar='v_batch_size')
-    parser.add_argument(
-        '--h_batch_size', type=int, default=256, metavar='h_batch_size')
-    parser.add_argument(
-        '--num_layers', type=int, default=5, metavar='num_layers')
-    parser.add_argument(
-        '--in_channels', type=int, default=8, metavar='in_channels')
-    parser.add_argument(
-        '--out_channels', type=int, default=1, metavar='out_channels')
-    parser.add_argument(
-        '--kernel_size', type=int, default=7, metavar='kernel_size')
-    parser.add_argument(
-        '--res_block_size', type=int, default=32, metavar='res_block_size')
-    parser.add_argument(
-        '--dropout', type=float, default=0.0, metavar='dropout')
-    parser.add_argument(
-        '--stride', type=int, default=1, metavar='stride')
-    parser.add_argument(
-        '--model_save_path', type=str, default='electricity/models/tcn_electricity.pt', 
-        metavar='model_save_path')
-    parser.add_argument(
-        '--epochs', type=int, default=300, metavar='epochs')
-    parser.add_argument(
-        '--lr', type=float, default=5e-4, metavar='lr')
-    parser.add_argument(
-        '--log_interval', type=int, default=5, metavar='log_interval')
-    parser.add_argument(
-        '--writer_path', type=str, default='electricity/runs/', 
-        metavar='writer_path')
-    parser.add_argument(
-        '--num_workers', type=int, default=0, metavar='num_workers')
-    parser.add_argument(
-        '--num_rolling_periods', type=int, default=7, metavar='num_rolling')
-    parser.add_argument(
-        '--length_rolling', type=int, default=24, metavar='length_rolling')
 
-    # Booleans
-    # Becomes e.g. --bias and --no-bias
+    # Dataset
+    parser.add_argument('--train_start', type=str, default='2012-01-01')
+    parser.add_argument('--train_end', type=str, default='2014-12-17')
+    parser.add_argument('--v_batch_size', type=int, default=32)
+    parser.add_argument('--h_batch_size', type=int, default=256)
+    parser.add_argument('--num_workers', type=int, default=0)
+    add_bool_arg(parser, name='time_covariates', default=True)
+
+    # Model architecture
+    parser.add_argument('--num_layers', type=int, default=5)
+    parser.add_argument('--kernel_size', type=int, default=7)
+    parser.add_argument('--res_block_size', type=int, default=32)
     add_bool_arg(parser, name='bias', default=True)
+
+    # Training parameters
+    parser.add_argument('--epochs', type=int, default=300)
+    parser.add_argument('--lr', type=float, default=5e-4)
+    parser.add_argument('--dropout', type=float, default=0.0)
+    parser.add_argument('--stride', type=int, default=1)
     add_bool_arg(parser, name='leveledinit', default=True)
     add_bool_arg(parser, name='clip', default=True)
-    add_bool_arg(parser, name='time_covariates', default=True)
-    add_bool_arg(parser, name='print', default=False)
+
+    # Test parameters
+    parser.add_argument('--num_rolling_periods', type=int, default=7)
+    parser.add_argument('--length_rolling', type=int, default=24)
+
+    # Logging
+    parser.add_argument('--model_save_path', type=str, default='electricity/models/tcn_electricity.pt')
+    parser.add_argument('--writer_path', type=str, default='electricity/runs/')
+    parser.add_argument('--log_interval', type=int, default=5)
+    add_bool_arg(parser, name='print', default=True)
 
     args = parser.parse_args()
     return args

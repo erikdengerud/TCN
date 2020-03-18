@@ -153,11 +153,16 @@ if __name__ == "__main__":
         dataset=test_dataset, batch_size=args.v_batch_size, shuffle=True, num_workers=args.num_workers)
     length_dataset = train_dataset.__len__()
 
+    load_iter = iter(train_loader)
+    x, y = load_iter.next()
+    in_channels = x.shape[1]
+    out_channels = y.shape[1]
+
     """ TCN """
     tcn = TCN(
             num_layers=args.num_layers+1,
-            in_channels=args.in_channels,
-            out_channels=args.out_channels,
+            in_channels=in_channels,
+            out_channels=out_channels,
             kernel_size=args.kernel_size,
             residual_blocks_channel_size=[args.res_block_size]*args.num_layers + [1],
             bias=args.bias,

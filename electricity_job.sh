@@ -12,4 +12,4 @@
  
 module load GCC/8.3.0  CUDA/10.1.243  OpenMPI/3.1.4 PyTorch/1.3.1-Python-3.7.4 
 
-python3 electricity/run_electricity.py --num_workers=4 --model_save_path='electricity/models/tcn_electrity_500ep_leveledinit.pt' --writer_path='electricity/runs/' --epochs=500 --leveledinit=True --time_covariates=True
+python3 electricity/run_electricity.py --num_workers=4 --model_save_path='electricity/models/tcn.pt' --writer_path='electricity/runs/tcn' --epochs=500 --no-leveledinit --no_time_covariates --no-clip --no-print

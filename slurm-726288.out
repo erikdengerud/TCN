@@ -1,0 +1,41 @@
+/var/spool/slurmd/job726288/slurm_script: line 12: $'\302\240': command not found
+train_start          : 2012-01-01
+train_end            : 2014-12-17
+v_batch_size         : 32
+h_batch_size         : 256
+num_workers          : 4
+time_covariates      : False
+num_layers           : 5
+kernel_size          : 7
+res_block_size       : 32
+bias                 : True
+epochs               : 500
+lr                   : 0.0005
+dropout              : 0.0
+stride               : 1
+leveledinit          : False
+clip                 : False
+num_rolling_periods  : 7
+length_rolling       : 24
+model_save_path      : electricity/models/tcn.pt
+writer_path          : electricity/runs/tcn
+log_interval         : 5
+print                : False
+cuda:0
+Creating dataset.
+Receptive field of the model is 385 time points.
+Train dataset
+Dimension of X :  torch.Size([370, 1, 25944])
+Dimension of Y :  torch.Size([370, 1, 25944])
+Test dataset
+Dimension of X :  torch.Size([370, 1, 576])
+Dimension of Y :  torch.Size([370, 1, 576])
+Number of learnable parameters : 65716
+Test set:
+Loss: 3.928035
+WAPE: 0.351992
+MAPE: 2.905544
+SMAPE: 0.700739
+MAE: 737.698853
+RMSE: 2836.034912
+Finished Training

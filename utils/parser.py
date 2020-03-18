@@ -6,10 +6,6 @@ def parse():
         '--train_start', type=str, default='2012-01-01', metavar='train_start')
     parser.add_argument(
         '--train_end', type=str, default='2014-12-17', metavar='train_end')
-    #parser.add_argument(
-    #    '--test_start', type=str, default='2014-08-01', metavar='test_start')
-    #parser.add_argument(
-    #    '--test_end', type=str, default='2014-10-01', metavar='test_end')
     parser.add_argument(
         '--v_batch_size', type=int, default=32, metavar='v_batch_size')
     parser.add_argument(
@@ -58,8 +54,7 @@ def parse():
     parser.add_argument(
         '--length_rolling', type=int, default=24, metavar='length_rolling')
     parser.add_argument(
-        '--time_covariates', type=bool, default=True, metavar='time_covariates'
-    )
+        '--time_covariates', type=bool, default=False)
 
     args = parser.parse_args()
     return args

@@ -17,7 +17,8 @@ def parse():
     parser.add_argument('--h_batch_size', type=int, default=256)
     parser.add_argument('--num_workers', type=int, default=0)
     add_bool_arg(parser, name='time_covariates', default=True)
-
+    add_bool_arg(parser, name='one_hot_id', default=True)
+    
     # Model architecture
     parser.add_argument('--num_layers', type=int, default=5)
     parser.add_argument('--kernel_size', type=int, default=7)

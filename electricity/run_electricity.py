@@ -139,14 +139,16 @@ if __name__ == "__main__":
         start_date=args.train_start,
         end_date=args.train_end,
         h_batch=args.h_batch_size,
-        include_time_covariates=args.time_covariates)
+        include_time_covariates=args.time_covariates,
+        one_hot_id=args.one_hot_id)
     print('Test dataset')
     test_dataset = ElectricityDataSet(
         'electricity/data/LD2011_2014_hourly.txt', 
         start_date=test_start,
         end_date=test_end,
         h_batch=0,
-        include_time_covariates=args.time_covariates)
+        include_time_covariates=args.time_covariates,
+        one_hot_id=args.one_hot_id)
     train_loader = DataLoader(
         dataset=train_dataset, batch_size=args.v_batch_size, shuffle=True, num_workers=args.num_workers)
     test_loader = DataLoader(
@@ -188,7 +190,7 @@ if __name__ == "__main__":
         train(ep)
         tloss, wape, mape, smape, mae, rmse = evaluate()
         writer.add_scalar('Loss/test', tloss , ep)
-        writer.add_scalar('wape', wape , ep)
+        writer.add_scalar('wape', wape , ep) 
         writer.add_scalar('mape', mape , ep)
         writer.add_scalar('smape', smape , ep)
         writer.add_scalar('mae', mae, ep)

@@ -5,8 +5,11 @@ import torch
 import numpy as np
 import pandas as pd
 import os
+import sys
 from datetime import date, timedelta
 import matplotlib.pyplot as plt
+
+from sklearn.preprocessing import OneHotEncoder
 
 from gluonts.time_feature import (
     MinuteOfHour, 
@@ -37,7 +40,8 @@ class ElectricityDataSet(Dataset):
         end_date='2014-05-26',   # YYYY-MM-DD
         include_time_covariates=False,
         predict_ahead=1,
-        h_batch=0
+        h_batch=0,
+        one_hot_id=False
         ):
 
         # Check dates
@@ -49,6 +53,7 @@ class ElectricityDataSet(Dataset):
         self.daterange = pd.date_range(
             start=start_date, end=end_date, freq='H')
 
+        self.one_hot_id = one_hot_id
         self.include_time_covariates = include_time_covariates
         self.predict_ahead = predict_ahead
         self.h_batch = h_batch
@@ -69,8 +74,26 @@ class ElectricityDataSet(Dataset):
             Z, num_covariates = self.get_time_covariates(dates)
             Z = Z.repeat(self.num_ts, 1, 1)
             X = torch.cat((X, Z), 1)
+
+        if self.one_hot_id:
+            ids = [[i] for i in range(self.num_ts)]
+            self.enc = OneHotEncoder(handle_unknown='ignore')
+            self.enc.fit(ids)
+            
+            # Tensor of shape 370 x 370 x length_ts
+            E = torch.zeros(self.num_ts, self.num_ts, self.length_ts)
+            for i in range(self.num_ts):
+                encoding = torch.from_numpy(self.enc.transform([[i]]).toarray())
+                encoding = encoding.repeat(self.length_ts,1)
+                encoding = torch.transpose(encoding, 0, 1)
+                E[i,:,:] = encoding
+
+            X = X.float()
+
+            X = torch.cat((X, E),1)
+
         self.X = X.to(dtype=torch.float32)
-        X = X.to(dtype=torch.float32)
+        #X = X.to(dtype=torch.float32)
 
         print("Dimension of X : ", self.X.shape)
         print("Dimension of Y : ", self.Y.shape)
@@ -80,6 +103,24 @@ class ElectricityDataSet(Dataset):
 
     def __getitem__(self, idx):
         if self.h_batch == 0:
+            '''
+            if self.one_hot_id:
+                if isinstance(idx, (list, np.ndarray)):
+                    idx_enc = [[d] for d in idx]
+                else:
+                    idx_enc = [idx]
+                print(idx)
+                """ Could be stored as E """
+                encoded = torch.from_numpy(self.enc.transform([idx_enc]).toarray())
+                encoding = encoded.repeat(self.length_ts,1)
+                encoding = torch.transpose(encoding, 0, 1)
+                X = self.X[]
+                X[idx]
+                print(encoded)
+                return self.X[idx], self.Y[idx]
+            else:
+                return self.X[idx], self.Y[idx]
+            '''
             return self.X[idx], self.Y[idx]
         else:
             j = np.random.randint(
@@ -164,14 +205,14 @@ if __name__ == "__main__":
     dataset = ElectricityDataSet(
     'electricity/data/LD2011_2014_hourly.txt', 
     include_time_covariates=True,
-    start_date='2012-01-01',
+    start_date='2014-01-01',
     end_date='2014-12-18',
     predict_ahead=3,
-    h_batch=0)
+    h_batch=0,
+    one_hot_id=True)
 
-    dataset.plot_examples(ids=[16, 22, 26], n=3, logy=False)
+    #dataset.plot_examples(ids=[16, 22, 26], n=3, logy=False)
 
-    '''
     loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
     dataiter = iter(loader)
     x, y = dataiter.next()
@@ -185,4 +226,5 @@ if __name__ == "__main__":
     print("Type y : ", y.dtype)
     print(x[0, 0, -5:])
     print(y[0, 0, -5:])
-    '''
+    
+

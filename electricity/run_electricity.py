@@ -176,7 +176,11 @@ if __name__ == "__main__":
     print(
         f"""Number of learnable parameters : {
             sum(p.numel() for p in tcn.parameters() if p.requires_grad)}""")
-
+    iter_loader = iter(train_loader)
+    x, y = iter_loader.next()
+    print('Shape of input and putput: ')
+    print(x.shape)
+    print(y.shape)
     """ Training parameters"""
     #criterion = nn.MSELoss()
     criterion = nn.L1Loss()

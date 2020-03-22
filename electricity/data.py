@@ -79,7 +79,7 @@ class ElectricityDataSet(Dataset):
             ids = [[i] for i in range(self.num_ts)]
             self.enc = OneHotEncoder(handle_unknown='ignore')
             self.enc.fit(ids)
-            
+            '''
             # Tensor of shape 370 x 370 x length_ts
             E = torch.zeros(self.num_ts, self.num_ts, self.length_ts)
             for i in range(self.num_ts):
@@ -91,7 +91,7 @@ class ElectricityDataSet(Dataset):
             X = X.float()
 
             X = torch.cat((X, E),1)
-
+            '''
         self.X = X.to(dtype=torch.float32)
         #X = X.to(dtype=torch.float32)
 
@@ -103,29 +103,45 @@ class ElectricityDataSet(Dataset):
 
     def __getitem__(self, idx):
         if self.h_batch == 0:
-            '''
+            X = self.X[idx]
+            Y = self.Y[idx]
+            
             if self.one_hot_id:
                 if isinstance(idx, (list, np.ndarray)):
                     idx_enc = [[d] for d in idx]
                 else:
                     idx_enc = [idx]
-                print(idx)
                 """ Could be stored as E """
                 encoded = torch.from_numpy(self.enc.transform([idx_enc]).toarray())
-                encoding = encoded.repeat(self.length_ts,1)
-                encoding = torch.transpose(encoding, 0, 1)
-                X = self.X[]
-                X[idx]
-                print(encoded)
-                return self.X[idx], self.Y[idx]
-            else:
-                return self.X[idx], self.Y[idx]
-            '''
-            return self.X[idx], self.Y[idx]
+                encoded = encoded.repeat(self.length_ts, 1)
+                encoded = torch.transpose(encoded, 0, 1)
+                encoded = encoded.float()
+
+                X = torch.cat((X, encoded), 0)
+                
+            return X, Y
+
         else:
             j = np.random.randint(
                 0, self.length_ts-self.h_batch-self.predict_ahead)
-            return self.X[idx,:,j:j+self.h_batch], self.Y[idx,:,j:j+self.h_batch]
+                
+            X = self.X[idx,:,j:j+self.h_batch]
+            Y = self.Y[idx,:,j:j+self.h_batch]
+
+            if self.one_hot_id:
+                if isinstance(idx, (list, np.ndarray)):
+                    idx_enc = [[d] for d in idx]
+                else:
+                    idx_enc = [idx]
+                
+                encoded = torch.from_numpy(self.enc.transform([idx_enc]).toarray())
+                encoded = encoded.repeat(self.h_batch,1)
+                encoded = torch.transpose(encoded, 0, 1)
+                encoded = encoded.float()
+
+                X = torch.cat((X, encoded), 0)
+
+            return X, Y
 
     def get_time_range_df(self, file_path, start_date, end_date):
         df_hourly = pd.read_csv(file_path, sep=';', low_memory=False)
@@ -205,7 +221,7 @@ if __name__ == "__main__":
     dataset = ElectricityDataSet(
     'electricity/data/LD2011_2014_hourly.txt', 
     include_time_covariates=True,
-    start_date='2014-01-01',
+    start_date='2014-06-01',
     end_date='2014-12-18',
     predict_ahead=3,
     h_batch=0,

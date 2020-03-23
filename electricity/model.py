@@ -58,7 +58,7 @@ class TCN(nn.Module):
         out = self.conv1d(out)
         return out
 
-    def rolling_prediction(self, x, tau=24, num_windows=7):
+    def rolling_prediction(self, x, y, tau=24, num_windows=7):
         """
         Rolling prediction. Returns MAPE, SMAPE, WAPE on the predictions.
         x is the matrix of the test set. Needs the covariates.
@@ -69,31 +69,44 @@ class TCN(nn.Module):
         real_values = []
         # divide x into the rolling windows
         for i in range(num_windows):
+            
             t_i = net_lookback + i*tau
-            x_window = x[:,:,:t_i]
-            x_cov_window = x[:,1:,t_i:(t_i+tau)]
-            assert(x_cov_window.shape[2]==tau)
+            print(t_i)
+            x_prev_window = x[:,:,:t_i]
+            x_cov_curr_window = x[:,1:,t_i:(t_i+tau)]
+            assert(x_cov_curr_window.shape[2]==tau)
             # multi step prediction of that window
-            _, preds = self.multi_step_prediction(x_window, x_cov_window, tau)
+            _, preds = self.multi_step_prediction(x_prev_window, x_cov_curr_window, tau)
             predictions_list.append(preds)
-            real_values.append(x[:,0,t_i:(t_i+tau)])
-            assert(preds.shape == x[:,0,t_i:(t_i+tau)].shape)
+            real_values.append(y[:,0,t_i:(t_i+tau)])
+            assert(preds.shape == y[:,0,t_i:(t_i+tau)].shape)
+            print(y[0,:,t_i:(t_i+tau)])
 
         predictions = torch.cat(predictions_list, 1)
         real_values = torch.cat(real_values, 1)
         return predictions, real_values
  
-    def multi_step_prediction(self, x, x_cov, num_steps):
-        """ x_cov should be the covariates for the next num_steps """
+    def multi_step_prediction(self, x_prev, x_cov_curr, num_steps):
+        """
+        x           : The values and covariates for the previous window
+        x_cov       : The covariates for the next window
+        num_steps   : The number of steps to predict aka the next window
+        """
+        #print('x', x)
+        #print('x_cov', x_cov)
         for i in range(num_steps):
-            x_next = self.forward(x)[:,:,-1]
+            print(x_prev[0,:,self.lookback:])
+            print(x_cov_curr[0])
+            x_next = self.forward(x_prev)[:,:,-1]
             # add covariates
-            x_next = torch.cat((x_next, x_cov[:,:,i]),1)
+            x_next = torch.cat((x_next, x_cov_curr[:,:,i]),1)
             x_next = x_next.unsqueeze(2)
             # Add back onto x
-            x = torch.cat((x, x_next), 2)
+            x_prev = torch.cat((x_prev, x_next), 2)
+
+            #print(x_prev.shape)
         # Return predicted x with covariates and just the predictions
-        return x[:,:,-num_steps:], x[:,0,-num_steps:]
+        return x_prev[:,:,-num_steps:], x_prev[:,0,-num_steps:]
 
 if __name__ == "__main__":
     import torch
@@ -120,7 +133,7 @@ if __name__ == "__main__":
         out_channels=1,
         kernel_size=3,
         residual_blocks_channel_size=[16, 16, 16, 16, 16],
-        bias=True,
+        bias=False,
         dropout=0.5,
         stride=1,
         leveledinit=False)
@@ -128,15 +141,19 @@ if __name__ == "__main__":
     pytorch_total_params = sum(
     p.numel() for p in tcn.parameters() if p.requires_grad)
     print(f"Number of learnable parameters : {pytorch_total_params}")
-
+    tcn.eval()
     for i, data in enumerate(loader):
         x, y = data[0], data[1]
+        x, y = torch.zeros(4, 8, 300), torch.ones(4, 8, 300)
         print(x.shape)
         print(y.shape)
         print(i)
-        preds, real = tcn.rolling_prediction(x, tau=24, num_windows=7)
+        preds, real = tcn.rolling_prediction(x, y, tau=24, num_windows=1)
         print(preds.shape)
         print(real.shape)
+        print(preds)
+        print(real)
+        print(tcn.lookback)
         if i == 0:
             break
 

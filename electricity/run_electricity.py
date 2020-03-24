@@ -9,8 +9,9 @@ from torch.utils.data import DataLoader
 
 import numpy as np
 import sys
-sys.path.append('')
-sys.path.append('../../')
+
+sys.path.append("")
+sys.path.append("../../")
 from datetime import date, timedelta
 
 from model import TCN
@@ -35,15 +36,21 @@ def train(epoch):
 
         if i % args.log_interval == 0:
             cur_loss = total_loss / args.log_interval
-            processed = min(i*args.v_batch_size, length_dataset)
-            writer.add_scalar('Loss/train', cur_loss, processed + length_dataset*epoch)
+            processed = min(i * args.v_batch_size, length_dataset)
+            writer.add_scalar(
+                "Loss/train", cur_loss, processed + length_dataset * epoch
+            )
             if args.print:
                 print(
-                    (f"Train Epoch: {epoch:2d}"
-                    f"[{processed:6d}/{length_dataset:6d}"
-                    f"({100.*processed/length_dataset:.0f}%)]"
-                    f"\tLearning rate: {args.lr:.4f}\tLoss: {cur_loss:.6f}"))
+                    (
+                        f"Train Epoch: {epoch:2d}"
+                        f"[{processed:6d}/{length_dataset:6d}"
+                        f"({100.*processed/length_dataset:.0f}%)]"
+                        f"\tLearning rate: {args.lr:.4f}\tLoss: {cur_loss:.6f}"
+                    )
+                )
             total_loss = 0
+
 
 def evaluate():
     tcn.eval()
@@ -64,14 +71,15 @@ def evaluate():
             mae = MAE(real_values, predictions)
             rmse = RMSE(real_values, predictions)
             if args.print:
-                print('Random batch of test set:')
-                print('Test set: Loss: {:.6f}'.format(test_loss.item()))
-                print('Test set: WAPE: {:.6f}'.format(wape))
-                print('Test set: MAPE: {:.6f}'.format(mape))
-                print('Test set: SMAPE: {:.6f}'.format(smape))
-                print('Test set: MAE: {:.6f}'.format(mae))
-                print('Test set: RMSE: {:.6f}'.format(rmse))
+                print("Random batch of test set:")
+                print("Test set: Loss: {:.6f}".format(test_loss.item()))
+                print("Test set: WAPE: {:.6f}".format(wape))
+                print("Test set: MAPE: {:.6f}".format(mape))
+                print("Test set: SMAPE: {:.6f}".format(smape))
+                print("Test set: MAE: {:.6f}".format(mae))
+                print("Test set: RMSE: {:.6f}".format(rmse))
             return test_loss.item(), wape, mape, smape, mae, rmse
+
 
 def evaluate_final():
     tcn.eval()
@@ -85,7 +93,7 @@ def evaluate_final():
             predictions, real_values = tcn.rolling_prediction(x, y)
             all_predictions.append(predictions)
             all_real_values.append(real_values)
-            
+
             output = tcn(x)
             test_loss = criterion(output, y) / torch.abs(y).mean()
             all_test_loss.append(test_loss.item())
@@ -105,6 +113,7 @@ def evaluate_final():
 
         return test_loss, wape, mape, smape, mae, rmse
 
+
 if __name__ == "__main__":
     args = parse()
     print_args(args)
@@ -116,45 +125,54 @@ if __name__ == "__main__":
     """ Dataset """
     print("Creating dataset.")
     # Lookback of the TCN
-    look_back = 1 + 2 * (args.kernel_size -1) * 2**((args.num_layers+1)-1)
-    print(f'Receptive field of the model is {look_back} time points.')
+    look_back = 1 + 2 * (args.kernel_size - 1) * 2 ** ((args.num_layers + 1) - 1)
+    print(f"Receptive field of the model is {look_back} time points.")
     look_back_timedelta = timedelta(hours=look_back)
     # Num rolling periods * Length of rolling period
     rolling_validation_length_days = timedelta(
-        hours=args.num_rolling_periods*args.length_rolling)
+        hours=args.num_rolling_periods * args.length_rolling
+    )
 
     test_start = (
-        date.fromisoformat(args.train_end) - 
-        look_back_timedelta +
-        timedelta(days=1)
-        ).isoformat()
+        date.fromisoformat(args.train_end) - look_back_timedelta + timedelta(days=1)
+    ).isoformat()
     test_end = (
-        date.fromisoformat(args.train_end) + 
-        rolling_validation_length_days + 
-        timedelta(days=2)
-        ).isoformat()
-    print('Train dataset')
+        date.fromisoformat(args.train_end)
+        + rolling_validation_length_days
+        + timedelta(days=2)
+    ).isoformat()
+    print("Train dataset")
     train_dataset = ElectricityDataSet(
-        #'electricity/data/LD2012_2014_hourly.txt', 
-        'electricity/data/random_dataset.txt',
+        #'electricity/data/LD2012_2014_hourly.txt',
+        "electricity/data/random_dataset.txt",
         start_date=args.train_start,
         end_date=args.train_end,
         h_batch=args.h_batch_size,
         include_time_covariates=args.time_covariates,
-        one_hot_id=args.one_hot_id)
-    print('Test dataset')
+        one_hot_id=args.one_hot_id,
+    )
+    print("Test dataset")
     test_dataset = ElectricityDataSet(
-        #'electricity/data/LD2011_2014_hourly.txt', 
-        'electricity/data/random_dataset.txt',
+        #'electricity/data/LD2011_2014_hourly.txt',
+        "electricity/data/random_dataset.txt",
         start_date=test_start,
         end_date=test_end,
         h_batch=0,
         include_time_covariates=args.time_covariates,
-        one_hot_id=args.one_hot_id)
+        one_hot_id=args.one_hot_id,
+    )
     train_loader = DataLoader(
-        dataset=train_dataset, batch_size=args.v_batch_size, shuffle=True, num_workers=args.num_workers)
+        dataset=train_dataset,
+        batch_size=args.v_batch_size,
+        shuffle=True,
+        num_workers=args.num_workers,
+    )
     test_loader = DataLoader(
-        dataset=test_dataset, batch_size=args.v_batch_size, shuffle=True, num_workers=args.num_workers)
+        dataset=test_dataset,
+        batch_size=args.v_batch_size,
+        shuffle=True,
+        num_workers=args.num_workers,
+    )
     length_dataset = train_dataset.__len__()
 
     load_iter = iter(train_loader)
@@ -164,27 +182,29 @@ if __name__ == "__main__":
 
     """ TCN """
     tcn = TCN(
-            num_layers=args.num_layers+1,
-            in_channels=in_channels,
-            out_channels=out_channels,
-            kernel_size=args.kernel_size,
-            residual_blocks_channel_size=[args.res_block_size]*args.num_layers + [1],
-            bias=args.bias,
-            dropout=args.dropout,
-            stride=args.stride,
-            dilations=None,
-            leveledinit=args.leveledinit)
+        num_layers=args.num_layers + 1,
+        in_channels=in_channels,
+        out_channels=out_channels,
+        kernel_size=args.kernel_size,
+        residual_blocks_channel_size=[args.res_block_size] * args.num_layers + [1],
+        bias=args.bias,
+        dropout=args.dropout,
+        stride=args.stride,
+        dilations=None,
+        leveledinit=args.leveledinit,
+    )
     tcn.to(device)
     print(
         f"""Number of learnable parameters : {
-            sum(p.numel() for p in tcn.parameters() if p.requires_grad)}""")
+            sum(p.numel() for p in tcn.parameters() if p.requires_grad)}"""
+    )
     iter_loader = iter(train_loader)
     x, y, _ = iter_loader.next()
-    print('Shape of input and putput: ')
+    print("Shape of input and putput: ")
     print(x.shape)
     print(y.shape)
     """ Training parameters"""
-    #criterion = nn.MSELoss()
+    # criterion = nn.MSELoss()
     criterion = nn.L1Loss()
     optimizer = optim.Adam(tcn.parameters(), lr=args.lr)
 
@@ -192,26 +212,26 @@ if __name__ == "__main__":
     writer = SummaryWriter(log_dir=args.writer_path)
 
     """ Training """
-    for ep in range(1, args.epochs+1):
+    for ep in range(1, args.epochs + 1):
         train(ep)
         tloss, wape, mape, smape, mae, rmse = evaluate()
-        writer.add_scalar('Loss/test', tloss , ep)
-        writer.add_scalar('wape', wape , ep) 
-        writer.add_scalar('mape', mape , ep)
-        writer.add_scalar('smape', smape , ep)
-        writer.add_scalar('mae', mae, ep)
-        writer.add_scalar('rmse', rmse , ep)
+        writer.add_scalar("Loss/test", tloss, ep)
+        writer.add_scalar("wape", wape, ep)
+        writer.add_scalar("mape", mape, ep)
+        writer.add_scalar("smape", smape, ep)
+        writer.add_scalar("mae", mae, ep)
+        writer.add_scalar("rmse", rmse, ep)
 
     tloss, wape, mape, smape, mae, rmse = evaluate_final()
-    print('Test set:')
-    print('Loss: {:.6f}'.format(tloss))
-    print('WAPE: {:.6f}'.format(wape))
-    print('MAPE: {:.6f}'.format(mape))
-    print('SMAPE: {:.6f}'.format(smape))
-    print('MAE: {:.6f}'.format(mae))
-    print('RMSE: {:.6f}'.format(rmse))
+    print("Test set:")
+    print("Loss: {:.6f}".format(tloss))
+    print("WAPE: {:.6f}".format(wape))
+    print("MAPE: {:.6f}".format(mape))
+    print("SMAPE: {:.6f}".format(smape))
+    print("MAE: {:.6f}".format(mae))
+    print("RMSE: {:.6f}".format(rmse))
 
     writer.close()
     torch.save(tcn.state_dict(), args.model_save_path)
-    print('Finished Training')
+    print("Finished Training")
 

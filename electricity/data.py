@@ -12,16 +12,18 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import OneHotEncoder
 
 from gluonts.time_feature import (
-    MinuteOfHour, 
-    HourOfDay, 
-    DayOfWeek, 
-    DayOfMonth, 
-    DayOfYear, 
-    MonthOfYear, 
-    WeekOfYear)
+    MinuteOfHour,
+    HourOfDay,
+    DayOfWeek,
+    DayOfMonth,
+    DayOfYear,
+    MonthOfYear,
+    WeekOfYear,
+)
+
 
 class ElectricityDataSet(Dataset):
-    '''
+    """
     Load and prepare the electricity data set.
     https://archive.ics.uci.edu/ml/datasets/ElectricityLoadDiagrams20112014
     Aggregating to hourly values.
@@ -32,26 +34,26 @@ class ElectricityDataSet(Dataset):
         end_date            : end of the wanted dataset as YYYY-MM-DD 
         conv=False,
         include_covariates  : including time covariates from gluonts or not
-    '''
+    """
+
     def __init__(
-        self, 
-        file_path, 
-        start_date='2012-01-01', # YYYY-MM-DD 
-        end_date='2014-05-26',   # YYYY-MM-DD
+        self,
+        file_path,
+        start_date="2012-01-01",  # YYYY-MM-DD
+        end_date="2014-05-26",  # YYYY-MM-DD
         include_time_covariates=False,
         predict_ahead=1,
         h_batch=0,
-        one_hot_id=False
-        ):
+        one_hot_id=False,
+    ):
 
         # Check dates
         self.start_date = date.fromisoformat(start_date)
         self.end_date = date.fromisoformat(end_date)
         assert self.start_date < self.end_date
-        assert self.start_date >= date.fromisoformat('2011-01-01')
-        assert self.end_date <= date.fromisoformat('2015-01-01')
-        self.daterange = pd.date_range(
-            start=start_date, end=end_date, freq='H')
+        assert self.start_date >= date.fromisoformat("2011-01-01")
+        assert self.end_date <= date.fromisoformat("2015-01-01")
+        self.daterange = pd.date_range(start=start_date, end=end_date, freq="H")
 
         self.one_hot_id = one_hot_id
         self.include_time_covariates = include_time_covariates
@@ -59,7 +61,8 @@ class ElectricityDataSet(Dataset):
         self.h_batch = h_batch
 
         df, dates = self.get_time_range_df(
-            file_path, start_date=start_date, end_date=end_date)
+            file_path, start_date=start_date, end_date=end_date
+        )
         X = torch.tensor(df.values)
         X = torch.transpose(X, 0, 1)
         self.num_ts = X.shape[0]
@@ -67,8 +70,10 @@ class ElectricityDataSet(Dataset):
 
         X.resize_(self.num_ts, 1, self.length_ts)
         Y = torch.zeros(self.num_ts, 1, self.length_ts)
-        pad_end = torch.zeros(self.num_ts,1,self.predict_ahead).double()
-        self.Y = Y.copy_(torch.cat((X[:,:,self.predict_ahead:], pad_end), 2)).to(dtype=torch.float32)
+        pad_end = torch.zeros(self.num_ts, 1, self.predict_ahead).double()
+        self.Y = Y.copy_(torch.cat((X[:, :, self.predict_ahead :], pad_end), 2)).to(
+            dtype=torch.float32
+        )
 
         if self.include_time_covariates:
             Z, num_covariates = self.get_time_covariates(dates)
@@ -77,9 +82,9 @@ class ElectricityDataSet(Dataset):
 
         if self.one_hot_id:
             ids = [[i] for i in range(self.num_ts)]
-            self.enc = OneHotEncoder(handle_unknown='ignore')
+            self.enc = OneHotEncoder(handle_unknown="ignore")
             self.enc.fit(ids)
-            '''
+            """
             # Tensor of shape 370 x 370 x length_ts
             E = torch.zeros(self.num_ts, self.num_ts, self.length_ts)
             for i in range(self.num_ts):
@@ -91,13 +96,13 @@ class ElectricityDataSet(Dataset):
             X = X.float()
 
             X = torch.cat((X, E),1)
-            '''
+            """
         self.X = X.to(dtype=torch.float32)
-        #X = X.to(dtype=torch.float32)
+        # X = X.to(dtype=torch.float32)
 
         print("Dimension of X : ", self.X.shape)
         print("Dimension of Y : ", self.Y.shape)
-        
+
     def __len__(self):
         return self.num_ts
 
@@ -105,7 +110,7 @@ class ElectricityDataSet(Dataset):
         if self.h_batch == 0:
             X = self.X[idx]
             Y = self.Y[idx]
-            
+
             if self.one_hot_id:
                 if isinstance(idx, (list, np.ndarray)):
                     idx_enc = [[d] for d in idx]
@@ -118,24 +123,23 @@ class ElectricityDataSet(Dataset):
                 encoded = encoded.float()
 
                 X = torch.cat((X, encoded), 0)
-                
+
             return X, Y, idx
 
         else:
-            j = np.random.randint(
-                0, self.length_ts-self.h_batch-self.predict_ahead)
-                
-            X = self.X[idx,:,j:j+self.h_batch]
-            Y = self.Y[idx,:,j:j+self.h_batch]
+            j = np.random.randint(0, self.length_ts - self.h_batch - self.predict_ahead)
+
+            X = self.X[idx, :, j : j + self.h_batch]
+            Y = self.Y[idx, :, j : j + self.h_batch]
 
             if self.one_hot_id:
                 if isinstance(idx, (list, np.ndarray)):
                     idx_enc = [[d] for d in idx]
                 else:
                     idx_enc = [idx]
-                
+
                 encoded = torch.from_numpy(self.enc.transform([idx_enc]).toarray())
-                encoded = encoded.repeat(self.h_batch,1)
+                encoded = encoded.repeat(self.h_batch, 1)
                 encoded = torch.transpose(encoded, 0, 1)
                 encoded = encoded.float()
 
@@ -144,55 +148,70 @@ class ElectricityDataSet(Dataset):
             return X, Y, idx
 
     def get_time_range_df(self, file_path, start_date, end_date):
-        df_hourly = pd.read_csv(file_path, sep=';', low_memory=False)
+        df_hourly = pd.read_csv(file_path, sep=";", low_memory=False)
         # Cut off at start and end date
-        df_hourly.index = df_hourly['date'] 
-        df_hourly = df_hourly.loc[str(start_date):str(end_date)]
+        df_hourly.index = df_hourly["date"]
+        df_hourly = df_hourly.loc[str(start_date) : str(end_date)]
         df = df_hourly.reset_index(drop=True)
-        dates = df['date']
-        df.drop('date', axis=1, inplace=True)
+        dates = df["date"]
+        df.drop("date", axis=1, inplace=True)
         return df, dates
 
     def get_time_covariates(self, dates):
-        '''
+        """
         We use 7 time-covariates, which includes minute of
         the hour, hour of the day, day of the week, day of the month, 
         day of the year, month of the year, week of the year, all 
         normalized in a range [−0.5, 0.5], which is a subset of the 
         time-covariates used by default in the GluonTS library. 
         - From the paper.
-        '''
+        """
         time_index = pd.DatetimeIndex(dates)
         time_index = pd.DatetimeIndex(time_index)
-        Z = np.matrix([
-            MinuteOfHour().__call__(time_index),
-            HourOfDay().__call__(time_index),
-            DayOfWeek().__call__(time_index), 
-            DayOfMonth().__call__(time_index), 
-            DayOfYear().__call__(time_index),
-            MonthOfYear().__call__(time_index),
-            WeekOfYear().__call__(time_index)
-            ])
+        Z = np.matrix(
+            [
+                MinuteOfHour().__call__(time_index),
+                HourOfDay().__call__(time_index),
+                DayOfWeek().__call__(time_index),
+                DayOfMonth().__call__(time_index),
+                DayOfYear().__call__(time_index),
+                MonthOfYear().__call__(time_index),
+                WeekOfYear().__call__(time_index),
+            ]
+        )
         Z = torch.from_numpy(Z)
         num_covariates = Z.shape[0]
         return Z, num_covariates
 
-    def plot_examples(self, ids=[], n=3, length_plot=48, save_path='electricity/figures/ts_examples.pdf', logy=True):
+    def plot_examples(
+        self,
+        ids=[],
+        n=3,
+        length_plot=48,
+        save_path="electricity/figures/ts_examples.pdf",
+        logy=True,
+    ):
         if ids:
             time_series = []
             for i in ids:
-                start_point = np.random.randint(0, int((self.length_ts-length_plot)/24))*24
-                s = self.X[i, 0, start_point:start_point+length_plot].numpy()
+                start_point = (
+                    np.random.randint(0, int((self.length_ts - length_plot) / 24)) * 24
+                )
+                s = self.X[i, 0, start_point : start_point + length_plot].numpy()
                 time_series.append(np.transpose(s))
         else:
             # Choose n randomly selected series and a random start point
             examples_ids = np.random.choice(370, size=n, replace=False)
-            start_point = np.random.randint(0, int((self.length_ts-length_plot)/24))*24
+            start_point = (
+                np.random.randint(0, int((self.length_ts - length_plot) / 24)) * 24
+            )
             time_series = []
             for example_id in examples_ids:
-                s = self.X[example_id, 0, start_point:start_point+length_plot].numpy()
+                s = self.X[
+                    example_id, 0, start_point : start_point + length_plot
+                ].numpy()
                 time_series.append(np.transpose(s))
-    
+
         # Create df
         df = pd.DataFrame(time_series).T
 
@@ -203,15 +222,14 @@ class ElectricityDataSet(Dataset):
         start_date = start_date.isoformat()
         end_date = end_date.isoformat()
 
-        d_range = pd.date_range(start=start_date, end=end_date, freq='H')[:-1]
+        d_range = pd.date_range(start=start_date, end=end_date, freq="H")[:-1]
         df.index = d_range
 
-        df.plot(subplots=True, figsize=(10,5), logy=logy)
+        df.plot(subplots=True, figsize=(10, 5), logy=logy)
         plt.savefig(save_path)
         plt.show()
 
         return 0
-
 
 
 if __name__ == "__main__":
@@ -219,28 +237,28 @@ if __name__ == "__main__":
     print("Electricity dataset: ")
     np.random.seed(1729)
     dataset = ElectricityDataSet(
-    'electricity/data/LD2011_2014_hourly.txt', 
-    include_time_covariates=True,
-    start_date='2014-06-01',
-    end_date='2014-12-18',
-    predict_ahead=3,
-    h_batch=0,
-    one_hot_id=True)
+        "electricity/data/LD2011_2014_hourly.txt",
+        include_time_covariates=True,
+        start_date="2014-06-01",
+        end_date="2014-12-18",
+        predict_ahead=3,
+        h_batch=0,
+        one_hot_id=True,
+    )
 
-    #dataset.plot_examples(ids=[16, 22, 26], n=3, logy=False)
+    # dataset.plot_examples(ids=[16, 22, 26], n=3, logy=False)
 
     loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
     dataiter = iter(loader)
     x, y = dataiter.next()
 
-    #print('Samples : ', x)
-    print('Shape of samples : ', x.shape)
-    #print('Labels : ', y)
-    print('Shape of labels : ', y.shape)
-    print('Length of dataset: ', dataset.__len__())
+    # print('Samples : ', x)
+    print("Shape of samples : ", x.shape)
+    # print('Labels : ', y)
+    print("Shape of labels : ", y.shape)
+    print("Length of dataset: ", dataset.__len__())
     print("Type x : ", x.dtype)
     print("Type y : ", y.dtype)
     print(x[0, 0, -5:])
     print(y[0, 0, -5:])
-    
 

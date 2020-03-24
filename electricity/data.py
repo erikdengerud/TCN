@@ -119,7 +119,7 @@ class ElectricityDataSet(Dataset):
 
                 X = torch.cat((X, encoded), 0)
                 
-            return X, Y
+            return X, Y, idx
 
         else:
             j = np.random.randint(
@@ -141,7 +141,7 @@ class ElectricityDataSet(Dataset):
 
                 X = torch.cat((X, encoded), 0)
 
-            return X, Y
+            return X, Y, idx
 
     def get_time_range_df(self, file_path, start_date, end_date):
         df_hourly = pd.read_csv(file_path, sep=';', low_memory=False)

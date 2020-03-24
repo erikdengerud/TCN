@@ -8,6 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 def plot_predictions(model_path, data_loader, save_path, model_class):
+    plot_look_back = True
     print(model_path)
     # load model
     if '_tc' in model_path:
@@ -27,81 +28,56 @@ def plot_predictions(model_path, data_loader, save_path, model_class):
 
     # load data to plot
     iter_loader = iter(data_loader)
-    x, y = iter_loader.next()
-    print(x.shape)
-    print(y.shape)
-    print(y[0,:,model.lookback:model.lookback+6])
+    x, y, idx = iter_loader.next()
 
     # predict using multi step and rolling predictions
-    preds, actual = model.rolling_prediction(x, y, num_windows=1, tau=6)
-    print(preds.shape)
-    print(actual.shape)
+    preds, actual = model.rolling_prediction(x, y, num_windows=7, tau=24)
     # plot n series at a time. Real and predicted values
     preds, actual = preds.detach().numpy(), actual.detach().numpy()
-    print(preds.shape)
-    print(actual.shape)
     num_series = preds.shape[0]
     print(f'num series = {num_series}')
     dfs = []
-    print(len(preds))
     for i in range(len(preds)):
         df = pd.DataFrame(data=[preds[i], actual[i]])
         df = df.T
         df.columns = ['predicted', 'target']
         
         dfs.append(df)#, columns=['predicted', 'target']))
-        print(dfs[i].head())
-    fig, axes = plt.subplots(nrows=num_series, ncols=1)
-    print(len(dfs))
-    print(dfs[3])
-    for i in range(len(dfs)):
-        dfs[i].plot(ax=axes[i])
-        # add red lines every 24 hours
-    plt.show()
+    fig, axes = plt.subplots(nrows=num_series, ncols=1, sharex=True)
+
+    if plot_look_back:
+        y = y.detach().numpy()
+        vlines = [model.lookback+24*i for i in range(7)]
+        for i in range(len(dfs)):
+            end = y.shape[2] 
+            axes[i].set_xlim(0, end)
+            axes[i].plot(range(end), y[i].T, color='b', label='Target')
+            pred_range = [model.lookback + i for i in range(len(preds[i]))]
+            axes[i].plot(pred_range, preds[i], color='g', label='Predictions')
+            axes[i].set_ylabel(idx[i].item())
+            for vline in vlines:
+                axes[i].axvline(x=vline)
+            axes[i].legend()
+        fig.suptitle(model_path)
+    else:
+        y = y.detach().numpy()
+        vlines = [24*i for i in range(7)]
+        for i in range(len(dfs)):
+            df = dfs[i]
+            # Add values before rolling predictions
+            dfs[i].plot(ax=axes[i], logy=False, legend=False)
+            axes[i].set_ylabel(idx[i].item(), rotation=0)
+            for vline in vlines:
+                axes[i].axvline(x=vline)
+        fig.suptitle(model_path)
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="center right")
+    plt.subplots_adjust()#right=0.85)
+    plt.setp(axes, xticks=vlines, xticklabels=vlines) 
     
-    
-    print(preds)
-    print(actual)
-    print(preds.shape)
-    print(actual.shape)
     # save plots
     plt.savefig(save_path)
 
-    print(f"loaded {model_path}")
-
-'''
-def evaluate_final():
-    tcn.eval()
-    with torch.no_grad():
-        all_predictions = []
-        all_real_values = []
-        all_test_loss = []
-        for i, data in enumerate(test_loader):
-            x, y = data[0].to(device), data[1].to(device)
-
-            predictions, real_values = tcn.rolling_prediction(x, y)
-            all_predictions.append(predictions)
-            all_real_values.append(real_values)
-            
-            output = tcn(x)
-            test_loss = criterion(output, y) / torch.abs(y).mean()
-            all_test_loss.append(test_loss.item())
-
-        predictions_tensor = torch.cat(all_predictions, 0)
-        real_values_tensor = torch.cat(all_real_values, 0)
-
-        predictions_tensor = predictions_tensor.cpu()
-        real_values_tensor = real_values_tensor.cpu()
-
-        mape = MAPE(real_values_tensor, predictions_tensor)
-        smape = SMAPE(real_values_tensor, predictions_tensor)
-        wape = WAPE(real_values_tensor, predictions_tensor)
-        test_loss = np.sum(all_test_loss)
-        mae = MAE(real_values_tensor, predictions_tensor)
-        rmse = RMSE(real_values_tensor, predictions_tensor)
-
-        return test_loss, wape, mape, smape, mae, rmse
-'''
 
 if __name__ == "__main__":
     from data import ElectricityDataSet
@@ -164,31 +140,15 @@ if __name__ == "__main__":
     test_loader_tc = DataLoader(
         dataset=test_dataset_tc, batch_size=v_batch_size, shuffle=True, num_workers=num_workers)
 
-    tc_iter = iter(test_loader_tc)
-    x, y = tc_iter.next()
-    print(x.shape)
-    print(y.shape)
-    no_tc_iter = iter(test_loader)
-    x, y = no_tc_iter.next()
-    print(x.shape)
-    print(y.shape)
-
     # Get all models
     models = glob.glob('electricity/models/*.pt')
     print(models)
     for model_path in models:
         if '_tc' in model_path:
-            plot_predictions(model_path, test_loader_tc, save_path, TCN)
+            plot_predictions(model_path, test_loader_tc, '.'.join([model_path, 'pdf']), TCN)
             print('tc loader')
         else:
-            plot_predictions(model_path, test_loader, save_path, TCN)
+            plot_predictions(model_path, test_loader, '.'.join([model_path, 'pdf']), TCN)
             print('not tc loader')
         
         
-        # predict
-
-    
-    # plot predictions vs actual
-
-    # save 
-    

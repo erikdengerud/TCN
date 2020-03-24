@@ -78,9 +78,9 @@ class TCN(nn.Module):
             # multi step prediction of that window
             _, preds = self.multi_step_prediction(x_prev_window, x_cov_curr_window, tau)
             predictions_list.append(preds)
-            real_values.append(y[:,0,t_i:(t_i+tau)])
-            assert(preds.shape == y[:,0,t_i:(t_i+tau)].shape)
-            print(y[0,:,t_i:(t_i+tau)])
+            real_values.append(x[:,0,t_i:(t_i+tau)])
+            assert(preds.shape == x[:,0,t_i:(t_i+tau)].shape)
+            print(x[0,:,t_i:(t_i+tau)])
 
         predictions = torch.cat(predictions_list, 1)
         real_values = torch.cat(real_values, 1)

@@ -135,7 +135,8 @@ if __name__ == "__main__":
         ).isoformat()
     print('Train dataset')
     train_dataset = ElectricityDataSet(
-        'electricity/data/LD2011_2014_hourly.txt', 
+        #'electricity/data/LD2012_2014_hourly.txt', 
+        'electricity/data/random_dataset.txt',
         start_date=args.train_start,
         end_date=args.train_end,
         h_batch=args.h_batch_size,
@@ -143,7 +144,8 @@ if __name__ == "__main__":
         one_hot_id=args.one_hot_id)
     print('Test dataset')
     test_dataset = ElectricityDataSet(
-        'electricity/data/LD2011_2014_hourly.txt', 
+        #'electricity/data/LD2011_2014_hourly.txt', 
+        'electricity/data/random_dataset.txt',
         start_date=test_start,
         end_date=test_end,
         h_batch=0,

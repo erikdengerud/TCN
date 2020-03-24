@@ -71,7 +71,6 @@ class TCN(nn.Module):
         for i in range(num_windows):
             
             t_i = net_lookback + i*tau
-            print(t_i)
             x_prev_window = x[:,:,:t_i]
             x_cov_curr_window = x[:,1:,t_i:(t_i+tau)]
             assert(x_cov_curr_window.shape[2]==tau)
@@ -80,7 +79,6 @@ class TCN(nn.Module):
             predictions_list.append(preds)
             real_values.append(x[:,0,t_i:(t_i+tau)])
             assert(preds.shape == x[:,0,t_i:(t_i+tau)].shape)
-            print(x[0,:,t_i:(t_i+tau)])
 
         predictions = torch.cat(predictions_list, 1)
         real_values = torch.cat(real_values, 1)
@@ -95,8 +93,6 @@ class TCN(nn.Module):
         #print('x', x)
         #print('x_cov', x_cov)
         for i in range(num_steps):
-            print(x_prev[0,:,self.lookback:])
-            print(x_cov_curr[0])
             x_next = self.forward(x_prev)[:,:,-1]
             # add covariates
             x_next = torch.cat((x_next, x_cov_curr[:,:,i]),1)

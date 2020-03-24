@@ -54,7 +54,7 @@ def evaluate():
             output = tcn(x)
             test_loss = criterion(output, y) / torch.abs(y).mean()
 
-            predictions, real_values = tcn.rolling_prediction(x)
+            predictions, real_values = tcn.rolling_prediction(x, y)
             real_values = real_values.cpu()
             predictions = predictions.cpu()
 
@@ -82,7 +82,7 @@ def evaluate_final():
         for i, data in enumerate(test_loader):
             x, y = data[0].to(device), data[1].to(device)
 
-            predictions, real_values = tcn.rolling_prediction(x)
+            predictions, real_values = tcn.rolling_prediction(x, y)
             all_predictions.append(predictions)
             all_real_values.append(real_values)
             
@@ -158,7 +158,7 @@ if __name__ == "__main__":
     length_dataset = train_dataset.__len__()
 
     load_iter = iter(train_loader)
-    x, y = load_iter.next()
+    x, y, _ = load_iter.next()
     in_channels = x.shape[1]
     out_channels = y.shape[1]
 
@@ -179,7 +179,7 @@ if __name__ == "__main__":
         f"""Number of learnable parameters : {
             sum(p.numel() for p in tcn.parameters() if p.requires_grad)}""")
     iter_loader = iter(train_loader)
-    x, y = iter_loader.next()
+    x, y, _ = iter_loader.next()
     print('Shape of input and putput: ')
     print(x.shape)
     print(y.shape)

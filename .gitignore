@@ -1,7 +1,9 @@
 # Data 
-data/
+#data/
 .vscode/
 #models/
+*.txt
+*.npy
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

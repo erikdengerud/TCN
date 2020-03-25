@@ -174,6 +174,7 @@ if __name__ == "__main__":
         num_workers=args.num_workers,
     )
     length_dataset = train_dataset.__len__()
+    print(test_dataset.length_ts)
 
     load_iter = iter(train_loader)
     x, y, _ = load_iter.next()
@@ -234,4 +235,3 @@ if __name__ == "__main__":
     writer.close()
     torch.save(tcn.state_dict(), args.model_save_path)
     print("Finished Training")
-

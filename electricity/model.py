@@ -88,7 +88,7 @@ class TCN(nn.Module):
         real_values = torch.cat(real_values, 1)
         return predictions, real_values
 
-    def multi_step_prediction(self, x_prev, x_cov_curr, num_steps):
+    def multi_step_prediction(self, x, x_cov_curr, num_steps):
         """
         x           : The values and covariates for the previous window
         x_cov       : The covariates for the next window
@@ -96,6 +96,7 @@ class TCN(nn.Module):
         """
         # print('x', x)
         # print('x_cov', x_cov)
+        x_prev = x.clone()
         for i in range(num_steps):
             x_next = self.forward(x_prev)[:, :, -1]
             # add covariates
@@ -159,4 +160,3 @@ if __name__ == "__main__":
         print(tcn.lookback)
         if i == 0:
             break
-

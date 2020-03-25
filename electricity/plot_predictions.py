@@ -98,7 +98,7 @@ if __name__ == "__main__":
     train_end = "2014-12-17"
     time_covariates = True
     one_hot_id = False
-    v_batch_size = 4
+    v_batch_size = 5
     num_workers = 0
     save_path = "plot_predtictions.pdf"
 
@@ -123,8 +123,8 @@ if __name__ == "__main__":
 
     print("Test dataset")
     test_dataset = ElectricityDataSet(
-        "electricity/data/random_dataset.txt",
-        #'electricity/data/LD2011_2014_hourly.txt',
+        # "electricity/data/random_dataset.txt",
+        "electricity/data/LD2011_2014_hourly.txt",
         start_date=test_start,
         end_date=test_end,
         h_batch=0,
@@ -138,8 +138,8 @@ if __name__ == "__main__":
         num_workers=num_workers,
     )
     test_dataset_tc = ElectricityDataSet(
-        #'electricity/data/LD2011_2014_hourly.txt',
-        "electricity/data/random_dataset.txt",
+        "electricity/data/LD2011_2014_hourly.txt",
+        # "electricity/data/random_dataset.txt",
         start_date=test_start,
         end_date=test_end,
         h_batch=0,
@@ -154,7 +154,7 @@ if __name__ == "__main__":
     )
 
     # Get all models
-    models = glob.glob("electricity/models/tcn_random.pt")
+    models = glob.glob("electricity/models/*.pt")
     print(models)
     for model_path in models:
         if "_tc" in model_path:
@@ -173,4 +173,3 @@ if __name__ == "__main__":
                 model_path, test_loader, ".".join([model_path, "pdf"]), TCN
             )
             print("not tc loader")
-

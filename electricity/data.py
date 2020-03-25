@@ -84,19 +84,7 @@ class ElectricityDataSet(Dataset):
             ids = [[i] for i in range(self.num_ts)]
             self.enc = OneHotEncoder(handle_unknown="ignore")
             self.enc.fit(ids)
-            """
-            # Tensor of shape 370 x 370 x length_ts
-            E = torch.zeros(self.num_ts, self.num_ts, self.length_ts)
-            for i in range(self.num_ts):
-                encoding = torch.from_numpy(self.enc.transform([[i]]).toarray())
-                encoding = encoding.repeat(self.length_ts,1)
-                encoding = torch.transpose(encoding, 0, 1)
-                E[i,:,:] = encoding
 
-            X = X.float()
-
-            X = torch.cat((X, E),1)
-            """
         self.X = X.to(dtype=torch.float32)
         # X = X.to(dtype=torch.float32)
 
@@ -187,7 +175,7 @@ class ElectricityDataSet(Dataset):
         self,
         ids=[],
         n=3,
-        length_plot=48,
+        length_plot=168,
         save_path="electricity/figures/ts_examples.pdf",
         logy=True,
     ):

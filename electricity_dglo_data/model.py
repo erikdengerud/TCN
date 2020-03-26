@@ -61,11 +61,15 @@ class TCN(nn.Module):
         self.lookback = 1 + 2 * (kernel_size - 1) * 2 ** (num_layers - 1)
 
     def init_weights(self, leveledinit: bool, kernel_size: int, bias: bool) -> None:
+        """ 
+        Init the weights in the last layer. The rest is initialized in the residual block. 
+        """
         if leveledinit:
-            with torch.no_grad():
-                self.conv1d.weight.copy_(torch.tensor(1.0 / kernel_size))
-                if bias:
-                    self.conv1d.bias.copy_(torch.tensor(0.0))
+            nn.init.normal_(self.conv1d.weight, std=1e-3)
+            nn.init.normal_(self.conv1d.bias, std=1e-6)
+            self.conv1d.weight[:, 0, :] += 1.0 / kernel_size
+        else:
+            nn.init.xavier_uniform_(self.conv1d.weight)
 
     def forward(self, x: Tensor) -> Tensor:
         out = self.tcn(x)
@@ -152,7 +156,7 @@ if __name__ == "__main__":
         x, y = data[0], data[1]
         print(x.shape)
         print(y.shape)
-        print(i)
+        print("i=", i)
         preds, real = tcn.rolling_prediction(x, tau=24, num_windows=7)
         print(preds.shape)
         print(real.shape)

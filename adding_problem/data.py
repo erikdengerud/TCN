@@ -1,7 +1,10 @@
 # data.py
-from torch.utils.data import Dataset, DataLoader
-import torch
 import numpy as np
+import torch
+import torch.tensor as Tensor
+from torch.utils.data import Dataset, DataLoader
+from typing import List
+
 
 class AddTwoDataSet(Dataset):
     """ 
@@ -9,7 +12,8 @@ class AddTwoDataSet(Dataset):
     Implementation based on:
     https://github.com/locuslab/TCN/blob/master/TCN/adding_problem/utils.py
     """
-    def __init__(self, N, seq_length):
+
+    def __init__(self, N: int, seq_length: int) -> None:
         self.N = N
         self.seq_length = seq_length
 
@@ -25,13 +29,12 @@ class AddTwoDataSet(Dataset):
 
         self.X = torch.cat((X_rand, X_add), dim=1)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.N
 
-    def __getitem__(self, idx):
-        #if torch.is_tensor(idx):
-        #    idx = idx.tolist()
+    def __getitem__(self, idx: List[int]) -> List[Tensor]:
         return self.X[idx], self.Y[idx]
+
 
 if __name__ == "__main__":
     # Add two dataset
@@ -40,7 +43,8 @@ if __name__ == "__main__":
     loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
     dataiter = iter(loader)
     samples, labels = dataiter.next()
-    print('Samples : ', samples)
-    print('Labels : ', labels)
-    print('Shape of samples : ', samples.shape)
-    print('Length of dataset: ', dataset.__len__())
+    print("Samples : ", samples)
+    print("Labels : ", labels)
+    print("Shape of samples : ", samples.shape)
+    print("Length of dataset: ", dataset.__len__())
+

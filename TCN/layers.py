@@ -109,8 +109,8 @@ class ResidualBlock(nn.Module):
         https://github.com/rajatsen91/deepglo/blob/54e0644d764f1ead65d4203b72c8634e2f6ea25e/DeepGLO/LocalModel.py#L34
         """
         if leveledinit:
-            nn.init.normal_(self.dcc1.weigth, std=1e-3)
-            nn.init.normal_(self.dcc2.weigth, std=1e-3)
+            nn.init.normal_(self.dcc1.weight, std=1e-3)
+            nn.init.normal_(self.dcc2.weight, std=1e-3)
             nn.init.normal_(self.dcc1.bias, std=1e-6)
             nn.init.normal_(self.dcc2.bias, std=1e-6)
             self.dcc1.weight[:, 0, :] += 1.0 / kernel_size
@@ -167,6 +167,7 @@ if __name__ == "__main__":
             p.numel() for p in cv1.parameters() if p.requires_grad
         )
         print(f"Number of learnable parameters : {pytorch_total_params}")
+        print(cv1.weight[:, 0])
 
     if block_test:
         print("-----ResidualBlock test-----")
@@ -185,3 +186,4 @@ if __name__ == "__main__":
             p.numel() for p in block.parameters() if p.requires_grad
         )
         print(f"Number of learnable parameters : {pytorch_total_params}")
+        print(block.dcc1.weight)

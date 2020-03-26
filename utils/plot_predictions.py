@@ -22,8 +22,8 @@ from torchvision.transforms import ToTensor
 
 
 def plot_predictions(
-    model: nn.Module, data_loader: DataLoader, num_windows: int = 7, tau: int = 24,
-) -> io.BytesIO:
+    model: nn.Module, data_loader: DataLoader, device, num_windows: int = 7, tau: int = 24
+) -> plt.Figure:
     """
     Plotting predictions of the model on the test set.
     Creates a pyplot plot and save to buffer.
@@ -33,7 +33,8 @@ def plot_predictions(
     # series each time.
     iter_loader = iter(data_loader)
     x, y, idx = iter_loader.next()
-
+    x = x.to(device)
+    y = y.to(device)
     # Predict using multi step and rolling predictions
     preds, actual = model.rolling_prediction(x, num_windows=7, tau=24)
     # plot n series at a time. Real and predicted values

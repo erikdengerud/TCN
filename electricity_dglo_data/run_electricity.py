@@ -127,7 +127,7 @@ if __name__ == "__main__":
     args = parse()
     print_args(args)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
+    print(device)
     """ 
     Dataset 
     """
@@ -241,7 +241,7 @@ if __name__ == "__main__":
         writer.add_scalar("smape", smape, ep)
         writer.add_scalar("mae", mae, ep)
         writer.add_scalar("rmse", rmse, ep)
-        fig = plot_predictions(tcn, test_loader)
+        fig = plot_predictions(tcn, test_loader, device)
         writer.add_figure("predictions", fig, global_step=ep)
 
     tloss, wape, mape, smape, mae, rmse = evaluate_final()

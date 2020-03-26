@@ -54,35 +54,6 @@ def train(epoch: int) -> None:
             total_loss = 0
 
 
-def evaluate() -> List[float]:
-    tcn.eval()
-    with torch.no_grad():
-        for i, d in enumerate(test_loader):
-            x, y = d[0].to(device), d[1].to(device)
-
-            output = tcn(x)
-            test_loss = criterion(output, y) / torch.abs(y).mean()
-
-            predictions, real_values = tcn.rolling_prediction(x)
-            real_values = real_values.cpu()
-            predictions = predictions.cpu()
-
-            mape = MAPE(real_values, predictions)
-            smape = SMAPE(real_values, predictions)
-            wape = WAPE(real_values, predictions)
-            mae = MAE(real_values, predictions)
-            rmse = RMSE(real_values, predictions)
-            if args.print:
-                print("Random batch of test set:")
-                print("Test set: Loss: {:.6f}".format(test_loss.item()))
-                print("Test set: WAPE: {:.6f}".format(wape))
-                print("Test set: MAPE: {:.6f}".format(mape))
-                print("Test set: SMAPE: {:.6f}".format(smape))
-                print("Test set: MAE: {:.6f}".format(mae))
-                print("Test set: RMSE: {:.6f}".format(rmse))
-            return test_loss.item(), wape, mape, smape, mae, rmse
-
-
 def evaluate_final() -> List[float]:
     tcn.eval()
     with torch.no_grad():
@@ -112,14 +83,6 @@ def evaluate_final() -> List[float]:
         test_loss = np.sum(all_test_loss)
         mae = MAE(real_values_tensor, predictions_tensor)
         rmse = RMSE(real_values_tensor, predictions_tensor)
-        if args.print:
-            print("Test set metrics:")
-            print("Loss: {:.6f}".format(test_loss.item()))
-            print("WAPE: {:.6f}".format(wape))
-            print("MAPE: {:.6f}".format(mape))
-            print("SMAPE: {:.6f}".format(smape))
-            print("MAE: {:.6f}".format(mae))
-            print("RMSE: {:.6f}".format(rmse))
         return test_loss, wape, mape, smape, mae, rmse
 
 
@@ -137,7 +100,7 @@ if __name__ == "__main__":
     look_back = 1 + 2 * (args.kernel_size - 1) * 2 ** ((args.num_layers + 1) - 1)
     print(f"Receptive field of the model is {look_back} time points.")
     look_back_timedelta = timedelta(hours=look_back)
-    # Num rolling periods * Length of rolling period
+    # The timedelta function gives out days
     rolling_validation_length_days = timedelta(
         hours=args.num_rolling_periods * args.length_rolling
     )
@@ -218,7 +181,6 @@ if __name__ == "__main__":
     )
 
     """ Training parameters"""
-    # criterion = nn.MSELoss()
     criterion = nn.L1Loss()  # The criterion is scaled in the train function
     optimizer = optim.Adam(tcn.parameters(), lr=args.lr)
 
@@ -234,15 +196,30 @@ if __name__ == "__main__":
         else use evaluate_final().
         """
         train(ep)
-        tloss, wape, mape, smape, mae, rmse = evaluate_final()
-        writer.add_scalar("Loss/test", tloss, ep)
-        writer.add_scalar("wape", wape, ep)
-        writer.add_scalar("mape", mape, ep)
-        writer.add_scalar("smape", smape, ep)
-        writer.add_scalar("mae", mae, ep)
-        writer.add_scalar("rmse", rmse, ep)
-        fig = plot_predictions(tcn, test_loader, device)
-        writer.add_figure("predictions", fig, global_step=ep)
+        if ep % 10 == 0:
+            if device == "cuda:0":
+                torch.cuda.empty_cache()
+            tloss, wape, mape, smape, mae, rmse = evaluate_final()
+            writer.add_scalar("Loss/test", tloss, ep)
+            writer.add_scalar("wape", wape, ep)
+            writer.add_scalar("mape", mape, ep)
+            writer.add_scalar("smape", smape, ep)
+            writer.add_scalar("mae", mae, ep)
+            writer.add_scalar("rmse", rmse, ep)
+            if device == "cuda:0":
+                torch.cuda.empty_cache()
+            fig = plot_predictions(tcn, test_loader, device)
+            if device == "cuda:0":
+                torch.cuda.empty_cache()
+            writer.add_figure("predictions", fig, global_step=ep)
+            if args.print:
+                print("Test set metrics:")
+                print("Loss: {:.6f}".format(test_loss.item()))
+                print("WAPE: {:.6f}".format(wape))
+                print("MAPE: {:.6f}".format(mape))
+                print("SMAPE: {:.6f}".format(smape))
+                print("MAE: {:.6f}".format(mae))
+                print("RMSE: {:.6f}".format(rmse))
 
     tloss, wape, mape, smape, mae, rmse = evaluate_final()
     print("Test set:")

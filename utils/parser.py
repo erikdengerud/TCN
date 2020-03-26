@@ -18,8 +18,8 @@ def parse():
     parser.add_argument("--v_batch_size", type=int, default=32)
     parser.add_argument("--h_batch_size", type=int, default=256)
     parser.add_argument("--num_workers", type=int, default=0)
-    add_bool_arg(parser, name="time_covariates", default=True)
-    add_bool_arg(parser, name="one_hot_id", default=True)
+    add_bool_arg(parser, name="time_covariates", default=False)
+    add_bool_arg(parser, name="one_hot_id", default=False)
 
     # Model architecture
     parser.add_argument("--num_layers", type=int, default=5)
@@ -32,7 +32,7 @@ def parse():
     parser.add_argument("--lr", type=float, default=5e-4)
     parser.add_argument("--dropout", type=float, default=0.0)
     parser.add_argument("--stride", type=int, default=1)
-    add_bool_arg(parser, name="leveledinit", default=True)
+    add_bool_arg(parser, name="leveledinit", default=False)
     add_bool_arg(parser, name="clip", default=False)
 
     # Test parameters
@@ -45,7 +45,7 @@ def parse():
     )
     parser.add_argument("--writer_path", type=str, default="electricity/runs/")
     parser.add_argument("--log_interval", type=int, default=5)
-    add_bool_arg(parser, name="print", default=True)
+    add_bool_arg(parser, name="print", default=False)
 
     args = parser.parse_args()
     return args

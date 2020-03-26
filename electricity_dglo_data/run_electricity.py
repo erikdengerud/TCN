@@ -36,8 +36,8 @@ def train(epoch: int) -> None:
         optimizer.step()
         total_loss += loss.item()
 
-        if i % args.log_interval == 0:
-            cur_loss = total_loss / args.log_interval
+        if i % args.log_interval == 0 and i != 0:
+            cur_loss = total_loss / (args.log_interval * args.v_batch_size)
             processed = min(i * args.v_batch_size, length_dataset)
             writer.add_scalar(
                 "Loss/train", cur_loss, processed + length_dataset * epoch
@@ -51,6 +51,8 @@ def train(epoch: int) -> None:
                         f"\tLearning rate: {args.lr:.4f}\tLoss: {cur_loss:.6f}"
                     )
                 )
+            total_loss = 0
+        if i == 0:
             total_loss = 0
 
 
@@ -214,7 +216,7 @@ if __name__ == "__main__":
             writer.add_figure("predictions", fig, global_step=ep)
             if args.print:
                 print("Test set metrics:")
-                print("Loss: {:.6f}".format(test_loss.item()))
+                print("Loss: {:.6f}".format(tloss.item()))
                 print("WAPE: {:.6f}".format(wape))
                 print("MAPE: {:.6f}".format(mape))
                 print("SMAPE: {:.6f}".format(smape))

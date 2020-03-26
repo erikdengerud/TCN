@@ -199,7 +199,7 @@ if __name__ == "__main__":
         """
         train(ep)
         if ep % 10 == 0:
-            if device == "cuda:0":
+            if torch.cuda.is_available():
                 torch.cuda.empty_cache()
             tloss, wape, mape, smape, mae, rmse = evaluate_final()
             writer.add_scalar("Loss/test", tloss, ep)
@@ -208,10 +208,10 @@ if __name__ == "__main__":
             writer.add_scalar("smape", smape, ep)
             writer.add_scalar("mae", mae, ep)
             writer.add_scalar("rmse", rmse, ep)
-            if device == "cuda:0":
+            if torch.cuda.is_available():
                 torch.cuda.empty_cache()
             fig = plot_predictions(tcn, test_loader, device)
-            if device == "cuda:0":
+            if torch.cuda.is_available():
                 torch.cuda.empty_cache()
             writer.add_figure("predictions", fig, global_step=ep)
             if args.print:

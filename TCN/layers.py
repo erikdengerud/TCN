@@ -113,8 +113,9 @@ class ResidualBlock(nn.Module):
             nn.init.normal_(self.dcc2.weight, std=1e-3)
             nn.init.normal_(self.dcc1.bias, std=1e-6)
             nn.init.normal_(self.dcc2.bias, std=1e-6)
-            self.dcc1.weight[:, 0, :] += 1.0 / kernel_size
-            self.dcc2.weight += 1.0 / kernel_size
+            with torch.no_grad():
+                self.dcc1.weight[:, 0, :] += 1.0 / kernel_size
+                self.dcc2.weight += 1.0 / kernel_size
         else:
             nn.init.xavier_uniform_(self.dcc1.weight)
             nn.init.xavier_uniform_(self.dcc2.weight)

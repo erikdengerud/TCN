@@ -67,7 +67,8 @@ class TCN(nn.Module):
         if leveledinit:
             nn.init.normal_(self.conv1d.weight, std=1e-3)
             nn.init.normal_(self.conv1d.bias, std=1e-6)
-            self.conv1d.weight[:, 0, :] += 1.0 / kernel_size
+            with torch.no_grad():
+                self.conv1d.weight[:, 0, :] += 1.0 / kernel_size
         else:
             nn.init.xavier_uniform_(self.conv1d.weight)
 

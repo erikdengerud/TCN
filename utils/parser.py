@@ -32,6 +32,7 @@ def parse():
     parser.add_argument("--lr", type=float, default=5e-4)
     parser.add_argument("--dropout", type=float, default=0.2)
     parser.add_argument("--stride", type=int, default=1)
+    parser.add_argument("--tenacity", type=int, default=7)
     add_bool_arg(parser, name="leveledinit", default=False)
     add_bool_arg(parser, name="clip", default=False)
 

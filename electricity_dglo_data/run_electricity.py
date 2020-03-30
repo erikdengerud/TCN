@@ -15,7 +15,7 @@ from typing import List
 sys.path.append("")
 sys.path.append("../../")
 
-from data import ElectricityDataSet
+from data2 import ElectricityDataSet
 from model import TCN
 from utils.metrics import WAPE, MAPE, SMAPE, MAE, RMSE
 from utils.parser import parse, print_args
@@ -30,6 +30,9 @@ def train(epoch: int) -> None:
         x, y = d[0].to(device), d[1].to(device)
         optimizer.zero_grad()
         output = tcn(x)
+        # Since our x is longer than the y because we need the receptive field we
+        # have to slice the output.
+        output = output[:, :, -train_dataset.h_batch :]
         loss = criterion(output, y) / torch.abs(y).mean()
         loss.backward()
         if args.clip:
@@ -93,6 +96,9 @@ def evaluate_final() -> List[float]:
 
 
 if __name__ == "__main__":
+    torch.manual_seed(1729)
+    np.random.seed(1729)
+
     args = parse()
     print_args(args)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -129,6 +135,7 @@ if __name__ == "__main__":
         h_batch=args.h_batch_size,
         include_time_covariates=args.time_covariates,
         one_hot_id=args.one_hot_id,
+        receptive_field=look_back,
     )
     print("Test dataset")
     test_dataset = ElectricityDataSet(
@@ -138,6 +145,7 @@ if __name__ == "__main__":
         h_batch=0,
         include_time_covariates=args.time_covariates,
         one_hot_id=args.one_hot_id,
+        receptive_field=look_back,
     )
     train_loader = DataLoader(
         dataset=train_dataset,
@@ -196,31 +204,41 @@ if __name__ == "__main__":
     """ 
     TRAINING
     """
+    test_losses = []  # early stopping
+    tenacity_count = 0
     for ep in range(1, args.epochs + 1):
         """ 
         To evaluate on only one random batch of the testset use evaluate(), 
         else use evaluate_final().
         """
         train(ep)
-        if ep % 10 == 0:
-            with torch.no_grad():
-                tloss, wape, mape, smape, mae, rmse = evaluate_final()
-                writer.add_scalar("Loss/test", tloss, ep)
-                writer.add_scalar("wape", wape, ep)
-                writer.add_scalar("mape", mape, ep)
-                writer.add_scalar("smape", smape, ep)
-                writer.add_scalar("mae", mae, ep)
-                writer.add_scalar("rmse", rmse, ep)
-                fig = plot_predictions(tcn, test_loader, device)
-                writer.add_figure("predictions", fig, global_step=ep)
-                if args.print:
-                    print("Test set metrics:")
-                    print("Loss: {:.6f}".format(tloss.item()))
-                    print("WAPE: {:.6f}".format(wape))
-                    print("MAPE: {:.6f}".format(mape))
-                    print("SMAPE: {:.6f}".format(smape))
-                    print("MAE: {:.6f}".format(mae))
-                    print("RMSE: {:.6f}".format(rmse))
+        with torch.no_grad():
+            tloss, wape, mape, smape, mae, rmse = evaluate_final()
+            writer.add_scalar("Loss/test", tloss, ep)
+            writer.add_scalar("wape", wape, ep)
+            writer.add_scalar("mape", mape, ep)
+            writer.add_scalar("smape", smape, ep)
+            writer.add_scalar("mae", mae, ep)
+            writer.add_scalar("rmse", rmse, ep)
+            fig = plot_predictions(tcn, test_loader, device)
+            writer.add_figure("predictions", fig, global_step=ep)
+            if args.print:
+                print("Test set metrics:")
+                print("Loss: {:.6f}".format(tloss.item()))
+                print("WAPE: {:.6f}".format(wape))
+                print("MAPE: {:.6f}".format(mape))
+                print("SMAPE: {:.6f}".format(smape))
+                print("MAE: {:.6f}".format(mae))
+                print("RMSE: {:.6f}".format(rmse))
+
+        # Early stop
+        if tloss < min(test_losses[-args.tenacity :]):
+            tenacity_count = 0
+        else:
+            tenacity_count += 1
+        test_losses.append(tloss)
+        if tenacity_count >= args.tenacity:
+            break
 
     tloss, wape, mape, smape, mae, rmse = evaluate_final()
     print("Test set:")

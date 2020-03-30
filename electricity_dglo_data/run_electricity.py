@@ -199,29 +199,24 @@ if __name__ == "__main__":
         """
         train(ep)
         if ep % 10 == 0:
-            if device == "cuda:0":
-                torch.cuda.empty_cache()
-            tloss, wape, mape, smape, mae, rmse = evaluate_final()
-            writer.add_scalar("Loss/test", tloss, ep)
-            writer.add_scalar("wape", wape, ep)
-            writer.add_scalar("mape", mape, ep)
-            writer.add_scalar("smape", smape, ep)
-            writer.add_scalar("mae", mae, ep)
-            writer.add_scalar("rmse", rmse, ep)
-            if device == "cuda:0":
-                torch.cuda.empty_cache()
-            fig = plot_predictions(tcn, test_loader, device)
-            if device == "cuda:0":
-                torch.cuda.empty_cache()
-            writer.add_figure("predictions", fig, global_step=ep)
-            if args.print:
-                print("Test set metrics:")
-                print("Loss: {:.6f}".format(tloss.item()))
-                print("WAPE: {:.6f}".format(wape))
-                print("MAPE: {:.6f}".format(mape))
-                print("SMAPE: {:.6f}".format(smape))
-                print("MAE: {:.6f}".format(mae))
-                print("RMSE: {:.6f}".format(rmse))
+            with torch.no_grad():
+                tloss, wape, mape, smape, mae, rmse = evaluate_final()
+                writer.add_scalar("Loss/test", tloss, ep)
+                writer.add_scalar("wape", wape, ep)
+                writer.add_scalar("mape", mape, ep)
+                writer.add_scalar("smape", smape, ep)
+                writer.add_scalar("mae", mae, ep)
+                writer.add_scalar("rmse", rmse, ep)
+                fig = plot_predictions(tcn, test_loader, device)
+                writer.add_figure("predictions", fig, global_step=ep)
+                if args.print:
+                    print("Test set metrics:")
+                    print("Loss: {:.6f}".format(tloss.item()))
+                    print("WAPE: {:.6f}".format(wape))
+                    print("MAPE: {:.6f}".format(mape))
+                    print("SMAPE: {:.6f}".format(smape))
+                    print("MAE: {:.6f}".format(mae))
+                    print("RMSE: {:.6f}".format(rmse))
 
     tloss, wape, mape, smape, mae, rmse = evaluate_final()
     print("Test set:")

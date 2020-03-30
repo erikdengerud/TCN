@@ -30,7 +30,7 @@ def parse():
     # Training parameters
     parser.add_argument("--epochs", type=int, default=300)
     parser.add_argument("--lr", type=float, default=5e-4)
-    parser.add_argument("--dropout", type=float, default=0.0)
+    parser.add_argument("--dropout", type=float, default=0.2)
     parser.add_argument("--stride", type=int, default=1)
     add_bool_arg(parser, name="leveledinit", default=False)
     add_bool_arg(parser, name="clip", default=False)
@@ -44,7 +44,7 @@ def parse():
         "--model_save_path", type=str, default="electricity/models/tcn_electricity.pt"
     )
     parser.add_argument("--writer_path", type=str, default="electricity/runs/")
-    parser.add_argument("--log_interval", type=int, default=5)
+    parser.add_argument("--log_interval", type=int, default=1)
     add_bool_arg(parser, name="print", default=False)
 
     args = parser.parse_args()

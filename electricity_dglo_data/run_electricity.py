@@ -24,6 +24,7 @@ from utils.plot_predictions import plot_predictions
 
 def train(epoch: int) -> None:
     tcn.train()
+    epoch_train_loss = []
     total_loss = 0.0
     for i, d in enumerate(train_loader):
         x, y = d[0].to(device), d[1].to(device)
@@ -31,10 +32,13 @@ def train(epoch: int) -> None:
         output = tcn(x)
         loss = criterion(output, y) / torch.abs(y).mean()
         loss.backward()
-        if args.clip > 0:
-            torch.nn.utils.clip_grad_norm_(tcn.parameters(), args.clip)
+        if args.clip:
+            for p in tcn.parameters():
+                p.grad.data.clamp_(max=1e5, min=-1e5)
+            # torch.nn.utils.clip_grad_norm_(tcn.parameters(), args.clip)
         optimizer.step()
         total_loss += loss.item()
+        epoch_train_loss.append(loss.item())
 
         if i % args.log_interval == 0 and i != 0:
             cur_loss = total_loss / (args.log_interval * args.v_batch_size)

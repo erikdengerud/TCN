@@ -45,7 +45,7 @@ def plot_predictions(
     # Predict using multi step and rolling predictions
     preds, actual = model.rolling_prediction(x, num_windows=7, tau=24)
     # plot n series at a time. Real and predicted values
-    preds, actual = preds.detach().numpy(), actual.detach().numpy()
+    preds, actual = preds.detach().cpu().numpy(), actual.detach().cpu().numpy()
     num_series = preds.shape[0]
     dfs = []
     for i in range(len(preds)):

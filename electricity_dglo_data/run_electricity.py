@@ -11,6 +11,9 @@ from datetime import date, timedelta
 import numpy as np
 import sys
 from typing import List
+import warnings
+
+warnings.filterwarnings("ignore")
 
 sys.path.append("")
 sys.path.append("../../")
@@ -232,13 +235,14 @@ if __name__ == "__main__":
                 print("RMSE: {:.6f}".format(rmse))
 
         # Early stop
-        if tloss < min(test_losses[-args.tenacity :]):
-            tenacity_count = 0
-        else:
-            tenacity_count += 1
-        test_losses.append(tloss)
-        if tenacity_count >= args.tenacity:
-            break
+        #if ep > args.tenacity + 1:
+        #    if tloss < min(test_losses[-args.tenacity :]): 
+        #        tenacity_count = 0
+        #    elif ep > args.tenacity:
+        #        tenacity_count += 1
+        #test_losses.append(tloss)
+        #if tenacity_count >= args.tenacity:
+        #    break
 
     tloss, wape, mape, smape, mae, rmse = evaluate_final()
     print("Test set:")

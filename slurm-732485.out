@@ -1,0 +1,2745 @@
+/var/spool/slurmd/job732485/slurm_script: line 12: $'\302\240': command not found
+train_start          : 2012-01-01
+train_end            : 2014-12-16
+v_batch_size         : 32
+h_batch_size         : 256
+num_workers          : 4
+time_covariates      : False
+one_hot_id           : False
+num_layers           : 5
+kernel_size          : 7
+res_block_size       : 32
+bias                 : True
+epochs               : 300
+lr                   : 0.0005
+dropout              : 0.2
+stride               : 1
+tenacity             : 7
+leveledinit          : False
+clip                 : True
+num_rolling_periods  : 7
+length_rolling       : 24
+model_save_path      : electricity_dglo_data/models/tcn_no_add_no_stop.pt
+writer_path          : electricity_dglo_data/runs/tcn_no_add_no_stop
+log_interval         : 500
+print                : True
+cuda:0
+Creating dataset.
+Receptive field of the model is 385 time points.
+Train dataset
+Dimension of X :  torch.Size([370, 1, 25944])
+Dimension of Y :  torch.Size([370, 1, 25944])
+Test dataset
+Dimension of X :  torch.Size([370, 1, 576])
+Dimension of Y :  torch.Size([370, 1, 576])
+25944
+576
+Number of learnable parameters : 65716
+Train Epoch:  1[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.025563
+Train Epoch:  1[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.020811
+Test set metrics:
+Loss: 6.250637
+WAPE: 0.451087
+MAPE: 1.509837
+SMAPE: 0.608420
+MAE: 964.418091
+RMSE: 6742.234863
+Train Epoch:  2[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.016792
+Train Epoch:  2[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.015135
+Test set metrics:
+Loss: 4.858910
+WAPE: 0.309141
+MAPE: 1.721297
+SMAPE: 0.584233
+MAE: 660.938782
+RMSE: 3529.992188
+Train Epoch:  3[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.013993
+Train Epoch:  3[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.013418
+Test set metrics:
+Loss: 4.532133
+WAPE: 0.303696
+MAPE: 1.768826
+SMAPE: 0.591870
+MAE: 649.297791
+RMSE: 3250.990967
+Train Epoch:  4[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.012825
+Train Epoch:  4[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.012528
+Test set metrics:
+Loss: 4.387139
+WAPE: 0.309243
+MAPE: 2.163338
+SMAPE: 0.621830
+MAE: 661.158813
+RMSE: 3187.213135
+Train Epoch:  5[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.012163
+Train Epoch:  5[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.011972
+Test set metrics:
+Loss: 4.287709
+WAPE: 0.306507
+MAPE: 2.146903
+SMAPE: 0.570572
+MAE: 655.308105
+RMSE: 2997.556885
+Train Epoch:  6[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.011753
+Train Epoch:  6[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.011620
+Test set metrics:
+Loss: 4.188293
+WAPE: 0.309294
+MAPE: 2.604720
+SMAPE: 0.582300
+MAE: 661.267517
+RMSE: 2942.479736
+Train Epoch:  7[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.011456
+Train Epoch:  7[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.011348
+Test set metrics:
+Loss: 4.076533
+WAPE: 0.282952
+MAPE: 2.092298
+SMAPE: 0.590969
+MAE: 604.948608
+RMSE: 2691.427734
+Train Epoch:  8[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.011213
+Train Epoch:  8[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.011092
+Test set metrics:
+Loss: 3.960981
+WAPE: 0.283740
+MAPE: 2.386336
+SMAPE: 0.584114
+MAE: 606.633667
+RMSE: 2679.083496
+Train Epoch:  9[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.011010
+Train Epoch:  9[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.010989
+Test set metrics:
+Loss: 4.107826
+WAPE: 0.299564
+MAPE: 2.558622
+SMAPE: 0.625621
+MAE: 640.465210
+RMSE: 2838.084961
+Train Epoch: 10[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.010851
+Train Epoch: 10[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.010822
+Test set metrics:
+Loss: 4.063557
+WAPE: 0.292755
+MAPE: 2.409946
+SMAPE: 0.574592
+MAE: 625.907593
+RMSE: 2806.402832
+Train Epoch: 11[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.010757
+Train Epoch: 11[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.010691
+Test set metrics:
+Loss: 4.045742
+WAPE: 0.285937
+MAPE: 2.511880
+SMAPE: 0.556720
+MAE: 611.330444
+RMSE: 2720.220215
+Train Epoch: 12[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.010616
+Train Epoch: 12[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.010601
+Test set metrics:
+Loss: 4.156920
+WAPE: 0.309579
+MAPE: 2.796935
+SMAPE: 0.606482
+MAE: 661.876587
+RMSE: 2937.127930
+Train Epoch: 13[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.010554
+Train Epoch: 13[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.010468
+Test set metrics:
+Loss: 4.109132
+WAPE: 0.307147
+MAPE: 3.113576
+SMAPE: 0.548427
+MAE: 656.676819
+RMSE: 3030.700928
+Train Epoch: 14[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.010429
+Train Epoch: 14[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.010394
+Test set metrics:
+Loss: 4.048783
+WAPE: 0.291569
+MAPE: 2.614074
+SMAPE: 0.586743
+MAE: 623.370972
+RMSE: 2816.413574
+Train Epoch: 15[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.010348
+Train Epoch: 15[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.010305
+Test set metrics:
+Loss: 4.085747
+WAPE: 0.411356
+MAPE: 6.342330
+SMAPE: 0.553042
+MAE: 879.473511
+RMSE: 4405.786133
+Train Epoch: 16[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.010255
+Train Epoch: 16[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.010213
+Test set metrics:
+Loss: 4.062874
+WAPE: 0.294622
+MAPE: 2.527073
+SMAPE: 0.579192
+MAE: 629.898499
+RMSE: 2907.177246
+Train Epoch: 17[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.010184
+Train Epoch: 17[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.010167
+Test set metrics:
+Loss: 4.084350
+WAPE: 0.320787
+MAPE: 3.944167
+SMAPE: 0.557618
+MAE: 685.839661
+RMSE: 3289.120361
+Train Epoch: 18[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.010123
+Train Epoch: 18[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.010085
+Test set metrics:
+Loss: 4.092008
+WAPE: 0.353899
+MAPE: 4.371340
+SMAPE: 0.582160
+MAE: 756.631165
+RMSE: 3623.963135
+Train Epoch: 19[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.010057
+Train Epoch: 19[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.010019
+Test set metrics:
+Loss: 4.032938
+WAPE: 0.293644
+MAPE: 2.780864
+SMAPE: 0.518564
+MAE: 627.808411
+RMSE: 2926.390381
+Train Epoch: 20[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009996
+Train Epoch: 20[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009996
+Test set metrics:
+Loss: 4.052574
+WAPE: 0.292324
+MAPE: 2.983278
+SMAPE: 0.545503
+MAE: 624.984619
+RMSE: 3033.836670
+Train Epoch: 21[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009954
+Train Epoch: 21[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009921
+Test set metrics:
+Loss: 4.096175
+WAPE: 0.317929
+MAPE: 3.827280
+SMAPE: 0.548275
+MAE: 679.729370
+RMSE: 3180.176514
+Train Epoch: 22[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009893
+Train Epoch: 22[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009903
+Test set metrics:
+Loss: 4.048169
+WAPE: 0.364238
+MAPE: 4.657310
+SMAPE: 0.544488
+MAE: 778.735779
+RMSE: 3667.025146
+Train Epoch: 23[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009852
+Train Epoch: 23[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009860
+Test set metrics:
+Loss: 4.071460
+WAPE: 0.350883
+MAPE: 4.548272
+SMAPE: 0.581870
+MAE: 750.182861
+RMSE: 3515.187988
+Train Epoch: 24[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009833
+Train Epoch: 24[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009809
+Test set metrics:
+Loss: 3.942033
+WAPE: 0.272623
+MAPE: 2.644013
+SMAPE: 0.540427
+MAE: 582.864197
+RMSE: 2682.919189
+Train Epoch: 25[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009787
+Train Epoch: 25[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009772
+Test set metrics:
+Loss: 4.120777
+WAPE: 0.359066
+MAPE: 4.881432
+SMAPE: 0.556805
+MAE: 767.677979
+RMSE: 3761.367920
+Train Epoch: 26[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009755
+Train Epoch: 26[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009723
+Test set metrics:
+Loss: 3.935254
+WAPE: 0.284661
+MAPE: 2.842126
+SMAPE: 0.528650
+MAE: 608.602600
+RMSE: 2840.556885
+Train Epoch: 27[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009729
+Train Epoch: 27[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009710
+Test set metrics:
+Loss: 4.028657
+WAPE: 0.302384
+MAPE: 3.394819
+SMAPE: 0.560136
+MAE: 646.493103
+RMSE: 2954.512207
+Train Epoch: 28[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009681
+Train Epoch: 28[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009703
+Test set metrics:
+Loss: 3.821914
+WAPE: 0.267878
+MAPE: 2.227956
+SMAPE: 0.518789
+MAE: 572.719116
+RMSE: 2650.664551
+Train Epoch: 29[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009662
+Train Epoch: 29[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009631
+Test set metrics:
+Loss: 3.931481
+WAPE: 0.275731
+MAPE: 2.469303
+SMAPE: 0.505684
+MAE: 589.509705
+RMSE: 2710.525635
+Train Epoch: 30[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009639
+Train Epoch: 30[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009606
+Test set metrics:
+Loss: 3.934656
+WAPE: 0.281985
+MAPE: 2.918768
+SMAPE: 0.543126
+MAE: 602.881165
+RMSE: 2719.612549
+Train Epoch: 31[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009589
+Train Epoch: 31[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009594
+Test set metrics:
+Loss: 4.009629
+WAPE: 0.297542
+MAPE: 3.373031
+SMAPE: 0.563389
+MAE: 636.141235
+RMSE: 2949.080566
+Train Epoch: 32[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009566
+Train Epoch: 32[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009587
+Test set metrics:
+Loss: 3.921580
+WAPE: 0.287533
+MAPE: 2.874309
+SMAPE: 0.553619
+MAE: 614.741394
+RMSE: 2839.424072
+Train Epoch: 33[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009545
+Train Epoch: 33[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009533
+Test set metrics:
+Loss: 3.940134
+WAPE: 0.295036
+MAPE: 3.166130
+SMAPE: 0.534685
+MAE: 630.783691
+RMSE: 2855.782715
+Train Epoch: 34[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009521
+Train Epoch: 34[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009510
+Test set metrics:
+Loss: 3.867365
+WAPE: 0.287424
+MAPE: 3.154589
+SMAPE: 0.547928
+MAE: 614.509888
+RMSE: 2845.360596
+Train Epoch: 35[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009525
+Train Epoch: 35[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009487
+Test set metrics:
+Loss: 4.034912
+WAPE: 0.306652
+MAPE: 3.203692
+SMAPE: 0.557968
+MAE: 655.618591
+RMSE: 2971.808105
+Train Epoch: 36[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009484
+Train Epoch: 36[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009449
+Test set metrics:
+Loss: 3.875943
+WAPE: 0.287479
+MAPE: 3.381548
+SMAPE: 0.559692
+MAE: 614.625854
+RMSE: 2770.833984
+Train Epoch: 37[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009463
+Train Epoch: 37[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009453
+Test set metrics:
+Loss: 3.887425
+WAPE: 0.294226
+MAPE: 3.411283
+SMAPE: 0.543565
+MAE: 629.051575
+RMSE: 2986.522461
+Train Epoch: 38[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009426
+Train Epoch: 38[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009417
+Test set metrics:
+Loss: 3.820442
+WAPE: 0.288220
+MAPE: 3.518575
+SMAPE: 0.516436
+MAE: 616.211670
+RMSE: 2842.635254
+Train Epoch: 39[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009424
+Train Epoch: 39[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009404
+Test set metrics:
+Loss: 3.965105
+WAPE: 0.292236
+MAPE: 2.882020
+SMAPE: 0.542593
+MAE: 624.798096
+RMSE: 2765.643799
+Train Epoch: 40[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009400
+Train Epoch: 40[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009401
+Test set metrics:
+Loss: 4.003233
+WAPE: 0.279283
+MAPE: 2.315884
+SMAPE: 0.566313
+MAE: 597.104309
+RMSE: 2659.144531
+Train Epoch: 41[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009362
+Train Epoch: 41[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009377
+Test set metrics:
+Loss: 3.902223
+WAPE: 0.322134
+MAPE: 4.098148
+SMAPE: 0.555612
+MAE: 688.718689
+RMSE: 3192.803467
+Train Epoch: 42[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009352
+Train Epoch: 42[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009371
+Test set metrics:
+Loss: 3.841515
+WAPE: 0.295542
+MAPE: 3.844274
+SMAPE: 0.572007
+MAE: 631.866333
+RMSE: 2780.927246
+Train Epoch: 43[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009330
+Train Epoch: 43[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009346
+Test set metrics:
+Loss: 3.963922
+WAPE: 0.344738
+MAPE: 5.236326
+SMAPE: 0.540806
+MAE: 737.045776
+RMSE: 3482.929199
+Train Epoch: 44[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009344
+Train Epoch: 44[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009304
+Test set metrics:
+Loss: 3.847438
+WAPE: 0.305286
+MAPE: 3.372035
+SMAPE: 0.548502
+MAE: 652.698547
+RMSE: 2914.057129
+Train Epoch: 45[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009313
+Train Epoch: 45[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009268
+Test set metrics:
+Loss: 3.811761
+WAPE: 0.282093
+MAPE: 3.361390
+SMAPE: 0.507578
+MAE: 603.111572
+RMSE: 2785.413574
+Train Epoch: 46[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009291
+Train Epoch: 46[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009279
+Test set metrics:
+Loss: 4.014827
+WAPE: 0.364291
+MAPE: 5.207069
+SMAPE: 0.562123
+MAE: 778.849365
+RMSE: 3498.570801
+Train Epoch: 47[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009256
+Train Epoch: 47[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009248
+Test set metrics:
+Loss: 3.936360
+WAPE: 0.368405
+MAPE: 5.963366
+SMAPE: 0.538966
+MAE: 787.645081
+RMSE: 3841.248535
+Train Epoch: 48[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009261
+Train Epoch: 48[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009258
+Test set metrics:
+Loss: 3.973131
+WAPE: 0.353710
+MAPE: 5.695718
+SMAPE: 0.552597
+MAE: 756.227356
+RMSE: 3645.510254
+Train Epoch: 49[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009249
+Train Epoch: 49[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009242
+Test set metrics:
+Loss: 3.883508
+WAPE: 0.299386
+MAPE: 3.521131
+SMAPE: 0.554439
+MAE: 640.084473
+RMSE: 2795.485840
+Train Epoch: 50[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009219
+Train Epoch: 50[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009226
+Test set metrics:
+Loss: 3.814807
+WAPE: 0.280622
+MAPE: 2.895378
+SMAPE: 0.542190
+MAE: 599.967346
+RMSE: 2632.494873
+Train Epoch: 51[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009223
+Train Epoch: 51[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009192
+Test set metrics:
+Loss: 3.850462
+WAPE: 0.310484
+MAPE: 3.896297
+SMAPE: 0.557555
+MAE: 663.810181
+RMSE: 3030.381104
+Train Epoch: 52[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009219
+Train Epoch: 52[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009199
+Test set metrics:
+Loss: 3.801739
+WAPE: 0.291279
+MAPE: 3.736175
+SMAPE: 0.540242
+MAE: 622.751892
+RMSE: 2779.983643
+Train Epoch: 53[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009180
+Train Epoch: 53[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009191
+Test set metrics:
+Loss: 3.887812
+WAPE: 0.296059
+MAPE: 2.901092
+SMAPE: 0.565433
+MAE: 632.969971
+RMSE: 2790.808838
+Train Epoch: 54[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009165
+Train Epoch: 54[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009164
+Test set metrics:
+Loss: 3.832553
+WAPE: 0.302108
+MAPE: 3.600483
+SMAPE: 0.553813
+MAE: 645.902893
+RMSE: 2915.878662
+Train Epoch: 55[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009174
+Train Epoch: 55[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009112
+Test set metrics:
+Loss: 3.862072
+WAPE: 0.336575
+MAPE: 4.756652
+SMAPE: 0.531838
+MAE: 719.592896
+RMSE: 3285.872070
+Train Epoch: 56[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009144
+Train Epoch: 56[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009116
+Test set metrics:
+Loss: 3.804050
+WAPE: 0.317288
+MAPE: 4.409145
+SMAPE: 0.580329
+MAE: 678.359070
+RMSE: 3150.287109
+Train Epoch: 57[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009146
+Train Epoch: 57[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009120
+Test set metrics:
+Loss: 3.751059
+WAPE: 0.305700
+MAPE: 3.934854
+SMAPE: 0.559888
+MAE: 653.583679
+RMSE: 3016.844482
+Train Epoch: 58[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009116
+Train Epoch: 58[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009124
+Test set metrics:
+Loss: 3.741077
+WAPE: 0.285035
+MAPE: 3.626667
+SMAPE: 0.539198
+MAE: 609.402039
+RMSE: 2743.269287
+Train Epoch: 59[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009110
+Train Epoch: 59[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009126
+Test set metrics:
+Loss: 3.882490
+WAPE: 0.361085
+MAPE: 5.990963
+SMAPE: 0.554731
+MAE: 771.995300
+RMSE: 3619.087158
+Train Epoch: 60[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009118
+Train Epoch: 60[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009086
+Test set metrics:
+Loss: 3.808011
+WAPE: 0.318307
+MAPE: 4.514307
+SMAPE: 0.542739
+MAE: 680.536987
+RMSE: 3110.733154
+Train Epoch: 61[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009087
+Train Epoch: 61[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009079
+Test set metrics:
+Loss: 3.880044
+WAPE: 0.340063
+MAPE: 4.848682
+SMAPE: 0.538747
+MAE: 727.049927
+RMSE: 3388.482178
+Train Epoch: 62[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009062
+Train Epoch: 62[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009071
+Test set metrics:
+Loss: 3.867574
+WAPE: 0.362565
+MAPE: 6.018091
+SMAPE: 0.546259
+MAE: 775.160706
+RMSE: 3750.123535
+Train Epoch: 63[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009055
+Train Epoch: 63[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009050
+Test set metrics:
+Loss: 3.849773
+WAPE: 0.295395
+MAPE: 3.661622
+SMAPE: 0.543912
+MAE: 631.550415
+RMSE: 2865.099365
+Train Epoch: 64[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009048
+Train Epoch: 64[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009025
+Test set metrics:
+Loss: 3.733531
+WAPE: 0.268383
+MAPE: 2.728333
+SMAPE: 0.537066
+MAE: 573.799683
+RMSE: 2397.590576
+Train Epoch: 65[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009027
+Train Epoch: 65[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009037
+Test set metrics:
+Loss: 3.798280
+WAPE: 0.321201
+MAPE: 4.921252
+SMAPE: 0.507130
+MAE: 686.724731
+RMSE: 3289.130859
+Train Epoch: 66[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009028
+Train Epoch: 66[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009011
+Test set metrics:
+Loss: 3.813659
+WAPE: 0.291080
+MAPE: 3.392691
+SMAPE: 0.558830
+MAE: 622.326111
+RMSE: 2701.746826
+Train Epoch: 67[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.009008
+Train Epoch: 67[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.009003
+Test set metrics:
+Loss: 3.748099
+WAPE: 0.297775
+MAPE: 4.053802
+SMAPE: 0.528141
+MAE: 636.638672
+RMSE: 2938.677002
+Train Epoch: 68[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008997
+Train Epoch: 68[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008999
+Test set metrics:
+Loss: 3.767341
+WAPE: 0.279673
+MAPE: 2.775334
+SMAPE: 0.535130
+MAE: 597.937378
+RMSE: 2577.066406
+Train Epoch: 69[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008996
+Train Epoch: 69[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008971
+Test set metrics:
+Loss: 3.748278
+WAPE: 0.303188
+MAPE: 4.328378
+SMAPE: 0.534099
+MAE: 648.213318
+RMSE: 2901.666260
+Train Epoch: 70[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008994
+Train Epoch: 70[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008968
+Test set metrics:
+Loss: 3.825159
+WAPE: 0.328886
+MAPE: 5.021729
+SMAPE: 0.527753
+MAE: 703.154846
+RMSE: 3391.122559
+Train Epoch: 71[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008953
+Train Epoch: 71[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008974
+Test set metrics:
+Loss: 3.794633
+WAPE: 0.291842
+MAPE: 3.808501
+SMAPE: 0.514557
+MAE: 623.954834
+RMSE: 2853.918457
+Train Epoch: 72[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008953
+Train Epoch: 72[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008944
+Test set metrics:
+Loss: 3.803397
+WAPE: 0.331706
+MAPE: 5.384374
+SMAPE: 0.560632
+MAE: 709.182739
+RMSE: 3386.701904
+Train Epoch: 73[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008936
+Train Epoch: 73[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008957
+Test set metrics:
+Loss: 3.738499
+WAPE: 0.281457
+MAPE: 3.340291
+SMAPE: 0.529801
+MAE: 601.751892
+RMSE: 2608.218994
+Train Epoch: 74[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008915
+Train Epoch: 74[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008930
+Test set metrics:
+Loss: 3.732953
+WAPE: 0.305948
+MAPE: 4.467918
+SMAPE: 0.522160
+MAE: 654.112488
+RMSE: 2967.962646
+Train Epoch: 75[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008918
+Train Epoch: 75[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008924
+Test set metrics:
+Loss: 3.777782
+WAPE: 0.332561
+MAPE: 5.425941
+SMAPE: 0.536510
+MAE: 711.010925
+RMSE: 3338.737305
+Train Epoch: 76[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008883
+Train Epoch: 76[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008916
+Test set metrics:
+Loss: 3.776144
+WAPE: 0.279980
+MAPE: 3.557348
+SMAPE: 0.533607
+MAE: 598.594727
+RMSE: 2664.506836
+Train Epoch: 77[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008912
+Train Epoch: 77[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008863
+Test set metrics:
+Loss: 3.706316
+WAPE: 0.270002
+MAPE: 3.054143
+SMAPE: 0.499897
+MAE: 577.261536
+RMSE: 2628.727539
+Train Epoch: 78[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008876
+Train Epoch: 78[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008894
+Test set metrics:
+Loss: 3.766396
+WAPE: 0.292990
+MAPE: 3.811357
+SMAPE: 0.528263
+MAE: 626.408875
+RMSE: 2759.611084
+Train Epoch: 79[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008887
+Train Epoch: 79[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008866
+Test set metrics:
+Loss: 3.730370
+WAPE: 0.318962
+MAPE: 5.288085
+SMAPE: 0.530186
+MAE: 681.937439
+RMSE: 3189.686035
+Train Epoch: 80[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008861
+Train Epoch: 80[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008866
+Test set metrics:
+Loss: 3.765981
+WAPE: 0.363000
+MAPE: 6.254712
+SMAPE: 0.542391
+MAE: 776.090088
+RMSE: 3692.994629
+Train Epoch: 81[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008861
+Train Epoch: 81[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008840
+Test set metrics:
+Loss: 3.729169
+WAPE: 0.277281
+MAPE: 3.811086
+SMAPE: 0.520764
+MAE: 592.824280
+RMSE: 2653.461670
+Train Epoch: 82[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008857
+Train Epoch: 82[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008859
+Test set metrics:
+Loss: 3.757266
+WAPE: 0.297918
+MAPE: 3.862886
+SMAPE: 0.545078
+MAE: 636.946289
+RMSE: 2847.277832
+Train Epoch: 83[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008835
+Train Epoch: 83[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008812
+Test set metrics:
+Loss: 3.756820
+WAPE: 0.323423
+MAPE: 5.254350
+SMAPE: 0.575170
+MAE: 691.474915
+RMSE: 3188.876465
+Train Epoch: 84[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008834
+Train Epoch: 84[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008823
+Test set metrics:
+Loss: 3.743660
+WAPE: 0.330130
+MAPE: 5.444220
+SMAPE: 0.536982
+MAE: 705.813660
+RMSE: 3376.352539
+Train Epoch: 85[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008826
+Train Epoch: 85[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008806
+Test set metrics:
+Loss: 3.777862
+WAPE: 0.290946
+MAPE: 4.143311
+SMAPE: 0.552021
+MAE: 622.039001
+RMSE: 2793.927979
+Train Epoch: 86[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008791
+Train Epoch: 86[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008809
+Test set metrics:
+Loss: 3.816051
+WAPE: 0.305262
+MAPE: 4.403709
+SMAPE: 0.535043
+MAE: 652.645996
+RMSE: 2943.692627
+Train Epoch: 87[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008783
+Train Epoch: 87[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008793
+Test set metrics:
+Loss: 3.734067
+WAPE: 0.318972
+MAPE: 5.030331
+SMAPE: 0.553652
+MAE: 681.958679
+RMSE: 3176.038330
+Train Epoch: 88[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008779
+Train Epoch: 88[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008797
+Test set metrics:
+Loss: 3.779385
+WAPE: 0.297682
+MAPE: 4.220364
+SMAPE: 0.531600
+MAE: 636.439819
+RMSE: 2899.067871
+Train Epoch: 89[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008763
+Train Epoch: 89[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008783
+Test set metrics:
+Loss: 3.770956
+WAPE: 0.296679
+MAPE: 3.918494
+SMAPE: 0.552928
+MAE: 634.296448
+RMSE: 2778.150391
+Train Epoch: 90[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008799
+Train Epoch: 90[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008731
+Test set metrics:
+Loss: 3.693324
+WAPE: 0.316820
+MAPE: 5.448264
+SMAPE: 0.527234
+MAE: 677.358459
+RMSE: 3203.666260
+Train Epoch: 91[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008748
+Train Epoch: 91[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008744
+Test set metrics:
+Loss: 3.747079
+WAPE: 0.318023
+MAPE: 4.670287
+SMAPE: 0.559411
+MAE: 679.929993
+RMSE: 3048.385742
+Train Epoch: 92[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008740
+Train Epoch: 92[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008745
+Test set metrics:
+Loss: 3.705390
+WAPE: 0.301967
+MAPE: 4.566502
+SMAPE: 0.556246
+MAE: 645.601562
+RMSE: 2944.112305
+Train Epoch: 93[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008732
+Train Epoch: 93[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008745
+Test set metrics:
+Loss: 3.805909
+WAPE: 0.352582
+MAPE: 6.048374
+SMAPE: 0.528676
+MAE: 753.816101
+RMSE: 3566.344238
+Train Epoch: 94[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008693
+Train Epoch: 94[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008747
+Test set metrics:
+Loss: 3.740462
+WAPE: 0.306757
+MAPE: 4.401526
+SMAPE: 0.555407
+MAE: 655.843262
+RMSE: 2949.419189
+Train Epoch: 95[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008730
+Train Epoch: 95[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008715
+Test set metrics:
+Loss: 3.749476
+WAPE: 0.332177
+MAPE: 5.470139
+SMAPE: 0.570624
+MAE: 710.190674
+RMSE: 3337.929688
+Train Epoch: 96[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008746
+Train Epoch: 96[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008732
+Test set metrics:
+Loss: 3.702598
+WAPE: 0.265437
+MAPE: 3.626799
+SMAPE: 0.515003
+MAE: 567.502197
+RMSE: 2505.919434
+Train Epoch: 97[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008713
+Train Epoch: 97[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008714
+Test set metrics:
+Loss: 3.763842
+WAPE: 0.351106
+MAPE: 5.696218
+SMAPE: 0.542204
+MAE: 750.660767
+RMSE: 3538.093750
+Train Epoch: 98[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008723
+Train Epoch: 98[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008699
+Test set metrics:
+Loss: 3.758428
+WAPE: 0.299912
+MAPE: 4.401256
+SMAPE: 0.525932
+MAE: 641.207520
+RMSE: 2958.786621
+Train Epoch: 99[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008699
+Train Epoch: 99[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008713
+Test set metrics:
+Loss: 3.683449
+WAPE: 0.291836
+MAPE: 4.083028
+SMAPE: 0.516633
+MAE: 623.941284
+RMSE: 2842.505615
+Train Epoch: 100[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008684
+Train Epoch: 100[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008704
+Test set metrics:
+Loss: 3.751620
+WAPE: 0.320115
+MAPE: 5.434699
+SMAPE: 0.544700
+MAE: 684.401794
+RMSE: 3174.287842
+Train Epoch: 101[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008677
+Train Epoch: 101[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008711
+Test set metrics:
+Loss: 3.745607
+WAPE: 0.313963
+MAPE: 4.874785
+SMAPE: 0.525821
+MAE: 671.249023
+RMSE: 3180.220215
+Train Epoch: 102[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008701
+Train Epoch: 102[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008676
+Test set metrics:
+Loss: 3.759824
+WAPE: 0.273343
+MAPE: 3.746490
+SMAPE: 0.546084
+MAE: 584.405029
+RMSE: 2512.971191
+Train Epoch: 103[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008660
+Train Epoch: 103[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008678
+Test set metrics:
+Loss: 3.699452
+WAPE: 0.286349
+MAPE: 3.904621
+SMAPE: 0.529707
+MAE: 612.210022
+RMSE: 2800.334717
+Train Epoch: 104[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008688
+Train Epoch: 104[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008664
+Test set metrics:
+Loss: 3.677617
+WAPE: 0.295513
+MAPE: 4.512809
+SMAPE: 0.539964
+MAE: 631.804077
+RMSE: 2908.765381
+Train Epoch: 105[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008642
+Train Epoch: 105[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008691
+Test set metrics:
+Loss: 3.737931
+WAPE: 0.360625
+MAPE: 6.661078
+SMAPE: 0.535150
+MAE: 771.012817
+RMSE: 3761.419434
+Train Epoch: 106[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008641
+Train Epoch: 106[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008660
+Test set metrics:
+Loss: 3.705528
+WAPE: 0.295435
+MAPE: 4.505695
+SMAPE: 0.534357
+MAE: 631.637451
+RMSE: 2826.894287
+Train Epoch: 107[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008640
+Train Epoch: 107[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008648
+Test set metrics:
+Loss: 3.665680
+WAPE: 0.291378
+MAPE: 4.304153
+SMAPE: 0.535202
+MAE: 622.962280
+RMSE: 2814.859375
+Train Epoch: 108[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008646
+Train Epoch: 108[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008636
+Test set metrics:
+Loss: 3.719293
+WAPE: 0.286232
+MAPE: 4.086735
+SMAPE: 0.574008
+MAE: 611.960632
+RMSE: 2665.142578
+Train Epoch: 109[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008649
+Train Epoch: 109[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008637
+Test set metrics:
+Loss: 3.733861
+WAPE: 0.274502
+MAPE: 3.789032
+SMAPE: 0.558766
+MAE: 586.882812
+RMSE: 2421.106934
+Train Epoch: 110[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008642
+Train Epoch: 110[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008615
+Test set metrics:
+Loss: 3.699188
+WAPE: 0.303729
+MAPE: 4.784319
+SMAPE: 0.535116
+MAE: 649.368958
+RMSE: 2929.438965
+Train Epoch: 111[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008622
+Train Epoch: 111[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008598
+Test set metrics:
+Loss: 3.743139
+WAPE: 0.288160
+MAPE: 3.798906
+SMAPE: 0.532431
+MAE: 616.082703
+RMSE: 2724.775146
+Train Epoch: 112[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008596
+Train Epoch: 112[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008594
+Test set metrics:
+Loss: 3.786297
+WAPE: 0.314090
+MAPE: 4.391588
+SMAPE: 0.541735
+MAE: 671.519653
+RMSE: 3013.120605
+Train Epoch: 113[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008619
+Train Epoch: 113[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008615
+Test set metrics:
+Loss: 3.679748
+WAPE: 0.290257
+MAPE: 4.509425
+SMAPE: 0.536213
+MAE: 620.565369
+RMSE: 2830.169922
+Train Epoch: 114[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008578
+Train Epoch: 114[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008593
+Test set metrics:
+Loss: 3.653681
+WAPE: 0.292764
+MAPE: 4.494027
+SMAPE: 0.519175
+MAE: 625.925049
+RMSE: 2844.928467
+Train Epoch: 115[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008602
+Train Epoch: 115[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008588
+Test set metrics:
+Loss: 3.720081
+WAPE: 0.299750
+MAPE: 5.306772
+SMAPE: 0.485353
+MAE: 640.862610
+RMSE: 3017.862061
+Train Epoch: 116[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008581
+Train Epoch: 116[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008592
+Test set metrics:
+Loss: 3.691729
+WAPE: 0.356408
+MAPE: 6.496171
+SMAPE: 0.529663
+MAE: 761.995728
+RMSE: 3653.465088
+Train Epoch: 117[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008573
+Train Epoch: 117[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008580
+Test set metrics:
+Loss: 3.701814
+WAPE: 0.277614
+MAPE: 3.363467
+SMAPE: 0.540867
+MAE: 593.534668
+RMSE: 2535.341064
+Train Epoch: 118[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008567
+Train Epoch: 118[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008589
+Test set metrics:
+Loss: 3.724988
+WAPE: 0.303365
+MAPE: 4.908738
+SMAPE: 0.525028
+MAE: 648.589844
+RMSE: 2987.723633
+Train Epoch: 119[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008586
+Train Epoch: 119[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008536
+Test set metrics:
+Loss: 3.713555
+WAPE: 0.295874
+MAPE: 4.415027
+SMAPE: 0.508802
+MAE: 632.574585
+RMSE: 2918.356445
+Train Epoch: 120[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008550
+Train Epoch: 120[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008562
+Test set metrics:
+Loss: 3.713960
+WAPE: 0.290712
+MAPE: 4.170300
+SMAPE: 0.535330
+MAE: 621.539307
+RMSE: 2765.732178
+Train Epoch: 121[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008554
+Train Epoch: 121[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008547
+Test set metrics:
+Loss: 3.742355
+WAPE: 0.328787
+MAPE: 5.626996
+SMAPE: 0.562800
+MAE: 702.941833
+RMSE: 3210.143799
+Train Epoch: 122[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008528
+Train Epoch: 122[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008556
+Test set metrics:
+Loss: 3.717205
+WAPE: 0.301860
+MAPE: 4.506570
+SMAPE: 0.532161
+MAE: 645.372559
+RMSE: 2934.929932
+Train Epoch: 123[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008550
+Train Epoch: 123[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008536
+Test set metrics:
+Loss: 3.743179
+WAPE: 0.312607
+MAPE: 4.794966
+SMAPE: 0.562537
+MAE: 668.350037
+RMSE: 2980.442139
+Train Epoch: 124[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008533
+Train Epoch: 124[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008531
+Test set metrics:
+Loss: 3.736065
+WAPE: 0.336761
+MAPE: 6.513634
+SMAPE: 0.542259
+MAE: 719.990417
+RMSE: 3411.413574
+Train Epoch: 125[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008542
+Train Epoch: 125[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008520
+Test set metrics:
+Loss: 3.718532
+WAPE: 0.306064
+MAPE: 5.356637
+SMAPE: 0.522270
+MAE: 654.361328
+RMSE: 3061.322510
+Train Epoch: 126[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008486
+Train Epoch: 126[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008531
+Test set metrics:
+Loss: 3.747383
+WAPE: 0.347620
+MAPE: 6.029061
+SMAPE: 0.513870
+MAE: 743.206421
+RMSE: 3553.129639
+Train Epoch: 127[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008509
+Train Epoch: 127[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008501
+Test set metrics:
+Loss: 3.711271
+WAPE: 0.271060
+MAPE: 3.854618
+SMAPE: 0.530032
+MAE: 579.523804
+RMSE: 2435.585205
+Train Epoch: 128[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008499
+Train Epoch: 128[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008506
+Test set metrics:
+Loss: 3.704598
+WAPE: 0.318547
+MAPE: 5.932853
+SMAPE: 0.505393
+MAE: 681.048828
+RMSE: 3258.835693
+Train Epoch: 129[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008509
+Train Epoch: 129[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008494
+Test set metrics:
+Loss: 3.713989
+WAPE: 0.306228
+MAPE: 5.304175
+SMAPE: 0.502866
+MAE: 654.712585
+RMSE: 3076.253174
+Train Epoch: 130[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008492
+Train Epoch: 130[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008491
+Test set metrics:
+Loss: 3.680013
+WAPE: 0.278722
+MAPE: 3.961277
+SMAPE: 0.516995
+MAE: 595.903809
+RMSE: 2661.379639
+Train Epoch: 131[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008487
+Train Epoch: 131[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008493
+Test set metrics:
+Loss: 3.766263
+WAPE: 0.375033
+MAPE: 7.113549
+SMAPE: 0.547767
+MAE: 801.816833
+RMSE: 3817.747559
+Train Epoch: 132[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008474
+Train Epoch: 132[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008478
+Test set metrics:
+Loss: 3.700349
+WAPE: 0.320480
+MAPE: 5.712350
+SMAPE: 0.532868
+MAE: 685.182190
+RMSE: 3193.069092
+Train Epoch: 133[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008496
+Train Epoch: 133[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008463
+Test set metrics:
+Loss: 3.678273
+WAPE: 0.298823
+MAPE: 4.630796
+SMAPE: 0.514759
+MAE: 638.879272
+RMSE: 2983.909424
+Train Epoch: 134[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008477
+Train Epoch: 134[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008488
+Test set metrics:
+Loss: 3.731333
+WAPE: 0.322683
+MAPE: 5.411143
+SMAPE: 0.544313
+MAE: 689.893250
+RMSE: 3230.280762
+Train Epoch: 135[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008472
+Train Epoch: 135[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008440
+Test set metrics:
+Loss: 3.682470
+WAPE: 0.252291
+MAPE: 2.925331
+SMAPE: 0.506668
+MAE: 539.395813
+RMSE: 2351.776123
+Train Epoch: 136[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008454
+Train Epoch: 136[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008449
+Test set metrics:
+Loss: 3.621668
+WAPE: 0.315002
+MAPE: 5.246014
+SMAPE: 0.525128
+MAE: 673.471619
+RMSE: 3192.600830
+Train Epoch: 137[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008452
+Train Epoch: 137[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008438
+Test set metrics:
+Loss: 3.656812
+WAPE: 0.299980
+MAPE: 4.951619
+SMAPE: 0.539880
+MAE: 641.353027
+RMSE: 2866.014160
+Train Epoch: 138[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008466
+Train Epoch: 138[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008425
+Test set metrics:
+Loss: 3.728916
+WAPE: 0.354705
+MAPE: 6.368938
+SMAPE: 0.552853
+MAE: 758.355103
+RMSE: 3667.851807
+Train Epoch: 139[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008435
+Train Epoch: 139[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008415
+Test set metrics:
+Loss: 3.737151
+WAPE: 0.322698
+MAPE: 5.715508
+SMAPE: 0.533994
+MAE: 689.924316
+RMSE: 3153.696045
+Train Epoch: 140[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008414
+Train Epoch: 140[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008425
+Test set metrics:
+Loss: 3.648119
+WAPE: 0.290735
+MAPE: 4.655427
+SMAPE: 0.515023
+MAE: 621.587646
+RMSE: 2872.018311
+Train Epoch: 141[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008434
+Train Epoch: 141[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008392
+Test set metrics:
+Loss: 3.697760
+WAPE: 0.257036
+MAPE: 2.707529
+SMAPE: 0.570896
+MAE: 549.539001
+RMSE: 2252.684570
+Train Epoch: 142[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008390
+Train Epoch: 142[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008420
+Test set metrics:
+Loss: 3.681600
+WAPE: 0.296790
+MAPE: 4.674909
+SMAPE: 0.514640
+MAE: 634.534058
+RMSE: 2932.789795
+Train Epoch: 143[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008402
+Train Epoch: 143[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008397
+Test set metrics:
+Loss: 3.643901
+WAPE: 0.280688
+MAPE: 3.991570
+SMAPE: 0.493356
+MAE: 600.107971
+RMSE: 2707.740723
+Train Epoch: 144[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008406
+Train Epoch: 144[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008420
+Test set metrics:
+Loss: 3.657231
+WAPE: 0.293578
+MAPE: 4.589736
+SMAPE: 0.514905
+MAE: 627.665405
+RMSE: 2876.925781
+Train Epoch: 145[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008380
+Train Epoch: 145[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008395
+Test set metrics:
+Loss: 3.671512
+WAPE: 0.303792
+MAPE: 4.671547
+SMAPE: 0.543564
+MAE: 649.503967
+RMSE: 2890.165283
+Train Epoch: 146[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008401
+Train Epoch: 146[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008362
+Test set metrics:
+Loss: 3.681807
+WAPE: 0.282569
+MAPE: 4.045731
+SMAPE: 0.545035
+MAE: 604.129333
+RMSE: 2618.961426
+Train Epoch: 147[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008357
+Train Epoch: 147[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008392
+Test set metrics:
+Loss: 3.693817
+WAPE: 0.292481
+MAPE: 4.532599
+SMAPE: 0.528690
+MAE: 625.321838
+RMSE: 2790.313721
+Train Epoch: 148[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008367
+Train Epoch: 148[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008369
+Test set metrics:
+Loss: 3.613475
+WAPE: 0.266593
+MAPE: 3.688866
+SMAPE: 0.506958
+MAE: 569.972046
+RMSE: 2525.300293
+Train Epoch: 149[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008368
+Train Epoch: 149[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008356
+Test set metrics:
+Loss: 3.713382
+WAPE: 0.317484
+MAPE: 5.097241
+SMAPE: 0.582905
+MAE: 678.776489
+RMSE: 3020.972412
+Train Epoch: 150[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008343
+Train Epoch: 150[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008356
+Test set metrics:
+Loss: 3.613337
+WAPE: 0.295806
+MAPE: 4.676214
+SMAPE: 0.500436
+MAE: 632.428772
+RMSE: 2940.330322
+Train Epoch: 151[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008367
+Train Epoch: 151[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008347
+Test set metrics:
+Loss: 3.662381
+WAPE: 0.275412
+MAPE: 3.931011
+SMAPE: 0.529887
+MAE: 588.828369
+RMSE: 2618.296387
+Train Epoch: 152[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008354
+Train Epoch: 152[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008321
+Test set metrics:
+Loss: 3.656548
+WAPE: 0.284661
+MAPE: 4.276942
+SMAPE: 0.528363
+MAE: 608.601807
+RMSE: 2711.419922
+Train Epoch: 153[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008333
+Train Epoch: 153[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008366
+Test set metrics:
+Loss: 3.704100
+WAPE: 0.321334
+MAPE: 4.930259
+SMAPE: 0.525393
+MAE: 687.008362
+RMSE: 3237.565186
+Train Epoch: 154[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008301
+Train Epoch: 154[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008340
+Test set metrics:
+Loss: 3.712923
+WAPE: 0.308941
+MAPE: 5.033843
+SMAPE: 0.528763
+MAE: 660.511658
+RMSE: 3057.098877
+Train Epoch: 155[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008339
+Train Epoch: 155[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008322
+Test set metrics:
+Loss: 3.722097
+WAPE: 0.299013
+MAPE: 4.937530
+SMAPE: 0.546101
+MAE: 639.285706
+RMSE: 2908.038574
+Train Epoch: 156[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008311
+Train Epoch: 156[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008324
+Test set metrics:
+Loss: 3.669648
+WAPE: 0.283759
+MAPE: 4.024264
+SMAPE: 0.537772
+MAE: 606.672852
+RMSE: 2723.071533
+Train Epoch: 157[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008300
+Train Epoch: 157[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008320
+Test set metrics:
+Loss: 3.702653
+WAPE: 0.320448
+MAPE: 5.267560
+SMAPE: 0.525265
+MAE: 685.114868
+RMSE: 3250.126953
+Train Epoch: 158[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008305
+Train Epoch: 158[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008315
+Test set metrics:
+Loss: 3.666048
+WAPE: 0.271070
+MAPE: 3.928874
+SMAPE: 0.494573
+MAE: 579.544189
+RMSE: 2641.127930
+Train Epoch: 159[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008300
+Train Epoch: 159[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008300
+Test set metrics:
+Loss: 3.614353
+WAPE: 0.283654
+MAPE: 4.202622
+SMAPE: 0.542359
+MAE: 606.449585
+RMSE: 2703.702637
+Train Epoch: 160[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008300
+Train Epoch: 160[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008299
+Test set metrics:
+Loss: 3.666418
+WAPE: 0.280975
+MAPE: 4.310072
+SMAPE: 0.502395
+MAE: 600.721375
+RMSE: 2760.130371
+Train Epoch: 161[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008308
+Train Epoch: 161[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008280
+Test set metrics:
+Loss: 3.659521
+WAPE: 0.263091
+MAPE: 3.276845
+SMAPE: 0.523328
+MAE: 562.485840
+RMSE: 2474.415527
+Train Epoch: 162[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008281
+Train Epoch: 162[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008290
+Test set metrics:
+Loss: 3.706441
+WAPE: 0.307699
+MAPE: 4.830420
+SMAPE: 0.559159
+MAE: 657.856934
+RMSE: 3005.888672
+Train Epoch: 163[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008276
+Train Epoch: 163[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008272
+Test set metrics:
+Loss: 3.656303
+WAPE: 0.264997
+MAPE: 4.335573
+SMAPE: 0.512022
+MAE: 566.561401
+RMSE: 2420.740723
+Train Epoch: 164[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008284
+Train Epoch: 164[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008256
+Test set metrics:
+Loss: 3.665383
+WAPE: 0.306368
+MAPE: 4.959464
+SMAPE: 0.542692
+MAE: 655.010193
+RMSE: 2930.938477
+Train Epoch: 165[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008261
+Train Epoch: 165[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008275
+Test set metrics:
+Loss: 3.635097
+WAPE: 0.244638
+MAPE: 2.964380
+SMAPE: 0.500880
+MAE: 523.032166
+RMSE: 2190.093750
+Train Epoch: 166[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008274
+Train Epoch: 166[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008274
+Test set metrics:
+Loss: 3.664160
+WAPE: 0.278646
+MAPE: 4.033909
+SMAPE: 0.517261
+MAE: 595.742859
+RMSE: 2698.812500
+Train Epoch: 167[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008275
+Train Epoch: 167[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008268
+Test set metrics:
+Loss: 3.598148
+WAPE: 0.276285
+MAPE: 4.015131
+SMAPE: 0.485505
+MAE: 590.694946
+RMSE: 2728.376465
+Train Epoch: 168[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008262
+Train Epoch: 168[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008266
+Test set metrics:
+Loss: 3.630659
+WAPE: 0.267775
+MAPE: 3.511604
+SMAPE: 0.502550
+MAE: 572.499878
+RMSE: 2553.234863
+Train Epoch: 169[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008247
+Train Epoch: 169[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008238
+Test set metrics:
+Loss: 3.672236
+WAPE: 0.310131
+MAPE: 4.521384
+SMAPE: 0.551198
+MAE: 663.056458
+RMSE: 3104.165039
+Train Epoch: 170[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008254
+Train Epoch: 170[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008249
+Test set metrics:
+Loss: 3.732721
+WAPE: 0.287580
+MAPE: 4.243986
+SMAPE: 0.522035
+MAE: 614.842590
+RMSE: 2708.768555
+Train Epoch: 171[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008262
+Train Epoch: 171[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008248
+Test set metrics:
+Loss: 3.673678
+WAPE: 0.305823
+MAPE: 4.771192
+SMAPE: 0.499899
+MAE: 653.846497
+RMSE: 3045.885498
+Train Epoch: 172[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008260
+Train Epoch: 172[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008229
+Test set metrics:
+Loss: 3.710989
+WAPE: 0.294443
+MAPE: 4.461099
+SMAPE: 0.519404
+MAE: 629.515503
+RMSE: 2868.158203
+Train Epoch: 173[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008225
+Train Epoch: 173[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008231
+Test set metrics:
+Loss: 3.651934
+WAPE: 0.266000
+MAPE: 3.392567
+SMAPE: 0.520800
+MAE: 568.705811
+RMSE: 2494.096680
+Train Epoch: 174[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008248
+Train Epoch: 174[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008217
+Test set metrics:
+Loss: 3.656533
+WAPE: 0.287400
+MAPE: 4.125534
+SMAPE: 0.523853
+MAE: 614.458313
+RMSE: 2830.208008
+Train Epoch: 175[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008252
+Train Epoch: 175[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008202
+Test set metrics:
+Loss: 3.621985
+WAPE: 0.305576
+MAPE: 5.252532
+SMAPE: 0.482015
+MAE: 653.317261
+RMSE: 3112.643799
+Train Epoch: 176[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008234
+Train Epoch: 176[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008172
+Test set metrics:
+Loss: 3.615228
+WAPE: 0.260365
+MAPE: 3.648018
+SMAPE: 0.491600
+MAE: 556.657898
+RMSE: 2515.594727
+Train Epoch: 177[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008204
+Train Epoch: 177[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008218
+Test set metrics:
+Loss: 3.672536
+WAPE: 0.286559
+MAPE: 4.099807
+SMAPE: 0.534283
+MAE: 612.658997
+RMSE: 2695.430664
+Train Epoch: 178[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008230
+Train Epoch: 178[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008184
+Test set metrics:
+Loss: 3.657693
+WAPE: 0.291823
+MAPE: 4.422976
+SMAPE: 0.505904
+MAE: 623.915039
+RMSE: 2879.182617
+Train Epoch: 179[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008203
+Train Epoch: 179[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008195
+Test set metrics:
+Loss: 3.671190
+WAPE: 0.307548
+MAPE: 4.927049
+SMAPE: 0.517653
+MAE: 657.533264
+RMSE: 3064.461426
+Train Epoch: 180[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008206
+Train Epoch: 180[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008193
+Test set metrics:
+Loss: 3.695058
+WAPE: 0.319452
+MAPE: 5.326791
+SMAPE: 0.537607
+MAE: 682.984680
+RMSE: 3231.749756
+Train Epoch: 181[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008185
+Train Epoch: 181[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008196
+Test set metrics:
+Loss: 3.615760
+WAPE: 0.255204
+MAPE: 3.533155
+SMAPE: 0.481053
+MAE: 545.622437
+RMSE: 2393.214111
+Train Epoch: 182[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008181
+Train Epoch: 182[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008210
+Test set metrics:
+Loss: 3.666949
+WAPE: 0.273140
+MAPE: 4.221986
+SMAPE: 0.510747
+MAE: 583.969116
+RMSE: 2573.417480
+Train Epoch: 183[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008184
+Train Epoch: 183[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008183
+Test set metrics:
+Loss: 3.629932
+WAPE: 0.292642
+MAPE: 4.281270
+SMAPE: 0.515145
+MAE: 625.665710
+RMSE: 2906.586914
+Train Epoch: 184[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008193
+Train Epoch: 184[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008166
+Test set metrics:
+Loss: 3.645312
+WAPE: 0.259206
+MAPE: 3.402262
+SMAPE: 0.507222
+MAE: 554.179688
+RMSE: 2392.328125
+Train Epoch: 185[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008202
+Train Epoch: 185[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008156
+Test set metrics:
+Loss: 3.652687
+WAPE: 0.305391
+MAPE: 4.906504
+SMAPE: 0.520217
+MAE: 652.921936
+RMSE: 2977.779297
+Train Epoch: 186[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008163
+Train Epoch: 186[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008177
+Test set metrics:
+Loss: 3.646561
+WAPE: 0.297261
+MAPE: 4.529726
+SMAPE: 0.525537
+MAE: 635.540771
+RMSE: 2941.690918
+Train Epoch: 187[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008155
+Train Epoch: 187[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008170
+Test set metrics:
+Loss: 3.629870
+WAPE: 0.260466
+MAPE: 3.382825
+SMAPE: 0.501480
+MAE: 556.873535
+RMSE: 2444.900635
+Train Epoch: 188[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008178
+Train Epoch: 188[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008150
+Test set metrics:
+Loss: 3.681820
+WAPE: 0.314661
+MAPE: 4.975175
+SMAPE: 0.518282
+MAE: 672.741699
+RMSE: 3085.524170
+Train Epoch: 189[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008163
+Train Epoch: 189[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008157
+Test set metrics:
+Loss: 3.710450
+WAPE: 0.291110
+MAPE: 4.344122
+SMAPE: 0.532424
+MAE: 622.389343
+RMSE: 2780.106689
+Train Epoch: 190[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008155
+Train Epoch: 190[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008154
+Test set metrics:
+Loss: 3.625831
+WAPE: 0.287067
+MAPE: 4.178982
+SMAPE: 0.497928
+MAE: 613.745361
+RMSE: 2818.162842
+Train Epoch: 191[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008134
+Train Epoch: 191[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008126
+Test set metrics:
+Loss: 3.644802
+WAPE: 0.264018
+MAPE: 3.574924
+SMAPE: 0.524637
+MAE: 564.467346
+RMSE: 2440.246094
+Train Epoch: 192[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008140
+Train Epoch: 192[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008141
+Test set metrics:
+Loss: 3.629707
+WAPE: 0.296763
+MAPE: 4.605737
+SMAPE: 0.507070
+MAE: 634.476318
+RMSE: 2962.120850
+Train Epoch: 193[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008124
+Train Epoch: 193[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008127
+Test set metrics:
+Loss: 3.679386
+WAPE: 0.290270
+MAPE: 4.622761
+SMAPE: 0.543685
+MAE: 620.593506
+RMSE: 2713.906738
+Train Epoch: 194[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008135
+Train Epoch: 194[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008141
+Test set metrics:
+Loss: 3.598830
+WAPE: 0.253941
+MAPE: 3.618277
+SMAPE: 0.491612
+MAE: 542.922485
+RMSE: 2298.420654
+Train Epoch: 195[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008112
+Train Epoch: 195[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008126
+Test set metrics:
+Loss: 3.602482
+WAPE: 0.251481
+MAPE: 2.813806
+SMAPE: 0.497573
+MAE: 537.663940
+RMSE: 2288.747314
+Train Epoch: 196[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008115
+Train Epoch: 196[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008142
+Test set metrics:
+Loss: 3.634231
+WAPE: 0.283519
+MAPE: 4.245800
+SMAPE: 0.496411
+MAE: 606.161316
+RMSE: 2740.485840
+Train Epoch: 197[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008143
+Train Epoch: 197[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008118
+Test set metrics:
+Loss: 3.605460
+WAPE: 0.295513
+MAPE: 4.851016
+SMAPE: 0.501510
+MAE: 631.802673
+RMSE: 2919.810303
+Train Epoch: 198[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008119
+Train Epoch: 198[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008130
+Test set metrics:
+Loss: 3.612960
+WAPE: 0.235143
+MAPE: 2.779466
+SMAPE: 0.493856
+MAE: 502.732788
+RMSE: 2002.171875
+Train Epoch: 199[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008111
+Train Epoch: 199[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008118
+Test set metrics:
+Loss: 3.585443
+WAPE: 0.291399
+MAPE: 4.560644
+SMAPE: 0.504535
+MAE: 623.008118
+RMSE: 2840.108398
+Train Epoch: 200[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008111
+Train Epoch: 200[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008116
+Test set metrics:
+Loss: 3.672121
+WAPE: 0.278178
+MAPE: 3.834953
+SMAPE: 0.512798
+MAE: 594.741272
+RMSE: 2638.182617
+Train Epoch: 201[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008125
+Train Epoch: 201[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008097
+Test set metrics:
+Loss: 3.684683
+WAPE: 0.293237
+MAPE: 4.406608
+SMAPE: 0.541774
+MAE: 626.937683
+RMSE: 2812.840576
+Train Epoch: 202[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008099
+Train Epoch: 202[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008106
+Test set metrics:
+Loss: 3.652603
+WAPE: 0.249571
+MAPE: 3.156221
+SMAPE: 0.492447
+MAE: 533.579285
+RMSE: 2202.433838
+Train Epoch: 203[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008096
+Train Epoch: 203[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008095
+Test set metrics:
+Loss: 3.646123
+WAPE: 0.295147
+MAPE: 4.292885
+SMAPE: 0.520520
+MAE: 631.020203
+RMSE: 2845.015381
+Train Epoch: 204[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008100
+Train Epoch: 204[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008086
+Test set metrics:
+Loss: 3.603451
+WAPE: 0.256623
+MAPE: 3.544231
+SMAPE: 0.486920
+MAE: 548.656128
+RMSE: 2420.261230
+Train Epoch: 205[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008116
+Train Epoch: 205[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008069
+Test set metrics:
+Loss: 3.610128
+WAPE: 0.278157
+MAPE: 4.556611
+SMAPE: 0.525705
+MAE: 594.695374
+RMSE: 2660.349121
+Train Epoch: 206[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008065
+Train Epoch: 206[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008087
+Test set metrics:
+Loss: 3.596256
+WAPE: 0.270157
+MAPE: 3.867023
+SMAPE: 0.509632
+MAE: 577.592163
+RMSE: 2569.212402
+Train Epoch: 207[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008070
+Train Epoch: 207[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008079
+Test set metrics:
+Loss: 3.737744
+WAPE: 0.292900
+MAPE: 4.802665
+SMAPE: 0.534134
+MAE: 626.216858
+RMSE: 2787.335449
+Train Epoch: 208[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008088
+Train Epoch: 208[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008028
+Test set metrics:
+Loss: 3.616204
+WAPE: 0.253134
+MAPE: 3.893830
+SMAPE: 0.511149
+MAE: 541.198303
+RMSE: 2253.795898
+Train Epoch: 209[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008053
+Train Epoch: 209[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008068
+Test set metrics:
+Loss: 3.587568
+WAPE: 0.246030
+MAPE: 3.194459
+SMAPE: 0.484166
+MAE: 526.008179
+RMSE: 2255.946045
+Train Epoch: 210[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008061
+Train Epoch: 210[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008067
+Test set metrics:
+Loss: 3.595046
+WAPE: 0.247902
+MAPE: 3.105512
+SMAPE: 0.506183
+MAE: 530.010559
+RMSE: 2220.822510
+Train Epoch: 211[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008055
+Train Epoch: 211[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008063
+Test set metrics:
+Loss: 3.612316
+WAPE: 0.268398
+MAPE: 3.664942
+SMAPE: 0.504683
+MAE: 573.831604
+RMSE: 2493.516113
+Train Epoch: 212[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008071
+Train Epoch: 212[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008043
+Test set metrics:
+Loss: 3.642630
+WAPE: 0.293617
+MAPE: 4.627634
+SMAPE: 0.490671
+MAE: 627.749634
+RMSE: 2875.951904
+Train Epoch: 213[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008037
+Train Epoch: 213[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008041
+Test set metrics:
+Loss: 3.604298
+WAPE: 0.273449
+MAPE: 4.119318
+SMAPE: 0.503430
+MAE: 584.630676
+RMSE: 2680.560791
+Train Epoch: 214[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008036
+Train Epoch: 214[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008049
+Test set metrics:
+Loss: 3.640032
+WAPE: 0.258125
+MAPE: 3.984915
+SMAPE: 0.523487
+MAE: 551.868408
+RMSE: 2367.707275
+Train Epoch: 215[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008060
+Train Epoch: 215[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008038
+Test set metrics:
+Loss: 3.685294
+WAPE: 0.280219
+MAPE: 4.400182
+SMAPE: 0.507373
+MAE: 599.104065
+RMSE: 2649.658203
+Train Epoch: 216[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008037
+Train Epoch: 216[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008048
+Test set metrics:
+Loss: 3.601200
+WAPE: 0.254714
+MAPE: 4.046931
+SMAPE: 0.481999
+MAE: 544.576172
+RMSE: 2294.494873
+Train Epoch: 217[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008022
+Train Epoch: 217[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008047
+Test set metrics:
+Loss: 3.662898
+WAPE: 0.272551
+MAPE: 3.503313
+SMAPE: 0.501405
+MAE: 582.711426
+RMSE: 2568.573730
+Train Epoch: 218[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008049
+Train Epoch: 218[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008029
+Test set metrics:
+Loss: 3.674449
+WAPE: 0.311532
+MAPE: 5.164852
+SMAPE: 0.532165
+MAE: 666.051636
+RMSE: 3132.194580
+Train Epoch: 219[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008023
+Train Epoch: 219[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008014
+Test set metrics:
+Loss: 3.624365
+WAPE: 0.277707
+MAPE: 4.168278
+SMAPE: 0.511306
+MAE: 593.735291
+RMSE: 2655.655029
+Train Epoch: 220[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008026
+Train Epoch: 220[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008023
+Test set metrics:
+Loss: 3.667910
+WAPE: 0.284732
+MAPE: 4.184896
+SMAPE: 0.501267
+MAE: 608.754089
+RMSE: 2771.432129
+Train Epoch: 221[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008023
+Train Epoch: 221[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008014
+Test set metrics:
+Loss: 3.624057
+WAPE: 0.261179
+MAPE: 3.878725
+SMAPE: 0.512177
+MAE: 558.397583
+RMSE: 2448.054443
+Train Epoch: 222[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008026
+Train Epoch: 222[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008007
+Test set metrics:
+Loss: 3.662577
+WAPE: 0.248676
+MAPE: 3.976868
+SMAPE: 0.487699
+MAE: 531.666748
+RMSE: 2217.309326
+Train Epoch: 223[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008024
+Train Epoch: 223[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007997
+Test set metrics:
+Loss: 3.661886
+WAPE: 0.272776
+MAPE: 3.976246
+SMAPE: 0.512356
+MAE: 583.192017
+RMSE: 2484.455566
+Train Epoch: 224[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008024
+Train Epoch: 224[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007997
+Test set metrics:
+Loss: 3.623994
+WAPE: 0.245152
+MAPE: 3.462663
+SMAPE: 0.516583
+MAE: 524.132935
+RMSE: 2228.605957
+Train Epoch: 225[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008020
+Train Epoch: 225[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007997
+Test set metrics:
+Loss: 3.586334
+WAPE: 0.261910
+MAPE: 4.715252
+SMAPE: 0.488127
+MAE: 559.960205
+RMSE: 2451.906006
+Train Epoch: 226[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.008013
+Train Epoch: 226[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008008
+Test set metrics:
+Loss: 3.626471
+WAPE: 0.274146
+MAPE: 4.150988
+SMAPE: 0.499948
+MAE: 586.120422
+RMSE: 2611.030518
+Train Epoch: 227[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007984
+Train Epoch: 227[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008013
+Test set metrics:
+Loss: 3.577296
+WAPE: 0.267702
+MAPE: 4.274678
+SMAPE: 0.492402
+MAE: 572.343567
+RMSE: 2570.962158
+Train Epoch: 228[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007984
+Train Epoch: 228[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.008005
+Test set metrics:
+Loss: 3.592283
+WAPE: 0.247766
+MAPE: 3.189520
+SMAPE: 0.476734
+MAE: 529.721069
+RMSE: 2254.706055
+Train Epoch: 229[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007988
+Train Epoch: 229[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007998
+Test set metrics:
+Loss: 3.677159
+WAPE: 0.263775
+MAPE: 3.560796
+SMAPE: 0.488951
+MAE: 563.948120
+RMSE: 2493.623779
+Train Epoch: 230[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007985
+Train Epoch: 230[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007988
+Test set metrics:
+Loss: 3.593564
+WAPE: 0.240870
+MAPE: 3.506571
+SMAPE: 0.503794
+MAE: 514.976257
+RMSE: 2124.833984
+Train Epoch: 231[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007992
+Train Epoch: 231[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007985
+Test set metrics:
+Loss: 3.627644
+WAPE: 0.253567
+MAPE: 3.421247
+SMAPE: 0.509992
+MAE: 542.123291
+RMSE: 2285.929688
+Train Epoch: 232[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007992
+Train Epoch: 232[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007975
+Test set metrics:
+Loss: 3.642265
+WAPE: 0.256299
+MAPE: 3.596411
+SMAPE: 0.492703
+MAE: 547.964905
+RMSE: 2417.209229
+Train Epoch: 233[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007961
+Train Epoch: 233[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007963
+Test set metrics:
+Loss: 3.639002
+WAPE: 0.280061
+MAPE: 4.423668
+SMAPE: 0.509094
+MAE: 598.767029
+RMSE: 2673.924072
+Train Epoch: 234[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007962
+Train Epoch: 234[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007982
+Test set metrics:
+Loss: 3.640626
+WAPE: 0.258077
+MAPE: 4.041006
+SMAPE: 0.505319
+MAE: 551.766174
+RMSE: 2338.467529
+Train Epoch: 235[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007954
+Train Epoch: 235[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007951
+Test set metrics:
+Loss: 3.557653
+WAPE: 0.240171
+MAPE: 3.287781
+SMAPE: 0.478597
+MAE: 513.481934
+RMSE: 2137.564697
+Train Epoch: 236[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007933
+Train Epoch: 236[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007978
+Test set metrics:
+Loss: 3.593057
+WAPE: 0.285077
+MAPE: 4.449018
+SMAPE: 0.498179
+MAE: 609.490906
+RMSE: 2781.165283
+Train Epoch: 237[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007950
+Train Epoch: 237[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007977
+Test set metrics:
+Loss: 3.582203
+WAPE: 0.240697
+MAPE: 3.049274
+SMAPE: 0.497352
+MAE: 514.608276
+RMSE: 2180.500000
+Train Epoch: 238[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007961
+Train Epoch: 238[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007937
+Test set metrics:
+Loss: 3.577796
+WAPE: 0.231129
+MAPE: 2.974180
+SMAPE: 0.488593
+MAE: 494.150452
+RMSE: 1948.288574
+Train Epoch: 239[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007943
+Train Epoch: 239[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007957
+Test set metrics:
+Loss: 3.641360
+WAPE: 0.281219
+MAPE: 4.529796
+SMAPE: 0.517445
+MAE: 601.243652
+RMSE: 2706.167236
+Train Epoch: 240[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007950
+Train Epoch: 240[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007936
+Test set metrics:
+Loss: 3.555916
+WAPE: 0.264306
+MAPE: 4.780166
+SMAPE: 0.507208
+MAE: 565.083679
+RMSE: 2448.906250
+Train Epoch: 241[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007937
+Train Epoch: 241[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007925
+Test set metrics:
+Loss: 3.609665
+WAPE: 0.240377
+MAPE: 3.324777
+SMAPE: 0.490925
+MAE: 513.922241
+RMSE: 2146.307373
+Train Epoch: 242[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007948
+Train Epoch: 242[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007913
+Test set metrics:
+Loss: 3.614850
+WAPE: 0.281584
+MAPE: 4.155059
+SMAPE: 0.519895
+MAE: 602.022766
+RMSE: 2616.766113
+Train Epoch: 243[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007952
+Train Epoch: 243[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007934
+Test set metrics:
+Loss: 3.590746
+WAPE: 0.247169
+MAPE: 3.230855
+SMAPE: 0.478901
+MAE: 528.444458
+RMSE: 2260.211182
+Train Epoch: 244[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007927
+Train Epoch: 244[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007919
+Test set metrics:
+Loss: 3.585364
+WAPE: 0.270067
+MAPE: 4.032084
+SMAPE: 0.503948
+MAE: 577.400757
+RMSE: 2560.820557
+Train Epoch: 245[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007928
+Train Epoch: 245[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007921
+Test set metrics:
+Loss: 3.562508
+WAPE: 0.266831
+MAPE: 4.189987
+SMAPE: 0.485734
+MAE: 570.481445
+RMSE: 2553.144043
+Train Epoch: 246[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007914
+Train Epoch: 246[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007921
+Test set metrics:
+Loss: 3.567859
+WAPE: 0.244100
+MAPE: 3.766661
+SMAPE: 0.489873
+MAE: 521.882446
+RMSE: 2198.209961
+Train Epoch: 247[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007930
+Train Epoch: 247[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007913
+Test set metrics:
+Loss: 3.602135
+WAPE: 0.262216
+MAPE: 3.547990
+SMAPE: 0.494123
+MAE: 560.614624
+RMSE: 2436.943848
+Train Epoch: 248[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007927
+Train Epoch: 248[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007912
+Test set metrics:
+Loss: 3.518887
+WAPE: 0.235866
+MAPE: 2.854089
+SMAPE: 0.492256
+MAE: 504.278900
+RMSE: 2135.624023
+Train Epoch: 249[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007920
+Train Epoch: 249[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007912
+Test set metrics:
+Loss: 3.611569
+WAPE: 0.246484
+MAPE: 3.269991
+SMAPE: 0.491644
+MAE: 526.979431
+RMSE: 2280.792969
+Train Epoch: 250[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007911
+Train Epoch: 250[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007921
+Test set metrics:
+Loss: 3.609327
+WAPE: 0.244209
+MAPE: 3.378274
+SMAPE: 0.498073
+MAE: 522.114929
+RMSE: 2166.631836
+Train Epoch: 251[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007898
+Train Epoch: 251[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007927
+Test set metrics:
+Loss: 3.552051
+WAPE: 0.242309
+MAPE: 3.510192
+SMAPE: 0.471857
+MAE: 518.054626
+RMSE: 2224.422119
+Train Epoch: 252[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007908
+Train Epoch: 252[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007899
+Test set metrics:
+Loss: 3.596174
+WAPE: 0.237925
+MAPE: 3.244891
+SMAPE: 0.488997
+MAE: 508.679993
+RMSE: 2106.031982
+Train Epoch: 253[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007895
+Train Epoch: 253[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007894
+Test set metrics:
+Loss: 3.622081
+WAPE: 0.267157
+MAPE: 4.501846
+SMAPE: 0.496587
+MAE: 571.178955
+RMSE: 2490.564941
+Train Epoch: 254[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007899
+Train Epoch: 254[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007887
+Test set metrics:
+Loss: 3.543184
+WAPE: 0.251027
+MAPE: 3.746016
+SMAPE: 0.505491
+MAE: 536.693420
+RMSE: 2312.854492
+Train Epoch: 255[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007887
+Train Epoch: 255[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007901
+Test set metrics:
+Loss: 3.599225
+WAPE: 0.230477
+MAPE: 2.379739
+SMAPE: 0.498471
+MAE: 492.756989
+RMSE: 1957.853516
+Train Epoch: 256[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007878
+Train Epoch: 256[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007892
+Test set metrics:
+Loss: 3.579095
+WAPE: 0.286868
+MAPE: 4.969924
+SMAPE: 0.512768
+MAE: 613.321167
+RMSE: 2758.478516
+Train Epoch: 257[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007894
+Train Epoch: 257[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007878
+Test set metrics:
+Loss: 3.553922
+WAPE: 0.231578
+MAPE: 3.631710
+SMAPE: 0.485768
+MAE: 495.110657
+RMSE: 1989.720459
+Train Epoch: 258[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007878
+Train Epoch: 258[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007866
+Test set metrics:
+Loss: 3.590291
+WAPE: 0.261906
+MAPE: 4.368703
+SMAPE: 0.489949
+MAE: 559.951843
+RMSE: 2432.440186
+Train Epoch: 259[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007854
+Train Epoch: 259[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007872
+Test set metrics:
+Loss: 3.598515
+WAPE: 0.234957
+MAPE: 2.630085
+SMAPE: 0.497039
+MAE: 502.336060
+RMSE: 2146.028076
+Train Epoch: 260[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007891
+Train Epoch: 260[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007864
+Test set metrics:
+Loss: 3.556840
+WAPE: 0.223443
+MAPE: 2.353679
+SMAPE: 0.488851
+MAE: 477.719238
+RMSE: 1920.821533
+Train Epoch: 261[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007894
+Train Epoch: 261[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007835
+Test set metrics:
+Loss: 3.541313
+WAPE: 0.229196
+MAPE: 2.833896
+SMAPE: 0.482748
+MAE: 490.019043
+RMSE: 1950.010010
+Train Epoch: 262[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007859
+Train Epoch: 262[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007857
+Test set metrics:
+Loss: 3.581840
+WAPE: 0.275016
+MAPE: 4.210042
+SMAPE: 0.518775
+MAE: 587.981445
+RMSE: 2641.228271
+Train Epoch: 263[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007871
+Train Epoch: 263[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007858
+Test set metrics:
+Loss: 3.553961
+WAPE: 0.244909
+MAPE: 3.705353
+SMAPE: 0.470726
+MAE: 523.611572
+RMSE: 2309.906250
+Train Epoch: 264[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007845
+Train Epoch: 264[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007857
+Test set metrics:
+Loss: 3.549886
+WAPE: 0.284959
+MAPE: 5.061801
+SMAPE: 0.500044
+MAE: 609.239380
+RMSE: 2802.238525
+Train Epoch: 265[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007860
+Train Epoch: 265[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007830
+Test set metrics:
+Loss: 3.598157
+WAPE: 0.253565
+MAPE: 3.639266
+SMAPE: 0.489385
+MAE: 542.118958
+RMSE: 2302.473145
+Train Epoch: 266[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007856
+Train Epoch: 266[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007865
+Test set metrics:
+Loss: 3.575644
+WAPE: 0.261188
+MAPE: 3.897866
+SMAPE: 0.508067
+MAE: 558.416321
+RMSE: 2466.373535
+Train Epoch: 267[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007840
+Train Epoch: 267[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007847
+Test set metrics:
+Loss: 3.530116
+WAPE: 0.238544
+MAPE: 3.622431
+SMAPE: 0.478796
+MAE: 510.003479
+RMSE: 2127.484375
+Train Epoch: 268[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007842
+Train Epoch: 268[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007846
+Test set metrics:
+Loss: 3.602573
+WAPE: 0.289071
+MAPE: 5.020970
+SMAPE: 0.506470
+MAE: 618.029602
+RMSE: 2835.662109
+Train Epoch: 269[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007813
+Train Epoch: 269[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007836
+Test set metrics:
+Loss: 3.553090
+WAPE: 0.233132
+MAPE: 3.112565
+SMAPE: 0.504496
+MAE: 498.432526
+RMSE: 2018.709961
+Train Epoch: 270[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007865
+Train Epoch: 270[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007821
+Test set metrics:
+Loss: 3.578411
+WAPE: 0.238216
+MAPE: 2.827920
+SMAPE: 0.491422
+MAE: 509.303925
+RMSE: 2160.143311
+Train Epoch: 271[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007830
+Train Epoch: 271[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007824
+Test set metrics:
+Loss: 3.550133
+WAPE: 0.248969
+MAPE: 3.660454
+SMAPE: 0.476458
+MAE: 532.292175
+RMSE: 2340.930908
+Train Epoch: 272[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007814
+Train Epoch: 272[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007834
+Test set metrics:
+Loss: 3.572509
+WAPE: 0.238416
+MAPE: 3.195342
+SMAPE: 0.503602
+MAE: 509.730957
+RMSE: 2088.708252
+Train Epoch: 273[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007809
+Train Epoch: 273[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007811
+Test set metrics:
+Loss: 3.586077
+WAPE: 0.258331
+MAPE: 3.776256
+SMAPE: 0.499125
+MAE: 552.309143
+RMSE: 2358.392578
+Train Epoch: 274[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007801
+Train Epoch: 274[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007810
+Test set metrics:
+Loss: 3.580146
+WAPE: 0.260065
+MAPE: 3.619430
+SMAPE: 0.489383
+MAE: 556.015564
+RMSE: 2400.559814
+Train Epoch: 275[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007811
+Train Epoch: 275[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007810
+Test set metrics:
+Loss: 3.522440
+WAPE: 0.251163
+MAPE: 3.903498
+SMAPE: 0.464809
+MAE: 536.983826
+RMSE: 2356.833008
+Train Epoch: 276[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007799
+Train Epoch: 276[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007822
+Test set metrics:
+Loss: 3.577143
+WAPE: 0.275233
+MAPE: 4.403228
+SMAPE: 0.506444
+MAE: 588.445679
+RMSE: 2653.642578
+Train Epoch: 277[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007812
+Train Epoch: 277[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007815
+Test set metrics:
+Loss: 3.532803
+WAPE: 0.242119
+MAPE: 3.151824
+SMAPE: 0.491177
+MAE: 517.648254
+RMSE: 2267.265381
+Train Epoch: 278[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007790
+Train Epoch: 278[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007799
+Test set metrics:
+Loss: 3.517147
+WAPE: 0.254474
+MAPE: 4.101982
+SMAPE: 0.490901
+MAE: 544.062744
+RMSE: 2396.755127
+Train Epoch: 279[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007804
+Train Epoch: 279[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007812
+Test set metrics:
+Loss: 3.491244
+WAPE: 0.232688
+MAPE: 3.350634
+SMAPE: 0.460410
+MAE: 497.485016
+RMSE: 2096.752197
+Train Epoch: 280[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007814
+Train Epoch: 280[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007788
+Test set metrics:
+Loss: 3.544266
+WAPE: 0.227010
+MAPE: 2.846429
+SMAPE: 0.466534
+MAE: 485.345612
+RMSE: 1987.274902
+Train Epoch: 281[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007780
+Train Epoch: 281[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007793
+Test set metrics:
+Loss: 3.586035
+WAPE: 0.261057
+MAPE: 3.579694
+SMAPE: 0.494582
+MAE: 558.135925
+RMSE: 2439.320312
+Train Epoch: 282[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007777
+Train Epoch: 282[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007781
+Test set metrics:
+Loss: 3.567756
+WAPE: 0.247455
+MAPE: 3.520417
+SMAPE: 0.511900
+MAE: 529.055908
+RMSE: 2216.775635
+Train Epoch: 283[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007760
+Train Epoch: 283[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007797
+Test set metrics:
+Loss: 3.557252
+WAPE: 0.255884
+MAPE: 3.757883
+SMAPE: 0.482500
+MAE: 547.075989
+RMSE: 2376.718750
+Train Epoch: 284[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007774
+Train Epoch: 284[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007794
+Test set metrics:
+Loss: 3.539360
+WAPE: 0.251849
+MAPE: 3.693397
+SMAPE: 0.478816
+MAE: 538.449341
+RMSE: 2334.502686
+Train Epoch: 285[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007777
+Train Epoch: 285[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007782
+Test set metrics:
+Loss: 3.512965
+WAPE: 0.227341
+MAPE: 2.697554
+SMAPE: 0.478983
+MAE: 486.052856
+RMSE: 2042.161865
+Train Epoch: 286[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007780
+Train Epoch: 286[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007772
+Test set metrics:
+Loss: 3.483367
+WAPE: 0.224854
+MAPE: 2.835701
+SMAPE: 0.465955
+MAE: 480.734650
+RMSE: 1961.508911
+Train Epoch: 287[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007753
+Train Epoch: 287[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007793
+Test set metrics:
+Loss: 3.551922
+WAPE: 0.256056
+MAPE: 3.685604
+SMAPE: 0.468652
+MAE: 547.444336
+RMSE: 2408.348145
+Train Epoch: 288[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007752
+Train Epoch: 288[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007773
+Test set metrics:
+Loss: 3.466466
+WAPE: 0.232285
+MAPE: 2.954999
+SMAPE: 0.473042
+MAE: 496.622986
+RMSE: 2093.658447
+Train Epoch: 289[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007761
+Train Epoch: 289[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007757
+Test set metrics:
+Loss: 3.500298
+WAPE: 0.234141
+MAPE: 3.196385
+SMAPE: 0.478381
+MAE: 500.591217
+RMSE: 2077.162354
+Train Epoch: 290[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007749
+Train Epoch: 290[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007738
+Test set metrics:
+Loss: 3.538720
+WAPE: 0.260545
+MAPE: 3.766520
+SMAPE: 0.482327
+MAE: 557.043152
+RMSE: 2475.376221
+Train Epoch: 291[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007735
+Train Epoch: 291[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007752
+Test set metrics:
+Loss: 3.549343
+WAPE: 0.271996
+MAPE: 4.244288
+SMAPE: 0.490641
+MAE: 581.524902
+RMSE: 2650.861572
+Train Epoch: 292[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007734
+Train Epoch: 292[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007746
+Test set metrics:
+Loss: 3.506885
+WAPE: 0.262903
+MAPE: 3.957741
+SMAPE: 0.495135
+MAE: 562.083191
+RMSE: 2460.936523
+Train Epoch: 293[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007757
+Train Epoch: 293[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007711
+Test set metrics:
+Loss: 3.535728
+WAPE: 0.269557
+MAPE: 3.969970
+SMAPE: 0.496522
+MAE: 576.309509
+RMSE: 2611.546875
+Train Epoch: 294[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007705
+Train Epoch: 294[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007723
+Test set metrics:
+Loss: 3.514787
+WAPE: 0.236952
+MAPE: 3.749327
+SMAPE: 0.471924
+MAE: 506.599884
+RMSE: 2114.945557
+Train Epoch: 295[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007725
+Train Epoch: 295[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007708
+Test set metrics:
+Loss: 3.521074
+WAPE: 0.238584
+MAPE: 3.041420
+SMAPE: 0.495186
+MAE: 510.089050
+RMSE: 2138.594727
+Train Epoch: 296[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007715
+Train Epoch: 296[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007705
+Test set metrics:
+Loss: 3.494401
+WAPE: 0.220487
+MAPE: 2.624810
+SMAPE: 0.483486
+MAE: 471.397919
+RMSE: 1806.382812
+Train Epoch: 297[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007704
+Train Epoch: 297[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007704
+Test set metrics:
+Loss: 3.543706
+WAPE: 0.250241
+MAPE: 3.888813
+SMAPE: 0.465701
+MAE: 535.011475
+RMSE: 2381.640625
+Train Epoch: 298[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007686
+Train Epoch: 298[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007711
+Test set metrics:
+Loss: 3.464240
+WAPE: 0.222043
+MAPE: 2.615267
+SMAPE: 0.474125
+MAE: 474.725464
+RMSE: 1992.012085
+Train Epoch: 299[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007690
+Train Epoch: 299[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007671
+Test set metrics:
+Loss: 3.514311
+WAPE: 0.226297
+MAPE: 2.632612
+SMAPE: 0.468790
+MAE: 483.820251
+RMSE: 1978.821289
+Train Epoch: 300[ 16000/ 37497(43%)]	Learning rate: 0.0005	Loss: 0.007671
+Train Epoch: 300[ 32000/ 37497(85%)]	Learning rate: 0.0005	Loss: 0.007680
+Test set metrics:
+Loss: 3.487765
+WAPE: 0.239122
+MAPE: 3.259355
+SMAPE: 0.492849
+MAE: 511.240112
+RMSE: 2137.115723
+Test set:
+Loss: 3.484112
+WAPE: 0.239122
+MAPE: 3.259354
+SMAPE: 0.492849
+MAE: 511.240051
+RMSE: 2137.115723
+Finished Training

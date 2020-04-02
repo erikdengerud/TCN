@@ -51,6 +51,116 @@ class DilatedCausalConv(nn.Conv1d):
         return super(DilatedCausalConv, self).forward(x)
 
 
+# Chomp 1D
+class Chomp1d(nn.Module):
+    """https://github.com/locuslab/TCN/blob/master/TCN/tcn.py"""
+
+    def __init__(self, chomp_size: int) -> None:
+        super(Chomp1d, self).__init__()
+        self.chomp_size = chomp_size
+
+    def forward(self, x: Tensor) -> Tensor:
+        return x[:, :, : -self.chomp_size].contiguous()
+
+
+# Temporal block chomp
+class ResidualBlockChomp(nn.Module):
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        kernel_size: int,
+        padding: int,
+        stride: int = 1,
+        dilation: int = 1,
+        bias: bool = True,
+        dropout: float = 0.2,
+        leveledinit: bool = False,
+    ) -> None:
+
+        super(ResidualBlockChomp, self).__init__()
+
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+
+        self.conv1 = weight_norm(
+            nn.Conv1d(
+                in_channels=in_channels,
+                out_channels=out_channels,
+                kernel_size=kernel_size,
+                stride=stride,
+                padding=padding,
+                dilation=dilation,
+            )
+        )
+        self.chomp1 = Chomp1d(padding)
+        self.dropout1 = nn.Dropout(dropout)
+
+        self.conv2 = weight_norm(
+            nn.Conv1d(
+                in_channels=out_channels,
+                out_channels=out_channels,
+                kernel_size=kernel_size,
+                stride=stride,
+                padding=padding,
+                dilation=dilation,
+            )
+        )
+        self.chomp2 = Chomp1d(padding)
+        self.dropout2 = nn.Dropout(dropout)
+
+        # If we don't have the same shape we have to make sure the residuals
+        # get the same shape as out has gotten by going through the layers.
+        if in_channels != out_channels:
+            self.res_conv = nn.Conv1d(in_channels, out_channels, 1)
+        else:
+            self.res_conv = None
+
+        # Init weights
+        self.init_weights(leveledinit, kernel_size, bias)
+
+    def init_weights(self, leveledinit: bool, kernel_size: int, bias: bool) -> None:
+        """
+        We refer to 
+        https://github.com/rajatsen91/deepglo/blob/54e0644d764f1ead65d4203b72c8634e2f6ea25e/DeepGLO/LocalModel.py#L34
+        """
+        if leveledinit:
+            nn.init.normal_(self.conv1.weight, std=1e-3)
+            nn.init.normal_(self.conv2.weight, std=1e-3)
+            nn.init.normal_(self.conv1.bias, std=1e-6)
+            nn.init.normal_(self.conv2.bias, std=1e-6)
+            with torch.no_grad():
+                self.conv1.weight[:, 0, :] += 1.0 / kernel_size
+                self.conv2.weight += 1.0 / kernel_size
+        else:
+            nn.init.xavier_uniform_(self.conv1.weight)
+            nn.init.xavier_uniform_(self.conv2.weight)
+
+    def forward(self, x: Tensor) -> Tensor:
+        """ 
+        Refer to https://github.com/locuslab/TCN and their paper for the residual convolution. 
+        """
+        out = self.conv1(x)
+        out = self.chomp1(out)
+        out = F.relu(out)
+        out = self.dropout1(out)
+        out = self.conv2(out)
+        out = self.chomp2(out)
+        out = F.relu(out)
+        out = self.dropout2(out)
+
+        # If we don't have the same shape we have to make sure the residuals
+        # get the same shape as out has gotten by going through the layers.
+        if self.res_conv is None:
+            residual = x
+        else:
+            residual = self.res_conv(x)
+
+        out += residual
+        out = F.relu(out)
+        return out
+
+
 # Temporal block
 class ResidualBlock(nn.Module):
     def __init__(
@@ -61,7 +171,7 @@ class ResidualBlock(nn.Module):
         stride: int = 1,
         dilation: int = 1,
         bias: bool = True,
-        dropout: float = 0.5,
+        dropout: float = 0.2,
         leveledinit: bool = False,
     ) -> None:
 

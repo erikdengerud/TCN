@@ -32,6 +32,7 @@ class TCN(nn.Module):
         dropout: float = 0.5,
         stride: int = 1,
         leveledinit: bool = False,
+        type_res_blocks: str = "erik",
     ) -> None:
         """
         A TCN for the electricity dataset. An additional layer is added to the TCN to get 
@@ -50,6 +51,7 @@ class TCN(nn.Module):
             dropout,
             stride,
             leveledinit,
+            type_res_blocks,
         )
         self.conv1d = DilatedCausalConv(
             in_channels=residual_blocks_channel_size[-1],

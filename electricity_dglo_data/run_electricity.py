@@ -190,6 +190,7 @@ if __name__ == "__main__":
         stride=args.stride,
         dilations=None,
         leveledinit=args.leveledinit,
+        type_res_blocks=args.type_res_blocks,
     )
     tcn.to(device)
     print(
@@ -235,13 +236,13 @@ if __name__ == "__main__":
                 print("RMSE: {:.6f}".format(rmse))
 
         # Early stop
-        #if ep > args.tenacity + 1:
-        #    if tloss < min(test_losses[-args.tenacity :]): 
+        # if ep > args.tenacity + 1:
+        #    if tloss < min(test_losses[-args.tenacity :]):
         #        tenacity_count = 0
         #    elif ep > args.tenacity:
         #        tenacity_count += 1
-        #test_losses.append(tloss)
-        #if tenacity_count >= args.tenacity:
+        # test_losses.append(tloss)
+        # if tenacity_count >= args.tenacity:
         #    break
 
     tloss, wape, mape, smape, mae, rmse = evaluate_final()

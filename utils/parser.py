@@ -25,6 +25,7 @@ def parse():
     parser.add_argument("--num_layers", type=int, default=5)
     parser.add_argument("--kernel_size", type=int, default=7)
     parser.add_argument("--res_block_size", type=int, default=32)
+    parser.add_argument("--type_res_blocks", type=str, default="erik")
     add_bool_arg(parser, name="bias", default=True)
 
     # Training parameters

@@ -11,7 +11,7 @@ from typing import List
 sys.path.append("")
 sys.path.append("../../")
 
-from TCN.layers import ResidualBlock
+from TCN.layers import ResidualBlock, ResidualBlockChomp
 
 
 class TemporalConvolutionalNetwork(nn.Module):
@@ -31,6 +31,7 @@ class TemporalConvolutionalNetwork(nn.Module):
         dropout: float = 0.5,
         stride: int = 1,
         leveledinit: bool = False,
+        type_res_blocks: str = "deepglo",
     ) -> None:
 
         super(TemporalConvolutionalNetwork, self).__init__()
@@ -45,30 +46,59 @@ class TemporalConvolutionalNetwork(nn.Module):
 
         res_blocks = []
         # Initial convolution to get correct num in channels
-        first_block = ResidualBlock(
-            in_channels=in_channels,
-            out_channels=residual_blocks_channel_size[0],
-            kernel_size=kernel_size,
-            stride=stride,
-            dilation=dilations[0],
-            bias=bias,
-            dropout=dropout,
-            leveledinit=leveledinit,
-        )
-        res_blocks += [first_block]
-
-        for i in range(1, num_layers):
-            block = ResidualBlock(
-                in_channels=residual_blocks_channel_size[i - 1],
-                out_channels=residual_blocks_channel_size[i],
+        if type_res_blocks == "deepglo":
+            first_block = ResidualBlockChomp(
+                in_channels=in_channels,
+                out_channels=residual_blocks_channel_size[0],
                 kernel_size=kernel_size,
+                padding=(kernel_size - 1) * dilations[0],
                 stride=stride,
-                dilation=dilations[i],
+                dilation=dilations[0],
                 bias=bias,
                 dropout=dropout,
                 leveledinit=leveledinit,
             )
-            res_blocks += [block]
+            res_blocks += [first_block]
+
+            for i in range(1, num_layers):
+                block = ResidualBlockChomp(
+                    in_channels=residual_blocks_channel_size[i - 1],
+                    out_channels=residual_blocks_channel_size[i],
+                    kernel_size=kernel_size,
+                    padding=(kernel_size - 1) * dilations[i],
+                    stride=stride,
+                    dilation=dilations[i],
+                    bias=bias,
+                    dropout=dropout,
+                    leveledinit=leveledinit,
+                )
+                res_blocks += [block]
+
+        else:
+            first_block = ResidualBlock(
+                in_channels=in_channels,
+                out_channels=residual_blocks_channel_size[0],
+                kernel_size=kernel_size,
+                stride=stride,
+                dilation=dilations[0],
+                bias=bias,
+                dropout=dropout,
+                leveledinit=leveledinit,
+            )
+            res_blocks += [first_block]
+
+            for i in range(1, num_layers):
+                block = ResidualBlock(
+                    in_channels=residual_blocks_channel_size[i - 1],
+                    out_channels=residual_blocks_channel_size[i],
+                    kernel_size=kernel_size,
+                    stride=stride,
+                    dilation=dilations[i],
+                    bias=bias,
+                    dropout=dropout,
+                    leveledinit=leveledinit,
+                )
+                res_blocks += [block]
         self.net = nn.Sequential(*res_blocks)
 
     def forward(self, x: Tensor) -> Tensor:
@@ -100,6 +130,7 @@ if __name__ == "__main__":
         dropout=0.5,
         stride=1,
         leveledinit=False,
+        type_res_blocks="deepglo",
     )
 
     # print(tcn(samples))

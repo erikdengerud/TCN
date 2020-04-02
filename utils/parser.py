@@ -10,7 +10,7 @@ def add_bool_arg(parser, name, default=False):
 
 
 def parse():
-    parser = argparse.ArgumentParser(description="Adding Problem")
+    parser = argparse.ArgumentParser(description="TCN Problem")
 
     # Dataset
     parser.add_argument("--train_start", type=str, default="2012-01-01")

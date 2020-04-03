@@ -62,63 +62,12 @@ class TemporalConvolutionalNetwork(nn.Module):
                     leveledinit=leveledinit,
                 )
                 res_blocks += [block]
-            """
-            first_block = ResidualBlockChomp(
-                in_channels=in_channels,
-                out_channels=residual_blocks_channel_size[0],
-                kernel_size=kernel_size,
-                padding=(kernel_size - 1) * dilations[0],
-                stride=stride,
-                dilation=dilations[0],
-                bias=bias,
-                dropout=dropout,
-                leveledinit=leveledinit,
-            )
-            res_blocks += [first_block]
-
-            for i in range(1, num_layers):
-                block = ResidualBlockChomp(
-                    in_channels=residual_blocks_channel_size[i - 1],
-                    out_channels=residual_blocks_channel_size[i],
-                    kernel_size=kernel_size,
-                    padding=(kernel_size - 1) * dilations[i],
-                    stride=stride,
-                    dilation=dilations[i],
-                    bias=bias,
-                    dropout=dropout,
-                    leveledinit=leveledinit,
-                )
-            """
         else:
-            block = ResidualBlock(
-                in_channels=in_channels
-                if i == 0
-                else residual_blocks_channel_size[i - 1],
-                out_channels=residual_blocks_channel_size[i],
-                kernel_size=kernel_size,
-                stride=stride,
-                dilation=dilations[i],
-                bias=bias,
-                dropout=dropout,
-                leveledinit=leveledinit,
-            )
-            res_blocks += [block]
-            """
-            first_block = ResidualBlock(
-                in_channels=in_channels,
-                out_channels=residual_blocks_channel_size[0],
-                kernel_size=kernel_size,
-                stride=stride,
-                dilation=dilations[0],
-                bias=bias,
-                dropout=dropout,
-                leveledinit=leveledinit,
-            )
-            res_blocks += [first_block]
-
-            for i in range(1, num_layers):
+            for i in range(num_layers):
                 block = ResidualBlock(
-                    in_channels=residual_blocks_channel_size[i - 1],
+                    in_channels=in_channels
+                    if i == 0
+                    else residual_blocks_channel_size[i - 1],
                     out_channels=residual_blocks_channel_size[i],
                     kernel_size=kernel_size,
                     stride=stride,
@@ -128,7 +77,7 @@ class TemporalConvolutionalNetwork(nn.Module):
                     leveledinit=leveledinit,
                 )
                 res_blocks += [block]
-            """
+
         self.net = nn.Sequential(*res_blocks)
 
     def forward(self, x: Tensor) -> Tensor:

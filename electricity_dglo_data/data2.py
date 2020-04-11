@@ -76,10 +76,10 @@ class ElectricityDataSet(Dataset):
         self.length_ts = X.shape[1]
 
         # Creating the labels Y by shifting the time series by predict_ahead
-        X.resize_(self.num_ts, 1, self.length_ts)
-        Y = torch.zeros(self.num_ts, 1, self.length_ts)
-        pad_end = torch.zeros(self.num_ts, 1, self.predict_ahead).double()
-        self.Y = Y.copy_(torch.cat((X[:, :, self.predict_ahead :], pad_end), 2)).to(
+        X = torch.unsqueeze(X, 2)
+        Y = torch.zeros(self.num_ts, self.length_ts, 1)
+        pad_end = torch.zeros(self.num_ts, self.predict_ahead, 1).double()
+        self.Y = Y.copy_(torch.cat((X[:, self.predict_ahead :, :], pad_end), 1)).to(
             dtype=torch.float32
         )
 
@@ -87,7 +87,7 @@ class ElectricityDataSet(Dataset):
         if self.include_time_covariates:
             Z, num_covariates = self.get_time_covariates(dates)
             Z = Z.repeat(self.num_ts, 1, 1)
-            X = torch.cat((X, Z), 1)
+            X = torch.cat((X, Z), 2)
 
         # Using the IDs of the time series as one-hot encoded covariates. The matrix is
         # too big to be stored in memory if we use on-hot encoding, so we specify the
@@ -129,13 +129,12 @@ class ElectricityDataSet(Dataset):
                     idx_enc = [[d] for d in idx]
                 else:
                     idx_enc = [idx]
-                """ Could store all encodings as a matrix E """
+                """ Could store all encodings as a matrix E ?"""
                 encoded = torch.from_numpy(self.enc.transform([idx_enc]).toarray())
                 encoded = encoded.repeat(self.length_ts, 1)
-                encoded = torch.transpose(encoded, 0, 1)
                 encoded = encoded.float()
 
-                X = torch.cat((X, encoded), 0)
+                X = torch.cat((X, encoded), 1)
             return X, Y, idx
 
         else:
@@ -146,21 +145,15 @@ class ElectricityDataSet(Dataset):
             if column + self.h_batch > self.length_ts:
                 column = self.length_ts - self.h_batch
 
-            X = self.X[row, :, column - self.receptive_field : column + self.h_batch]
-            Y = self.Y[row, :, column : column + self.h_batch]
-
+            #Change HERE*!!!!
+            X = self.X[row, column - self.receptive_field : column + self.h_batch, :]
+            Y = self.Y[row, column : column + self.h_batch, :]
             if self.one_hot_id:
-                # if isinstance(idx, (list, np.ndarray)):
-                #    idx_enc = [[d] for d in idx]
-                # else:
-                #    idx_enc = [idx]
                 row_enc = [row]
                 encoded = torch.from_numpy(self.enc.transform([row_enc]).toarray())
                 encoded = encoded.repeat(self.h_batch + self.receptive_field, 1)
-                encoded = torch.transpose(encoded, 0, 1)
                 encoded = encoded.float()
-
-                X = torch.cat((X, encoded), 0)
+                X = torch.cat((X, encoded), 1)
             return X, Y, idx
 
     def get_row_column(self, idx: int) -> List[int]:
@@ -206,7 +199,8 @@ class ElectricityDataSet(Dataset):
             ]
         )
         Z = torch.from_numpy(Z)
-        num_covariates = Z.shape[0]
+        Z = torch.transpose(Z, 0, 1)
+        num_covariates = Z.shape[1]
         return Z, num_covariates
 
     def plot_examples(
@@ -218,12 +212,13 @@ class ElectricityDataSet(Dataset):
         logy: bool = True,
     ) -> None:
         if ids:
+            print(ids)
             time_series = []
-            for i in ids:
-                start_point = (
+            start_point = (
                     np.random.randint(0, int((self.length_ts - length_plot) / 24)) * 24
                 )
-                s = self.X[i, 0, start_point : start_point + length_plot].numpy()
+            for i in ids:
+                s = self.X[i, start_point : start_point + length_plot, 0].numpy()
                 time_series.append(np.transpose(s))
         else:
             # Choose n randomly selected series and a random start point
@@ -234,7 +229,7 @@ class ElectricityDataSet(Dataset):
             time_series = []
             for example_id in examples_ids:
                 s = self.X[
-                    example_id, 0, start_point : start_point + length_plot
+                    example_id, start_point : start_point + length_plot, 0
                 ].numpy()
                 time_series.append(np.transpose(s))
 
@@ -247,8 +242,9 @@ class ElectricityDataSet(Dataset):
         end_date = start_date + t_range
         start_date = start_date.isoformat()
         end_date = end_date.isoformat()
-
+        print(df.head)
         d_range = pd.date_range(start=start_date, end=end_date, freq="H")[:-1]
+        print(d_range)
         df.index = d_range
 
         df.plot(subplots=True, figsize=(10, 5), logy=logy)
@@ -267,6 +263,38 @@ if __name__ == "__main__":
         end_date="2014-12-18",
         predict_ahead=3,
         h_batch=256,
+        one_hot_id=True,
+    )
+
+    dataset.plot_examples(ids=[16, 22, 26], n=3, logy=False, length_plot=168)
+
+    data_loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
+    dataiter = iter(data_loader)
+    x, y, idx = dataiter.next()
+    data = dataiter.next()
+    print(type(data))
+    # print(data)
+    print("idx", idx)
+    # print('Samples : ', x)
+    print("Shape of samples : ", x.shape)
+    # print('Labels : ', y)
+    print("Shape of labels : ", y.shape)
+    print("Length of dataset: ", dataset.__len__())
+    print("Type x : ", x.dtype)
+    print("Type y : ", y.dtype)
+    print(x[0, 0, -5:])
+    print(y[0, 0, -5:])
+    print(dataset.__len__())
+
+    print("Electricity dataset test 2: ")
+    np.random.seed(1729)
+    dataset = ElectricityDataSet(
+        "electricity_dglo_data/data/electricity.npy",
+        include_time_covariates=True,
+        start_date="2012-06-01",
+        end_date="2014-12-18",
+        predict_ahead=3,
+        h_batch=0,
         one_hot_id=True,
     )
 

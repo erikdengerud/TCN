@@ -76,10 +76,10 @@ class ElectricityDataSet(Dataset):
         self.length_ts = X.shape[1]
 
         # Creating the labels Y by shifting the time series by predict_ahead
-        X = torch.unsqueeze(X, 2)
-        Y = torch.zeros(self.num_ts, self.length_ts, 1)
-        pad_end = torch.zeros(self.num_ts, self.predict_ahead, 1).double()
-        self.Y = Y.copy_(torch.cat((X[:, self.predict_ahead :, :], pad_end), 1)).to(
+        X = torch.unsqueeze(X, 1)
+        Y = torch.zeros(self.num_ts, 1,  self.length_ts)
+        pad_end = torch.zeros(self.num_ts, 1, self.predict_ahead).double()
+        self.Y = Y.copy_(torch.cat((X[:, :, self.predict_ahead :], pad_end), 2)).to(
             dtype=torch.float32
         )
 
@@ -87,7 +87,7 @@ class ElectricityDataSet(Dataset):
         if self.include_time_covariates:
             Z, num_covariates = self.get_time_covariates(dates)
             Z = Z.repeat(self.num_ts, 1, 1)
-            X = torch.cat((X, Z), 2)
+            X = torch.cat((X, Z), 1)
 
         # Using the IDs of the time series as one-hot encoded covariates. The matrix is
         # too big to be stored in memory if we use on-hot encoding, so we specify the
@@ -133,8 +133,9 @@ class ElectricityDataSet(Dataset):
                 encoded = torch.from_numpy(self.enc.transform([idx_enc]).toarray())
                 encoded = encoded.repeat(self.length_ts, 1)
                 encoded = encoded.float()
+                encoded = torch.transpose(encoded, 0, 1)
 
-                X = torch.cat((X, encoded), 1)
+                X = torch.cat((X, encoded), 0)
             return X, Y, idx
 
         else:
@@ -146,14 +147,16 @@ class ElectricityDataSet(Dataset):
                 column = self.length_ts - self.h_batch
 
             #Change HERE*!!!!
-            X = self.X[row, column - self.receptive_field : column + self.h_batch, :]
-            Y = self.Y[row, column : column + self.h_batch, :]
+            X = self.X[row, :, column - self.receptive_field : column + self.h_batch]
+            Y = self.Y[row, :, column : column + self.h_batch]
             if self.one_hot_id:
                 row_enc = [row]
                 encoded = torch.from_numpy(self.enc.transform([row_enc]).toarray())
                 encoded = encoded.repeat(self.h_batch + self.receptive_field, 1)
                 encoded = encoded.float()
-                X = torch.cat((X, encoded), 1)
+                encoded = torch.transpose(encoded, 0, 1)
+
+                X = torch.cat((X, encoded), 0)
             return X, Y, idx
 
     def get_row_column(self, idx: int) -> List[int]:
@@ -199,8 +202,7 @@ class ElectricityDataSet(Dataset):
             ]
         )
         Z = torch.from_numpy(Z)
-        Z = torch.transpose(Z, 0, 1)
-        num_covariates = Z.shape[1]
+        num_covariates = Z.shape[0]
         return Z, num_covariates
 
     def plot_examples(
@@ -208,17 +210,16 @@ class ElectricityDataSet(Dataset):
         ids: List = [],
         n: int = 3,
         length_plot: int = 168,
-        save_path: int = "electricity/figures/ts_examples.pdf",
+        save_path: str = "electricity/figures/ts_examples.pdf",
         logy: bool = True,
     ) -> None:
         if ids:
-            print(ids)
             time_series = []
             start_point = (
                     np.random.randint(0, int((self.length_ts - length_plot) / 24)) * 24
                 )
             for i in ids:
-                s = self.X[i, start_point : start_point + length_plot, 0].numpy()
+                s = self.X[i, 0, start_point : start_point + length_plot].numpy()
                 time_series.append(np.transpose(s))
         else:
             # Choose n randomly selected series and a random start point
@@ -229,7 +230,7 @@ class ElectricityDataSet(Dataset):
             time_series = []
             for example_id in examples_ids:
                 s = self.X[
-                    example_id, start_point : start_point + length_plot, 0
+                    example_id, 0,  start_point : start_point + length_plot
                 ].numpy()
                 time_series.append(np.transpose(s))
 
@@ -242,13 +243,13 @@ class ElectricityDataSet(Dataset):
         end_date = start_date + t_range
         start_date = start_date.isoformat()
         end_date = end_date.isoformat()
-        print(df.head)
+
         d_range = pd.date_range(start=start_date, end=end_date, freq="H")[:-1]
-        print(d_range)
         df.index = d_range
 
         df.plot(subplots=True, figsize=(10, 5), logy=logy)
-        plt.savefig(save_path)
+        if save_path is not None:
+            plt.savefig(save_path)
         plt.show()
 
 
@@ -287,7 +288,6 @@ if __name__ == "__main__":
     print(dataset.__len__())
 
     print("Electricity dataset test 2: ")
-    np.random.seed(1729)
     dataset = ElectricityDataSet(
         "electricity_dglo_data/data/electricity.npy",
         include_time_covariates=True,
@@ -298,7 +298,7 @@ if __name__ == "__main__":
         one_hot_id=True,
     )
 
-    # dataset.plot_examples(ids=[16, 22, 26], n=3, logy=False, length_plot=168)
+    dataset.plot_examples(ids=[16, 22, 26], n=3, logy=False, length_plot=168)
 
     data_loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
     dataiter = iter(data_loader)

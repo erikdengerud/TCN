@@ -255,5 +255,5 @@ if __name__ == "__main__":
     print("RMSE: {:.6f}".format(rmse))
 
     writer.close()
-    torch.save(tcn.state_dict(), args.model_save_path)
+    torch.save(tcn, args.model_save_path)
     print("Finished Training")

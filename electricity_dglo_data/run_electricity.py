@@ -99,8 +99,8 @@ def evaluate_final() -> List[float]:
 
 
 if __name__ == "__main__":
-    torch.manual_seed(1729)
-    np.random.seed(1729)
+    torch.manual_seed(172)
+    np.random.seed(172)
 
     args = parse()
     print_args(args)

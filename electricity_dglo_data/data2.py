@@ -6,13 +6,17 @@ import numpy as np
 import os
 import pandas as pd
 import sys
+
+sys.path.append("./")
+sys.path.append("../../")
 from typing import Tuple, List
 
 import torch
 import torch.tensor as Tensor
 from torch.utils.data import Dataset, DataLoader
 
-from gluonts.time_feature import (
+# from gluonts.time_feature import (
+from utils.time import (
     MinuteOfHour,
     HourOfDay,
     DayOfWeek,
@@ -77,7 +81,7 @@ class ElectricityDataSet(Dataset):
 
         # Creating the labels Y by shifting the time series by predict_ahead
         X = torch.unsqueeze(X, 1)
-        Y = torch.zeros(self.num_ts, 1,  self.length_ts)
+        Y = torch.zeros(self.num_ts, 1, self.length_ts)
         pad_end = torch.zeros(self.num_ts, 1, self.predict_ahead).double()
         self.Y = Y.copy_(torch.cat((X[:, :, self.predict_ahead :], pad_end), 2)).to(
             dtype=torch.float32
@@ -146,7 +150,7 @@ class ElectricityDataSet(Dataset):
             if column + self.h_batch > self.length_ts:
                 column = self.length_ts - self.h_batch
 
-            #Change HERE*!!!!
+            # Change HERE*!!!!
             X = self.X[row, :, column - self.receptive_field : column + self.h_batch]
             Y = self.Y[row, :, column : column + self.h_batch]
             if self.one_hot_id:
@@ -192,13 +196,13 @@ class ElectricityDataSet(Dataset):
         time_index = pd.DatetimeIndex(time_index)
         Z = np.matrix(
             [
-                MinuteOfHour().__call__(time_index),
-                HourOfDay().__call__(time_index),
-                DayOfWeek().__call__(time_index),
-                DayOfMonth().__call__(time_index),
-                DayOfYear().__call__(time_index),
-                MonthOfYear().__call__(time_index),
-                WeekOfYear().__call__(time_index),
+                MinuteOfHour(time_index),
+                HourOfDay(time_index),
+                DayOfWeek(time_index),
+                DayOfMonth(time_index),
+                DayOfYear(time_index),
+                MonthOfYear(time_index),
+                WeekOfYear(time_index),
             ]
         )
         Z = torch.from_numpy(Z)
@@ -216,8 +220,8 @@ class ElectricityDataSet(Dataset):
         if ids:
             time_series = []
             start_point = (
-                    np.random.randint(0, int((self.length_ts - length_plot) / 24)) * 24
-                )
+                np.random.randint(0, int((self.length_ts - length_plot) / 24)) * 24
+            )
             for i in ids:
                 s = self.X[i, 0, start_point : start_point + length_plot].numpy()
                 time_series.append(np.transpose(s))
@@ -230,7 +234,7 @@ class ElectricityDataSet(Dataset):
             time_series = []
             for example_id in examples_ids:
                 s = self.X[
-                    example_id, 0,  start_point : start_point + length_plot
+                    example_id, 0, start_point : start_point + length_plot
                 ].numpy()
                 time_series.append(np.transpose(s))
 

@@ -15,10 +15,8 @@ import io
 import matplotlib.pyplot as plt
 from os import path
 import pandas as pd
-import PIL.Image
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from torchvision.transforms import ToTensor
 
 
 def plot_predictions(

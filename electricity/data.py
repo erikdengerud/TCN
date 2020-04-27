@@ -262,7 +262,7 @@ if __name__ == "__main__":
     print("Electricity dataset: ")
     np.random.seed(1729)
     dataset = ElectricityDataSet(
-        "electricity_dglo_data/data/electricity.npy",
+        "electricity/data/electricity.npy",
         include_time_covariates=True,
         start_date="2012-06-01",
         end_date="2014-12-18",

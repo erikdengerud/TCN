@@ -49,9 +49,9 @@ class TemporalConvolutionalNetwork(nn.Module):
         if type_res_blocks == "deepglo":
             for i in range(num_layers):
                 block = ResidualBlockChomp(
-                    in_channels=in_channels
-                    if i == 0
-                    else residual_blocks_channel_size[i - 1],
+                    # fmt: off
+                    in_channels=in_channels if i == 0 else residual_blocks_channel_size[i - 1],
+                    # fmt: on
                     out_channels=residual_blocks_channel_size[i],
                     kernel_size=kernel_size,
                     padding=(kernel_size - 1) * dilations[i],
@@ -65,9 +65,9 @@ class TemporalConvolutionalNetwork(nn.Module):
         else:
             for i in range(num_layers):
                 block = ResidualBlock(
-                    in_channels=in_channels
-                    if i == 0
-                    else residual_blocks_channel_size[i - 1],
+                    # fmt: off
+                    in_channels=in_channels if i == 0 else residual_blocks_channel_size[i - 1],
+                    # fmt: on
                     out_channels=residual_blocks_channel_size[i],
                     kernel_size=kernel_size,
                     stride=stride,

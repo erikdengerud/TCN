@@ -15,7 +15,6 @@ import torch
 import torch.tensor as Tensor
 from torch.utils.data import Dataset, DataLoader
 
-# from gluonts.time_feature import (
 from utils.time import (
     MinuteOfHour,
     HourOfDay,
@@ -34,11 +33,6 @@ class ElectricityDataSet(Dataset):
     Load and prepare the electricity data set.
     The data is downloaded using the script data/download_data.sh which is copied from the
     DeepGLO paper. 
-    Parameters:
-        file_path           : file path to the hourly aggregated file
-        start_date          : start of the wanted dataset as YYYY-MM-DD 
-        end_date            : end of the wanted dataset as YYYY-MM-DD 
-        include_covariates  : including time covariates from gluonts or not
     """
 
     def __init__(
@@ -87,7 +81,7 @@ class ElectricityDataSet(Dataset):
             dtype=torch.float32
         )
 
-        # Including time covariates from gluonts
+        # Including time covariates
         if self.include_time_covariates:
             Z, num_covariates = self.get_time_covariates(dates)
             Z = Z.repeat(self.num_ts, 1, 1)
@@ -115,10 +109,9 @@ class ElectricityDataSet(Dataset):
 
     def __getitem__(self, idx: int) -> List[Tensor]:
         """ 
-        Returns a batch of the dataset (X and Y) and the IDs used as a tensor. 
+        Returns a batch of the dataset (X and Y), the ids of the batch and the time series
+        id of the batch.  
         One hot encoded IDs are also added here.
-        UPDATE: (after looking closely at the paper...)
-        - One epoch is when the network has seen the whole dataset.
         """
         # We get a random index in the range [0, int(num_ts * lenght_ts) / h_batch)].
         # Then we create the sample for that index. The sample is the next h_batch and
@@ -140,7 +133,7 @@ class ElectricityDataSet(Dataset):
                 encoded = torch.transpose(encoded, 0, 1)
 
                 X = torch.cat((X, encoded), 0)
-            return X, Y, idx
+            return X, Y, idx, idx
 
         else:
             row, column = self.get_row_column(idx)
@@ -150,7 +143,6 @@ class ElectricityDataSet(Dataset):
             if column + self.h_batch > self.length_ts:
                 column = self.length_ts - self.h_batch
 
-            # Change HERE*!!!!
             X = self.X[row, :, column - self.receptive_field : column + self.h_batch]
             Y = self.Y[row, :, column : column + self.h_batch]
             if self.one_hot_id:
@@ -238,7 +230,6 @@ class ElectricityDataSet(Dataset):
                 ].numpy()
                 time_series.append(np.transpose(s))
 
-        # Create df
         df = pd.DataFrame(time_series).T
 
         # Get datetime start to use on the x axis
@@ -271,11 +262,11 @@ if __name__ == "__main__":
         one_hot_id=True,
     )
 
-    dataset.plot_examples(ids=[16, 22, 26], n=3, logy=False, length_plot=168)
+    dataset.plot_examples(ids=[43, 212, 94, 252, 309], n=5, logy=False, length_plot=168)
 
     data_loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
     dataiter = iter(data_loader)
-    x, y, idx = dataiter.next()
+    x, y, idx, row = dataiter.next()
     data = dataiter.next()
     print(type(data))
     # print(data)
@@ -293,7 +284,7 @@ if __name__ == "__main__":
 
     print("Electricity dataset test 2: ")
     dataset = ElectricityDataSet(
-        "electricity_dglo_data/data/electricity.npy",
+        "electricity/data/electricity.npy",
         include_time_covariates=True,
         start_date="2012-06-01",
         end_date="2014-12-18",

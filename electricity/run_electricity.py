@@ -40,7 +40,7 @@ def train(epoch: int) -> None:
         optimizer.zero_grad()
         output = tcn(x, idx_row)
         # Since our x is longer than the y because we need the receptive field we
-        # have to slice the output.
+        # slice the output.
         output = output[:, :, -train_dataset.h_batch :]
         loss = criterion(output, y) / torch.abs(y).mean()
         loss.backward()
@@ -79,13 +79,18 @@ def evaluate_final() -> List[float]:
         all_real_values = []
         all_test_loss = []
         for i, data in enumerate(test_loader):
-            x, y, idx = data[0].to(device), data[1].to(device), data[2].to(device)
+            x, y, idx, idx_row = (
+                data[0].to(device),
+                data[1].to(device),
+                data[2].to(device),
+                data[3].to(device),
+            )
 
-            predictions, real_values = tcn.rolling_prediction(x, idx)
+            predictions, real_values = tcn.rolling_prediction(x, idx_row)
             all_predictions.append(predictions)
             all_real_values.append(real_values)
 
-            output = tcn(x, idx)
+            output = tcn(x, idx_row)
             test_loss = criterion(output, y) / torch.abs(y).mean()
             all_test_loss.append(test_loss.item())
 
@@ -105,8 +110,8 @@ def evaluate_final() -> List[float]:
 
 
 if __name__ == "__main__":
-    torch.manual_seed(172)
-    np.random.seed(172)
+    torch.manual_seed(1729)
+    np.random.seed(1729)
 
     args = parse()
     print_args(args)
@@ -249,7 +254,9 @@ if __name__ == "__main__":
                 ids = [i for i in range(370)]
                 ids = torch.LongTensor(ids).to(device)
                 embds = tcn.embedding(ids)
-                writer.add_embedding(embds, metadata=ids, global_step=ep, tag="embedded id")
+                writer.add_embedding(
+                    embds, metadata=ids, global_step=ep, tag="embedded id"
+                )
 
         # Early stop
         if ep > args.tenacity + 1:

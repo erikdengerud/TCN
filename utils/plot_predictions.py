@@ -28,9 +28,7 @@ def plot_predictions(
     num_to_plot=4,
 ) -> plt.Figure:
     """
-    Plotting predictions of the model on the test set.
-    Creates a pyplot plot and save to buffer.
-    https://discuss.pytorch.org/t/example-code-to-put-matplotlib-graph-to-tensorboard-x/15806
+    Plotting predictions by the model on the test set.
     """
     # Load data to plot. The dataloader should have shuffle=False to get the same time
     # series each time.
@@ -89,7 +87,7 @@ if __name__ == "__main__":
 
     print("Creating dataset.")
     test_dataset = ElectricityDataSet(
-        "electricity_dglo_data/data/electricity.npy",
+        "electricity/data/electricity.npy",
         start_date="2012-01-01",
         end_date="2013-01-01",
         h_batch=0,

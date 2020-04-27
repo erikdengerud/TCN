@@ -64,6 +64,7 @@ class TCN(nn.Module):
         self.init_weights(leveledinit, kernel_size, bias)
         self.lookback = 1 + 2 * (kernel_size - 1) * 2 ** (num_layers - 1)
 
+        # Embeddings
         self.embed = embed
         if embed == "pre":
             self.embedding = nn.Embedding(
@@ -85,6 +86,7 @@ class TCN(nn.Module):
     def init_weights(self, leveledinit: bool, kernel_size: int, bias: bool) -> None:
         """ 
         Init the weights in the last layer. The rest is initialized in the residual block. 
+        From the DeepGLO paper.
         """
         if leveledinit:
             nn.init.normal_(self.conv1d.weight, std=1e-3)

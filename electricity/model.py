@@ -16,8 +16,6 @@ from TCN.layers import DilatedCausalConv
 
 from utils.metrics import MAPE, SMAPE, WAPE
 
-# from metrics import MAPE, SMAPE, WAPE
-
 
 class TCN(nn.Module):
     def __init__(
@@ -33,6 +31,9 @@ class TCN(nn.Module):
         stride: int = 1,
         leveledinit: bool = False,
         type_res_blocks: str = "erik",
+        num_embeddings: int = 370,
+        embedding_dim: int = 3,
+        embed: str = None,
     ) -> None:
         """
         A TCN for the electricity dataset. An additional layer is added to the TCN to get 
@@ -40,6 +41,7 @@ class TCN(nn.Module):
         does therefore not have to end with the out_channel size.
         """
         super(TCN, self).__init__()
+        in_channels = in_channels + embedding_dim if embed == "pre" else in_channels
         self.tcn = TemporalConvolutionalNetwork(
             num_layers,
             in_channels,
@@ -62,6 +64,24 @@ class TCN(nn.Module):
         self.init_weights(leveledinit, kernel_size, bias)
         self.lookback = 1 + 2 * (kernel_size - 1) * 2 ** (num_layers - 1)
 
+        self.embed = embed
+        if embed == "pre":
+            self.embedding = nn.Embedding(
+                num_embeddings=num_embeddings, embedding_dim=embedding_dim
+            )
+        elif embed == "post":
+            self.embedding = nn.Embedding(
+                num_embeddings=num_embeddings, embedding_dim=embedding_dim
+            )
+            # We add a layer after we concat the embeddings to the output to
+            # get some learning of the embeddings.
+            self.conv1demb = DilatedCausalConv(
+                in_channels=residual_blocks_channel_size[-1] + embedding_dim,
+                out_channels=residual_blocks_channel_size[-1],
+                kernel_size=kernel_size,
+                bias=bias,
+            )
+
     def init_weights(self, leveledinit: bool, kernel_size: int, bias: bool) -> None:
         """ 
         Init the weights in the last layer. The rest is initialized in the residual block. 
@@ -74,13 +94,27 @@ class TCN(nn.Module):
         else:
             nn.init.xavier_uniform_(self.conv1d.weight)
 
-    def forward(self, x: Tensor) -> Tensor:
+    def forward(self, x: Tensor, emb_id: Tensor) -> Tensor:
+        if self.embed == "pre":
+            emb = self.embedding(emb_id)
+            emb = torch.unsqueeze(emb, 2)
+            emb = emb.repeat(1, 1, x.shape[2])
+            x = torch.cat((x, emb), 1)
+
         out = self.tcn(x)
-        out = self.conv1d(out)
+
+        if self.embed == "post":
+            emb = self.embedding(emb_id)
+            emb = torch.unsqueeze(emb, 2)
+            emb = emb.repeat(1, 1, x.shape[2])
+            out = torch.cat((out, emb), 1)
+            out = self.conv1demb(out)
+
+        out = self.conv1d(out)  # to get right dimensions
         return out
 
     def rolling_prediction(
-        self, x: Tensor, tau: int = 24, num_windows: int = 7
+        self, x: Tensor, emb_id: Tensor, tau: int = 24, num_windows: int = 7
     ) -> List[Tensor]:
         """
         Rolling prediction. Returns MAPE, SMAPE, WAPE on the predictions.
@@ -96,7 +130,9 @@ class TCN(nn.Module):
             x_cov_curr_window = x[:, 1:, t_i : (t_i + tau)]
             assert x_cov_curr_window.shape[2] == tau
             # Multi step prediction of current window
-            _, preds = self.multi_step_prediction(x_prev_window, x_cov_curr_window, tau)
+            _, preds = self.multi_step_prediction(
+                x_prev_window, x_cov_curr_window, tau, emb_id
+            )
             predictions_list.append(preds)
             real_values.append(x[:, 0, t_i : (t_i + tau)])
             assert preds.shape == x[:, 0, t_i : (t_i + tau)].shape
@@ -106,11 +142,11 @@ class TCN(nn.Module):
         return predictions, real_values
 
     def multi_step_prediction(
-        self, x_prev: Tensor, x_cov_curr: Tensor, num_steps: int
+        self, x_prev: Tensor, x_cov_curr: Tensor, num_steps: int, emb_id: Tensor
     ) -> List[Tensor]:
         """ x_cov should be the covariates for the next num_steps """
         for i in range(num_steps):
-            x_next = self.forward(x_prev)[:, :, -1]
+            x_next = self.forward(x_prev, emb_id)[:, :, -1]
             # Add covariates
             x_next = torch.cat((x_next, x_cov_curr[:, :, i]), 1)
             x_next = x_next.unsqueeze(2)
@@ -128,8 +164,8 @@ if __name__ == "__main__":
     print("Electricity dataset: ")
     np.random.seed(1729)
     dataset = ElectricityDataSet(
-        "electricity_dglo_data/data/electricity.npy",
-        include_time_covariates=True,
+        "electricity/data/electricity.npy",
+        include_time_covariates=False,
         start_date="2014-06-01",
         end_date="2014-12-18",
         predict_ahead=3,
@@ -142,7 +178,7 @@ if __name__ == "__main__":
 
     tcn = TCN(
         num_layers=5,
-        in_channels=8,
+        in_channels=1,
         out_channels=1,
         kernel_size=3,
         residual_blocks_channel_size=[16, 16, 16, 16, 16],
@@ -150,17 +186,18 @@ if __name__ == "__main__":
         dropout=0.5,
         stride=1,
         leveledinit=False,
+        embed="pre",
     )
 
     pytorch_total_params = sum(p.numel() for p in tcn.parameters() if p.requires_grad)
     print(f"Number of learnable parameters : {pytorch_total_params}")
 
     for i, data in enumerate(data_loader):
-        x, y = data[0], data[1]
+        x, y, idx = data[0], data[1], data[2]
         print(x.shape)
         print(y.shape)
         print("i=", i)
-        preds, real = tcn.rolling_prediction(x, tau=24, num_windows=7)
+        preds, real = tcn.rolling_prediction(x, tau=24, num_windows=7, emb_id=idx)
         print(preds.shape)
         print(real.shape)
         if i == 0:

@@ -27,6 +27,8 @@ def parse():
     parser.add_argument("--res_block_size", type=int, default=32)
     parser.add_argument("--type_res_blocks", type=str, default="erik")
     add_bool_arg(parser, name="bias", default=True)
+    parser.add_argument("--embed", type=str, default=None)
+    parser.add_argument("--embedding_dim", type=int, default=3)
 
     # Training parameters
     parser.add_argument("--epochs", type=int, default=300)

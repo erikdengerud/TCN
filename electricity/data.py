@@ -161,7 +161,7 @@ class ElectricityDataSet(Dataset):
                 encoded = torch.transpose(encoded, 0, 1)
 
                 X = torch.cat((X, encoded), 0)
-            return X, Y, idx
+            return X, Y, idx, row
 
     def get_row_column(self, idx: int) -> List[int]:
         """ Gets row and column based on idx, num_ts and length_ts """

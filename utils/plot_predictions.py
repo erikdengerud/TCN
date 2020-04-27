@@ -35,13 +35,15 @@ def plot_predictions(
     # Load data to plot. The dataloader should have shuffle=False to get the same time
     # series each time.
     iter_loader = iter(data_loader)
-    x, y, idx = iter_loader.next()
+    x, y, idx, idx_row = iter_loader.next()
     x = x.to(device)
     y = y.to(device)
+    idx_row = idx_row.to(device)
     x = x[:num_to_plot]
     y = y[:num_to_plot]
+    idx_row = idx_row[:num_to_plot]
     # Predict using multi step and rolling predictions
-    preds, actual = model.rolling_prediction(x, num_windows=7, tau=24)
+    preds, actual = model.rolling_prediction(x, emb_id=idx_row, num_windows=7, tau=24)
     # plot n series at a time. Real and predicted values
     preds, actual = preds.detach().cpu().numpy(), actual.detach().cpu().numpy()
     num_series = preds.shape[0]

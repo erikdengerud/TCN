@@ -30,9 +30,15 @@ def train(epoch: int) -> None:
     epoch_train_loss = []
     total_loss = 0.0
     for i, d in enumerate(train_loader):
-        x, y = d[0].to(device), d[1].to(device)
+        x, y, idx, idx_row = (
+            d[0].to(device),
+            d[1].to(device),
+            d[2].to(device),
+            d[3].to(device),
+        )
+
         optimizer.zero_grad()
-        output = tcn(x)
+        output = tcn(x, idx_row)
         # Since our x is longer than the y because we need the receptive field we
         # have to slice the output.
         output = output[:, :, -train_dataset.h_batch :]
@@ -73,13 +79,13 @@ def evaluate_final() -> List[float]:
         all_real_values = []
         all_test_loss = []
         for i, data in enumerate(test_loader):
-            x, y = data[0].to(device), data[1].to(device)
+            x, y, idx = data[0].to(device), data[1].to(device), data[2].to(device)
 
-            predictions, real_values = tcn.rolling_prediction(x)
+            predictions, real_values = tcn.rolling_prediction(x, idx)
             all_predictions.append(predictions)
             all_real_values.append(real_values)
 
-            output = tcn(x)
+            output = tcn(x, idx)
             test_loss = criterion(output, y) / torch.abs(y).mean()
             all_test_loss.append(test_loss.item())
 
@@ -132,7 +138,7 @@ if __name__ == "__main__":
     """ Training and test datasets """
     print("Train dataset")
     train_dataset = ElectricityDataSet(
-        "electricity_dglo_data/data/electricity.npy",
+        "electricity/data/electricity.npy",
         start_date=args.train_start,
         end_date=args.train_end,
         h_batch=args.h_batch_size,
@@ -142,7 +148,7 @@ if __name__ == "__main__":
     )
     print("Test dataset")
     test_dataset = ElectricityDataSet(
-        "electricity_dglo_data/data/electricity.npy",
+        "electricity/data/electricity.npy",
         start_date=test_start,
         end_date=test_end,
         h_batch=0,
@@ -170,7 +176,7 @@ if __name__ == "__main__":
 
     # Using the dimensions of the samples and labels as in and output channels in our model
     load_iter = iter(train_loader)
-    x, y, _ = load_iter.next()
+    x, y, _, _ = load_iter.next()
     in_channels = x.shape[1]
     out_channels = y.shape[1]
     """
@@ -191,6 +197,9 @@ if __name__ == "__main__":
         dilations=None,
         leveledinit=args.leveledinit,
         type_res_blocks=args.type_res_blocks,
+        num_embeddings=train_dataset.num_ts,
+        embedding_dim=args.embedding_dim,
+        embed=args.embed,
     )
     tcn.to(device)
     print(
@@ -235,15 +244,22 @@ if __name__ == "__main__":
                 print("MAE: {:.6f}".format(mae))
                 print("RMSE: {:.6f}".format(rmse))
 
+            # Visualizing embeddings
+            if args.embed is not None:
+                ids = [i for i in range(370)]
+                embds = tcn.embedding(ids)
+                writer.add_embedding(embds.ids, ep, "embedded id")
+
         # Early stop
-        # if ep > args.tenacity + 1:
-        #    if tloss < min(test_losses[-args.tenacity :]):
-        #        tenacity_count = 0
-        #    elif ep > args.tenacity:
-        #        tenacity_count += 1
-        # test_losses.append(tloss)
-        # if tenacity_count >= args.tenacity:
-        #    break
+        if ep > args.tenacity + 1:
+            if tloss < min(test_losses[-args.tenacity :]):
+                tenacity_count = 0
+            elif ep > args.tenacity:
+                tenacity_count += 1
+        test_losses.append(tloss)
+        if tenacity_count >= args.tenacity:
+            print("Early stop!")
+            break
 
     tloss, wape, mape, smape, mae, rmse = evaluate_final()
     print("Test set:")

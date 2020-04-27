@@ -31,6 +31,7 @@ An implementation of a Temporal Convolutional Network.
 │   └── utils.py
 ├── __init__.py
 ├── README.md
+├── requirements.txt
 └── electricity_job.sh
 
 ## Run experiments

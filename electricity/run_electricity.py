@@ -247,6 +247,7 @@ if __name__ == "__main__":
             # Visualizing embeddings
             if args.embed is not None:
                 ids = [i for i in range(370)]
+                ids = torch.LongTensor(ids)
                 embds = tcn.embedding(ids)
                 writer.add_embedding(embds.ids, ep, "embedded id")
 

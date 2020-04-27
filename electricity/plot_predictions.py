@@ -4,28 +4,16 @@ Plotting of the predictions from the models in models/.
 Plotting the predictions for the test window 7x24h.
 """
 from os import path
+import torch
 import pandas as pd
 import matplotlib.pyplot as plt
 
 
-def plot_predictions(model_path, data_loader, save_path, model_class):
+def plot_predictions(model_path, data_loader, save_path):
     plot_look_back = False
     print(model_path)
-    # load model
-    if "_tc" in model_path or "random" in model_path:
-        in_channels = 8
-    else:
-        in_channels = 1
-    print(f"In channels: {in_channels}")
-    model = model_class(
-        in_channels=in_channels,
-        num_layers=6,
-        out_channels=1,
-        residual_blocks_channel_size=[32] * 5 + [1],
-        kernel_size=7,
-    )
 
-    model.load_state_dict(torch.load(model_path, map_location=torch.device("cpu")))
+    model = torch.load(model_path, map_location=torch.device('cpu'))
     model.eval()
 
     # load data to plot
@@ -33,7 +21,7 @@ def plot_predictions(model_path, data_loader, save_path, model_class):
     x, y, idx = iter_loader.next()
 
     # predict using multi step and rolling predictions
-    preds, actual = model.rolling_prediction(x, y, num_windows=7, tau=24)
+    preds, actual = model.rolling_prediction(x, num_windows=7, tau=24)
     # plot n series at a time. Real and predicted values
     preds, actual = preds.detach().numpy(), actual.detach().numpy()
     num_series = preds.shape[0]
@@ -82,8 +70,7 @@ def plot_predictions(model_path, data_loader, save_path, model_class):
 
 
 if __name__ == "__main__":
-    from data import ElectricityDataSet
-    from model import TCN
+    from data2 import ElectricityDataSet
 
     import torch
     from torch.utils.data import DataLoader
@@ -95,7 +82,7 @@ if __name__ == "__main__":
     kernel_size = 7
     num_rolling_periods = 7
     length_rolling = 24
-    train_end = "2014-12-17"
+    train_end = "2014-12-16"
     time_covariates = True
     one_hot_id = False
     v_batch_size = 5
@@ -123,13 +110,13 @@ if __name__ == "__main__":
 
     print("Test dataset")
     test_dataset = ElectricityDataSet(
-        # "electricity/data/random_dataset.txt",
-        "electricity/data/LD2011_2014_hourly.txt",
+        "electricity_dglo_data/data/electricity.npy",
         start_date=test_start,
         end_date=test_end,
         h_batch=0,
-        include_time_covariates=False,
-        one_hot_id=one_hot_id,
+        include_time_covariates=True,
+        one_hot_id=False,
+        receptive_field=look_back,
     )
     test_loader = DataLoader(
         dataset=test_dataset,
@@ -137,39 +124,14 @@ if __name__ == "__main__":
         shuffle=True,
         num_workers=num_workers,
     )
-    test_dataset_tc = ElectricityDataSet(
-        "electricity/data/LD2011_2014_hourly.txt",
-        # "electricity/data/random_dataset.txt",
-        start_date=test_start,
-        end_date=test_end,
-        h_batch=0,
-        include_time_covariates=True,
-        one_hot_id=one_hot_id,
-    )
-    test_loader_tc = DataLoader(
-        dataset=test_dataset_tc,
-        batch_size=v_batch_size,
-        shuffle=True,
-        num_workers=num_workers,
-    )
 
     # Get all models
-    models = glob.glob("electricity/models/*.pt")
+    models = glob.glob("electricity_dglo_data/models/*.pt")
     print(models)
     for model_path in models:
-        if "_tc" in model_path:
+        try:
             plot_predictions(
-                model_path, test_loader_tc, ".".join([model_path, "pdf"]), TCN
+                model_path, test_loader, path.join("electricity_dglo_data/figures", ".".join([model_path, "pdf"]))
             )
-            print("tc loader")
-        elif "random" in model_path:
-            plot_predictions(
-                model_path, test_loader_tc, ".".join([model_path, "pdf"]), TCN
-            )
-            print("tc loader")
-
-        else:
-            plot_predictions(
-                model_path, test_loader, ".".join([model_path, "pdf"]), TCN
-            )
-            print("not tc loader")
+        except Exception as e:
+            print(e)

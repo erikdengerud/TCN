@@ -249,7 +249,7 @@ class ResidualBlock(nn.Module):
             residual = self.res_conv(x)
 
         out += residual
-        return out
+        return F.relu(out)
 
 
 if __name__ == "__main__":

@@ -12,4 +12,4 @@
  
 module load GCC/8.3.0  CUDA/10.1.243  OpenMPI/3.1.4 PyTorch/1.3.1-Python-3.7.4 
 
-python3 electricity_dglo_data/run_electricity.py --num_workers 4 --model_save_path electricity_dglo_data/models/tcn_small_li_tc.pt --writer_path electricity_dglo_data/runs/tcn_small_li_tc --epochs 100 --clip --log_interval=500 --print --leveledinit --time_covariates
+python3 electricity/run_electricity.py --num_workers 4 --model_save_path electricity_dglo_data/models/tcn_small_li_tc.pt --writer_path electricity_dglo_data/runs/tcn_small_li_tc --epochs 100 --clip --log_interval=500 --print --leveledinit --time_covariates

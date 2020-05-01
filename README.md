@@ -54,3 +54,7 @@ This dataset has samples length T  and width 2. The first channel is random samp
 This dataset consists of time series of hourly electricity consumption of 370 houses <https://archive.ics.uci.edu/ml/datasets/ElectricityLoadDiagrams20112014>. Data are from the DeepGLO paper and can be 
 downloaded usin the `download_data.sh` script in the data folder.
 
+## Resources
+
+https://arxiv.org/pdf/1901.10738.pdf Unsupervised representation learning.
+https://arxiv.org/pdf/1603.04713.pdf Modeling time series similarity with siamese recurrent networks.

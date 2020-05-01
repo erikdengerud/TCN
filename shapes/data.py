@@ -14,6 +14,9 @@ import torch
 import torch.tensor as Tensor
 from torch.utils.data import Dataset, DataLoader
 
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.gaussian_process.kernels import Matern
+
 
 class ShapeDataset(Dataset):
     """
@@ -28,6 +31,8 @@ class ShapeDataset(Dataset):
         h_batch: int = 100,
         predict_ahead: int = 1,
         receptive_field: int = 20,
+        mean: float = 0,
+        var: float = 1.0,
     ) -> None:
 
         self.N = N
@@ -38,11 +43,13 @@ class ShapeDataset(Dataset):
         self.receptive_field = receptive_field
 
         """ Creating the dataset """
-        df = self.create_shape_series(N, t, balance)
-        X = torch.tensor(df.values)
+        df_ts, df_descriptive = self.create_shape_series(
+            N, t, balance=balance, mean=mean, var=var
+        )
+        X = torch.tensor(df_ts.values)
         X = torch.unsqueeze(X, 1)
         self.X = X
-
+        self.df_descriptive = df_descriptive
         # Creating the labels Y by shifting the time series by predict_ahead
         print(X.shape)
         Y = torch.zeros(self.N, 1, self.t)
@@ -98,13 +105,87 @@ class ShapeDataset(Dataset):
             row += 1
         return row, column
 
-    def create_shape_series(self, N, t, balance):
+    def create_shape_series(
+        self, N: int, t: int, balance: bool, mean: float = 0, var: float = 1.0
+    ):
+        ts = []
+        descriptive = []
         for i in range(N):
             # Randomly choose shape, frequency and noise
+            shape = np.random.choice(["sine", "square", "triangle"])
+            noise = np.random.choice(["iid", "matern", None])
+            period = np.random.choice([2, 10, 20])
+            s = self.shape_series(
+                shape, length=t, period=period, noise=noise, mean=mean, var=var
+            )
+            ts.append(s)
+            descriptive.append([shape, noise, str(period)])
 
-        X = np.random.rand(N, t)
-        df = pd.DataFrame(X)
-        return df
+        df_ts = pd.DataFrame(ts)
+        df_descriptive = pd.DataFrame(descriptive)
+        df_descriptive.columns = ["shape", "noise", "period"]
+        return df_ts, df_descriptive
+
+    def shape_series(
+        self, shape, length=100, period=10, mean=0, var=1, noise=None, noise_var=1
+    ) -> List[float]:
+        """ Creates a shape series and adds noise to it. """
+        assert shape in ["sine", "triangle", "square"]
+        assert noise in [None, "iid", "matern"]
+        if shape == "sine":
+            s = self.sine(length, period, mean, var)
+        elif shape == "square":
+            s = self.square(length, period, mean, var)
+        elif shape == "triangle":
+            s = self.triangle(length, period, mean, var)
+        if noise == "iid":
+            s += self.iid_noise(s)
+        elif noise == "matern":
+            s += self.matern_noise(s)
+        return s
+
+    def sine(self, t, p, mean=0, var=1, start=1):
+        """ Creating a sine signal with period p. """
+        x = np.linspace(1, t, t)
+        s = np.sin(1 / p * x * 2 * np.pi)
+        s = s * var + mean
+        assert len(s) == t
+        return s
+
+    def triangle(self, t, p, mean=0, var=1, start=1):
+        """ Creating a triangle signal with period p. """
+        y = np.array([(1 - 2 / p * x) for x in range(p)])
+        s = np.tile(
+            np.concatenate((start * y, -start * y), axis=None), t // (2 * p) + 1
+        )[:t]
+        s = s * var + mean
+        assert len(s) == t
+        return s
+
+    def square(self, t, p, mean=0, var=1, start=1):
+        """ Creating a square signal that alternates every p step. """
+        s = np.tile(
+            np.concatenate((start * np.ones(p), -start * np.ones(p)), axis=None),
+            t // (2 * p) + 1,
+        )[:t]
+        s = s * var + mean
+        assert len(s) == t
+        return s
+
+    def iid_noise(self, x, var=0.2):
+        noise = var * np.random.randn(len(x))
+        x += noise
+        return x
+
+    def matern_noise(self, s, var=1, nu=1.5):
+        """ nu determines the smoothness. smaller is less smooth """
+        gp = GaussianProcessRegressor(
+            kernel=var * Matern(length_scale=10, length_scale_bounds=(1e-5, 1e5), nu=nu)
+        )
+        x = np.linspace(1, len(s), len(s))
+        sample = gp.sample_y(x.reshape(-1, 1), 1, random_state=None).flatten()
+
+        return s + sample
 
     def plot_examples(
         self,
@@ -143,7 +224,7 @@ if __name__ == "__main__":
     np.random.seed(1729)
     dataset = ShapeDataset(N=50, t=100, balance=False, predict_ahead=1, h_batch=100,)
 
-    dataset.plot_examples(ids=[], n=5, length_plot=20)
+    dataset.plot_examples(ids=[], n=5, length_plot=50)
 
     data_loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
     dataiter = iter(data_loader)
@@ -162,3 +243,4 @@ if __name__ == "__main__":
     print(x[0, 0, -5:])
     print(y[0, 0, -5:])
     print(dataset.__len__())
+    print(dataset.df_descriptive.head())

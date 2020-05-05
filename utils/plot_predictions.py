@@ -36,7 +36,6 @@ def plot_predictions(
     x, y, idx, idx_row = iter_loader.next()
     x = x.to(device)
     y = y.to(device)
-<<<<<<< HEAD
     idx = idx.to(device)
     idx_row = idx_row.to(device)
     x = x[:num_to_plot]
@@ -47,14 +46,6 @@ def plot_predictions(
     preds, actual = model.rolling_prediction(
         x, emb_id=idx_row, num_windows=num_windows, tau=tau
     )
-=======
-    idx_row = idx_row.to(device)
-    x = x[:num_to_plot]
-    y = y[:num_to_plot]
-    idx_row = idx_row[:num_to_plot]
-    # Predict using multi step and rolling predictions
-    preds, actual = model.rolling_prediction(x, emb_id=idx_row, num_windows=7, tau=24)
->>>>>>> master
     # plot n series at a time. Real and predicted values
     preds, actual = preds.detach().cpu().numpy(), actual.detach().cpu().numpy()
     num_series = preds.shape[0]

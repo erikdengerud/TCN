@@ -3,6 +3,7 @@ An implementation of a Temporal Convolutional Network.
 
 ## Folder structure
 
+```bash
 .
 ├── TCN
 │   ├── __init__.py
@@ -33,6 +34,7 @@ An implementation of a Temporal Convolutional Network.
 ├── README.md
 ├── requirements.txt
 └── electricity_job.sh
+```
 
 ## Run experiments
 Run experiments like this `python electricity\run_electricity.py`.

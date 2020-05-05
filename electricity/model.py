@@ -61,8 +61,6 @@ class TCN(nn.Module):
             kernel_size=kernel_size,
             bias=bias,
         )
-        self.init_weights(leveledinit, kernel_size, bias)
-        self.lookback = 1 + 2 * (kernel_size - 1) * 2 ** (num_layers - 1)
 
         # Embeddings
         self.embed = embed
@@ -83,6 +81,10 @@ class TCN(nn.Module):
                 bias=bias,
             )
 
+        self.init_weights(leveledinit, kernel_size, bias)
+        self.lookback = 1 + 2 * (kernel_size - 1) * 2 ** (num_layers - 1)
+
+
     def init_weights(self, leveledinit: bool, kernel_size: int, bias: bool) -> None:
         """ 
         Init the weights in the last layer. The rest is initialized in the residual block. 
@@ -95,6 +97,9 @@ class TCN(nn.Module):
                 self.conv1d.weight[:, 0, :] += 1.0 / kernel_size
         else:
             nn.init.xavier_uniform_(self.conv1d.weight)
+        
+        if self.embed in ("pre", "post"):
+            nn.init.xavier_uniform_(self.embedding.weight)
 
     def forward(self, x: Tensor, emb_id: Tensor) -> Tensor:
         if self.embed == "pre":

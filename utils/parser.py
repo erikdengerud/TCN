@@ -20,6 +20,10 @@ def parse():
     parser.add_argument("--num_workers", type=int, default=0)
     add_bool_arg(parser, name="time_covariates", default=False)
     add_bool_arg(parser, name="one_hot_id", default=False)
+    parser.add_argument("--mean", type=float, default=0)
+    parser.add_argument("--var", type=float, default=1.0)
+    parser.add_argument("--N", type=int, default=100)
+    parser.add_argument("--t", type=int, default=1000)
 
     # Model architecture
     parser.add_argument("--num_layers", type=int, default=5)

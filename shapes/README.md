@@ -8,22 +8,16 @@ We use the dataset to test embeddings and use a 2 dimensional embedding space.
 The dataset contains N time series of length t.
 
 ### Shapes:
-* Sawtooth
+* Triangular
 * Rectangular
 * Sine
-
-The shapes are made using the functions in `scipy.signal`.
 
 ### Noise:
 * No noise
 * IID
-* Heavily correlated long effects
-
-The IID we use is N(0,1).
+* Matern
 
 ### Frequency:
-* 1
-* 3
-* 9
-
-Frequencies can be specified in the `scipy.signal` functions.
+* 2
+* 10
+* 20

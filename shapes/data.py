@@ -33,6 +33,7 @@ class ShapeDataset(Dataset):
         receptive_field: int = 20,
         mean: float = 0,
         var: float = 1.0,
+        df: pd.DataFrame = None,
     ) -> None:
 
         self.N = N
@@ -43,19 +44,21 @@ class ShapeDataset(Dataset):
         self.receptive_field = receptive_field
 
         """ Creating the dataset """
-        df_ts, df_descriptive = self.create_shape_series(
-            N, t, balance=balance, mean=mean, var=var
-        )
+        if df is not None:
+            df_ts, df_descriptive = self.create_shape_series_df(
+                df, t, mean=mean, var=var
+            )
+        else:
+            df_ts, df_descriptive = self.create_shape_series(
+                N, t, balance=balance, mean=mean, var=var
+            )
         X = torch.tensor(df_ts.values)
         X = torch.unsqueeze(X, 1)
-        self.X = X
+        self.X = X.to(dtype=torch.float32)
         self.df_descriptive = df_descriptive
         # Creating the labels Y by shifting the time series by predict_ahead
-        print(X.shape)
         Y = torch.zeros(self.N, 1, self.t)
-        print(Y.shape)
         pad_end = torch.zeros(self.N, 1, self.predict_ahead).double()
-        print(pad_end.shape)
         self.Y = Y.copy_(torch.cat((X[:, :, self.predict_ahead :], pad_end), 2)).to(
             dtype=torch.float32
         )
@@ -125,6 +128,22 @@ class ShapeDataset(Dataset):
         df_descriptive = pd.DataFrame(descriptive)
         df_descriptive.columns = ["shape", "noise", "period"]
         return df_ts, df_descriptive
+
+    def create_shape_series_df(self, df, t: int, mean: float = 0, var: float = 1.0):
+        """ Creating time series from df. """
+        ts = []
+        for i, row in df.iterrows():
+            s = self.shape_series(
+                row["shape"],
+                length=t,
+                period=int(row["period"]),
+                noise=row["noise"],
+                mean=mean,
+                var=var,
+            )
+            ts.append(s)
+        df_ts = pd.DataFrame(ts)
+        return df_ts, df
 
     def shape_series(
         self, shape, length=100, period=10, mean=0, var=1, noise=None, noise_var=1
@@ -226,7 +245,28 @@ if __name__ == "__main__":
 
     dataset.plot_examples(ids=[], n=5, length_plot=50)
 
-    data_loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
+    data_loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=False)
+    dataiter = iter(data_loader)
+    x, y, idx, row = dataiter.next()
+    data = dataiter.next()
+    print(type(data))
+    # print(data)
+    print("idx", idx)
+    # print('Samples : ', x)
+    print("Shape of samples : ", x.shape)
+    # print('Labels : ', y)
+    print("Shape of labels : ", y.shape)
+    print("Length of dataset: ", dataset.__len__())
+    print("Type x : ", x.dtype)
+    print("Type y : ", y.dtype)
+    print(x[0, 0, -5:])
+    print(y[0, 0, -5:])
+    print(dataset.__len__())
+    print(dataset.df_descriptive.head())
+
+    df = dataset.df_descriptive.copy()
+    dataset = ShapeDataset(df=df, t=100)
+    data_loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=False)
     dataiter = iter(data_loader)
     x, y, idx, row = dataiter.next()
     data = dataiter.next()

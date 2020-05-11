@@ -242,7 +242,7 @@ class ElectricityDataSet(Dataset):
         d_range = pd.date_range(start=start_date, end=end_date, freq="H")[:-1]
         df.index = d_range
 
-        df.plot(subplots=True, figsize=(10, 5), logy=logy)
+        df.plot(subplots=True, figsize=(10, 2), logy=logy)
         if save_path is not None:
             plt.savefig(save_path)
         plt.show()
@@ -262,7 +262,7 @@ if __name__ == "__main__":
         one_hot_id=True,
     )
 
-    dataset.plot_examples(ids=[43, 212, 94, 252, 309], n=5, logy=False, length_plot=168)
+    dataset.plot_examples(ids=[43], n=5, logy=False, length_plot=168)
 
     data_loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
     dataiter = iter(data_loader)
@@ -293,11 +293,11 @@ if __name__ == "__main__":
         one_hot_id=True,
     )
 
-    dataset.plot_examples(ids=[16, 22, 26], n=3, logy=False, length_plot=168)
+    # dataset.plot_examples(ids=[16, 22, 26], n=3, logy=False, length_plot=168)
 
     data_loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
     dataiter = iter(data_loader)
-    x, y, idx = dataiter.next()
+    x, y, idx, idx_row = dataiter.next()
     data = dataiter.next()
     print(type(data))
     # print(data)

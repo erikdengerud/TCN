@@ -178,7 +178,7 @@ if __name__ == "__main__":
         h_batch=0,
         receptive_field=16,
     )
-    data_loader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True)
+    data_loader = DataLoader(dataset, batch_size=16, num_workers=0, shuffle=True)
     dataiter = iter(data_loader)
     x, y, idx, idx_row = dataiter.next()
 

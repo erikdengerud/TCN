@@ -95,7 +95,14 @@ class RevenueDataset(Dataset):
             return X, Y, idx, idx
 
         else:
+            # print("before")
             row, column = self.get_row_column(idx)
+            if column < self.receptive_field:
+                column = self.receptive_field
+            if column + self.h_batch > self.length_ts:
+                column = self.length_ts - self.h_batch
+            if column == self.length_ts:
+                column -= 1
 
             X = self.X[
                 row,
@@ -105,6 +112,12 @@ class RevenueDataset(Dataset):
                 ),
             ]
             Y = self.Y[row, :, column : min(column + self.h_batch, self.length_ts)]
+            # print("after")
+
+            # print("X.shape = ", X.shape)
+            # print("Y.shape = ", Y.shape)
+            # print(X)
+            # print(Y)
 
             return X, Y, idx, row
 
@@ -123,6 +136,7 @@ class RevenueDataset(Dataset):
         of the datasset. 
         """
         df = pd.read_csv(file_path, index_col=0)
+        df = df.fillna(0)
         # Cut off at start and end date
         df = df.loc[str(start_date) : str(end_date)]
         dates = df.index

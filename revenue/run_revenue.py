@@ -128,7 +128,10 @@ if __name__ == "__main__":
     print("Creating dataset.")
     """ Calculating start and end of test set based on the length of the receptive field """
     # Lookback of the TCN
-    look_back = 1 + 2 * (args.kernel_size - 1) * 2 ** (args.num_layers - 1)
+    if args.dilated_convolutions:
+        look_back = 1 + 2 * (args.kernel_size - 1) * 2 ** (args.num_layers - 1)
+    else:
+        look_back = 1 + (args.kernel_size - 1) * args.num_layers
     print(f"Receptive field of the model is {look_back} time points.")
     look_back_timedelta = timedelta(hours=look_back)
 
@@ -299,4 +302,3 @@ if __name__ == "__main__":
     print("Finished Training")
 
 # python revenue/run_revenue.py --num_workers 0 --model_save_path revenue/models/test_local --writer_path revenue/runs/test_local --epochs 1 --tenacity 20 --clip --log_interval 100 --print --train_start 2007-01-01 --train_end 2017-01-01 --num_rolling_periods 2 --length_rolling 4 --v_batch_size 32 --h_batch_size 3 --num_layers 2 --kernel_size 2 --res_block_size 4 --embed post --embedding_dim 2
-

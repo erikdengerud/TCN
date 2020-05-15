@@ -45,6 +45,7 @@ class TCN(nn.Module):
         in_channels = in_channels + embedding_dim if embed == "pre" else in_channels
         if dilated_convolutions is False:
             dilations = [1 for i in range(num_layers)]
+        print(dilations)
         self.tcn = TemporalConvolutionalNetwork(
             num_layers,
             in_channels,

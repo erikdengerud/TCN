@@ -34,6 +34,7 @@ class TCN(nn.Module):
         num_embeddings: int = 370,
         embedding_dim: int = 2,
         embed: str = None,
+        dilated_convolutions: bool = True,
     ) -> None:
         """
         A TCN for the electricity dataset. An additional layer is added to the TCN to get 
@@ -42,6 +43,8 @@ class TCN(nn.Module):
         """
         super(TCN, self).__init__()
         in_channels = in_channels + embedding_dim if embed == "pre" else in_channels
+        if dilated_convolutions is False:
+            dilations = [1 for i in range(num_layers)]
         self.tcn = TemporalConvolutionalNetwork(
             num_layers,
             in_channels,

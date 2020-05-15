@@ -14,7 +14,7 @@ def f(a, b):
         return False
 
 
-num_entries_req = 16
+num_entries_req = 28
 all_df = []
 describe_dicts = []
 comp_sect_dicts = []

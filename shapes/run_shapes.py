@@ -151,8 +151,8 @@ if __name__ == "__main__":
     df = train_dataset.df_descriptive.copy()
     print("Test dataset")
     test_dataset = ShapeDataset(
-        N=50,
-        t=1000,
+        N=args.N,
+        t=args.t,
         balance=False,
         predict_ahead=1,
         h_batch=0,

@@ -259,11 +259,17 @@ if __name__ == "__main__":
 
             # Visualizing embeddings
             if args.embed is not None:
-                ids = [i for i in range(370)]
+                ids = [i for i in range(train_dataset.num_ts)]
                 ids = torch.LongTensor(ids).to(device)
+                meta_sector = [
+                    train_dataset.comp_sect_dict[
+                        train_dataset.companies_id_dict[id.item()]
+                    ][0]
+                    for id in ids
+                ]
                 embds = tcn.embedding(ids)
                 writer.add_embedding(
-                    embds, metadata=ids, global_step=ep, tag="embedded id"
+                    embds, metadata=meta_sector, global_step=ep, tag="embedded id"
                 )
 
         # Early stop

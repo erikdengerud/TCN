@@ -53,7 +53,7 @@ class RevenueDataset(Dataset):
         X = torch.tensor(df.values)
         X = torch.transpose(X, 0, 1)
         self.dates = dates
-        self.companies_id_dict = {df.columns[i]: i for i in range(len(df.columns))}
+        self.companies_id_dict = {i: df.columns[i] for i in range(len(df.columns))}
         self.num_ts = X.shape[0]
         self.length_ts = X.shape[1]
 
@@ -232,3 +232,6 @@ if __name__ == "__main__":
     print(x[0, 0, -5:])
     print(y[0, 0, -5:])
     print(dataset.__len__())
+
+    print(dataset.companies_id_dict)
+    print(dataset.comp_sect_dict)

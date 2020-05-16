@@ -86,7 +86,10 @@ class TCN(nn.Module):
             )
 
         self.init_weights(leveledinit, kernel_size, bias)
-        self.lookback = 1 + 2 * (kernel_size - 1) * 2 ** (num_layers - 1)
+        if dilated_convolutions is True:
+            self.lookback = 1 + 2 * (kernel_size - 1) * 2 ** (num_layers - 1)
+        else:
+            self.lookback = 1 + (kernel_size - 1) * num_layers
 
     def init_weights(self, leveledinit: bool, kernel_size: int, bias: bool) -> None:
         """ 

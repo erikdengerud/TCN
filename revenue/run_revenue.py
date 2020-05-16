@@ -90,7 +90,10 @@ def evaluate_final() -> List[float]:
             )
 
             predictions, real_values = tcn.rolling_prediction(
-                x, emb_id=idx_row, tau=4, num_windows=2
+                x,
+                emb_id=idx_row,
+                tau=args.length_rolling,
+                num_windows=args.num_rolling_periods,
             )
             all_predictions.append(predictions)
             all_real_values.append(real_values)

@@ -2,8 +2,8 @@ import pandas as pd
 import argparse
 
 
-def create_job_file(run_command: str, fn: str) -> None:
-    top = """#!/bin/sh\n#SBATCH --partition=GPUQ\n#SBATCH --account=share-ie-imf\n#SBATCH --time=10:00:00\n#SBATCH --nodes=1\n#SBATCH --ntasks-per-node=1\n#SBATCH --mem=20000\n#SBATCH --job-name=revenue\n#SBATCH --mail-user=eriko1306@gmail.com\n#SBATCH --mail-type=ALL\n#SBATCH --gres=gpu:1 
+def create_job_file(run_command: str, fn: str, time_limit: str) -> None:
+    top = f"""#!/bin/sh\n#SBATCH --partition=GPUQ\n#SBATCH --account=share-ie-imf\n#SBATCH --time={time_limit}\n#SBATCH --nodes=1\n#SBATCH --ntasks-per-node=1\n#SBATCH --mem=20000\n#SBATCH --job-name=revenue\n#SBATCH --mail-user=eriko1306@gmail.com\n#SBATCH --mail-type=ALL\n#SBATCH --gres=gpu:1 
     """
     venv = "source venv/bin/activate"
     modules = (
@@ -42,11 +42,14 @@ def create_bash_for_jobs(csv_path: str, fn: str) -> None:
             f"--res_block_size {df.filter_size[i]}",
             f"{'--' if df.dilations[i] else '--no-'}dilated_convolutions",
         ]
+        if df.embed[i]:
+            command.append("--embed post")
+            command.append(f"--embedding_dim {df.embed_dim[i]}")
 
         jobs[f"{df.dataset[i]}_job_{i}.sh"] = " ".join(command)
 
-    for job in jobs.keys():
-        create_job_file(jobs[job], job)
+    for i, job in enumerate(jobs.keys()):
+        create_job_file(jobs[job], job, df.time_limit[i])
 
     with open(fn, "w") as f:
         f.write("#!/bin/sh")

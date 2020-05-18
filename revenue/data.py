@@ -53,7 +53,7 @@ class RevenueDataset(Dataset):
         X = torch.tensor(df.values)
         X = torch.transpose(X, 0, 1)
         self.dates = dates
-        self.companies_id_dict = {i: df.columns[i] for i in range(len(df.columns))}
+        self.id_companies_dict = {i: df.columns[i] for i in range(len(df.columns))}
         self.num_ts = X.shape[0]
         self.length_ts = X.shape[1]
 
@@ -67,7 +67,7 @@ class RevenueDataset(Dataset):
 
         self.X = X.to(dtype=torch.float32)
 
-        self.comp_sect_dict = self.get_meta(meta_path)
+        self.comp_sect_dict, self.num_sect, self.sect_id_dict = self.get_meta(meta_path)
 
         print("Dimension of X : ", self.X.shape)
         print("Dimension of Y : ", self.Y.shape)
@@ -92,7 +92,12 @@ class RevenueDataset(Dataset):
             X = self.X[idx]
             Y = self.Y[idx]
 
-            return X, Y, idx, idx
+            # Using only one of the sectors if the company belongs to more
+            sect = self.sect_id_dict[
+                self.comp_sect_dict[self.id_companies_dict[idx]][0]
+            ]
+
+            return X, Y, idx, idx, sect
 
         else:
             # print("before")
@@ -118,8 +123,11 @@ class RevenueDataset(Dataset):
             # print("Y.shape = ", Y.shape)
             # print(X)
             # print(Y)
+            sect = self.sect_id_dict[
+                self.comp_sect_dict[self.id_companies_dict[row]][0]
+            ]
 
-            return X, Y, idx, row
+            return X, Y, idx, row, sect
 
     def get_row_column(self, idx: int) -> List[int]:
         """ Gets row and column based on idx, num_ts and length_ts """
@@ -152,7 +160,9 @@ class RevenueDataset(Dataset):
             else:
                 comp_sect_dict[comp].append(sectors[i])
         # d = df.set_index("company").T.to_dict("records")
-        return comp_sect_dict
+        unique_sectors = list(set(sectors))
+        sect_id_dict = {s: i for i, s in enumerate(unique_sectors)}
+        return comp_sect_dict, len(set(sectors)), sect_id_dict
 
     def plot_examples(
         self,
@@ -201,7 +211,6 @@ class RevenueDataset(Dataset):
 if __name__ == "__main__":
     # revenue dataset
     print("Revenue dataset.")
-    np.random.seed(1729)
     dataset = RevenueDataset(
         file_path="revenue/data/processed_companies.csv",
         meta_path="revenue/data/comp_sect_meta.csv",
@@ -217,11 +226,16 @@ if __name__ == "__main__":
 
     data_loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
     dataiter = iter(data_loader)
-    x, y, idx, row = dataiter.next()
+    x, y, idx, row, sect = dataiter.next()
     data = dataiter.next()
     print(type(data))
     # print(data)
     print("idx", idx)
+    print("sect: ", sect)
+    d = dataset.sect_id_dict
+    print(d)
+    d = {v: k for k, v in d.items()}
+    print([d[s] for s in sect.detach().numpy().tolist()])
     # print('Samples : ', x)
     print("Shape of samples : ", x.shape)
     # print('Labels : ', y)
@@ -233,5 +247,6 @@ if __name__ == "__main__":
     print(y[0, 0, -5:])
     print(dataset.__len__())
 
-    print(dataset.companies_id_dict)
-    print(dataset.comp_sect_dict)
+    # print(dataset.companies_id_dict)
+    print(dataset.num_sect)
+    print(dataset.sect_id_dict)

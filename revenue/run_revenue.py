@@ -13,6 +13,7 @@ import pandas as pd
 import sys
 from typing import List
 import warnings
+import pickle
 
 warnings.filterwarnings("ignore")
 
@@ -31,15 +32,17 @@ def train(epoch: int) -> None:
     epoch_train_loss = []
     total_loss = 0.0
     for i, d in enumerate(train_loader):
-        x, y, idx, idx_row = (
+        x, y, idx, idx_row, id_sect = (
             d[0].to(device),
             d[1].to(device),
             d[2].to(device),
             d[3].to(device),
+            d[4].to(device),
         )
 
         optimizer.zero_grad()
-        output = tcn(x, idx_row)
+        emb = idx_row if not args.embed_sector else id_sect
+        output = tcn(x, emb)
         # Since our x is longer than the y because we need the receptive field we
         # slice the output.
         output = output[:, :, -y.shape[2] :]
@@ -82,23 +85,25 @@ def evaluate_final() -> List[float]:
         all_real_values = []
         all_test_loss = []
         for i, data in enumerate(test_loader):
-            x, y, idx, idx_row = (
+            x, y, idx, idx_row, id_sect = (
                 data[0].to(device),
                 data[1].to(device),
                 data[2].to(device),
                 data[3].to(device),
+                data[4].to(device),
             )
 
             predictions, real_values = tcn.rolling_prediction(
                 x,
-                emb_id=idx_row,
+                emb_id=idx_row if not args.embed_sector else id_sect,
                 tau=args.length_rolling,
                 num_windows=args.num_rolling_periods,
             )
             all_predictions.append(predictions)
             all_real_values.append(real_values)
 
-            output = tcn(x, idx_row)
+            emb = idx_row if not args.embed_sector else id_sect
+            output = tcn(x, emb)
             test_loss = criterion(output, y) / torch.abs(y).mean()
             all_test_loss.append(test_loss.item())
 
@@ -191,7 +196,7 @@ if __name__ == "__main__":
 
     # Using the dimensions of the samples and labels as in and output channels in our model
     load_iter = iter(train_loader)
-    x, y, _, _ = load_iter.next()
+    x, y, _, _, _ = load_iter.next()
     in_channels = x.shape[1]
     out_channels = y.shape[1]
     """
@@ -210,7 +215,9 @@ if __name__ == "__main__":
         dilations=None,
         leveledinit=args.leveledinit,
         type_res_blocks=args.type_res_blocks,
-        num_embeddings=train_dataset.num_ts,
+        num_embeddings=train_dataset.num_ts
+        if not args.embed_sector
+        else train_dataset.num_sect,
         embedding_dim=args.embedding_dim,
         embed=args.embed,
         dilated_convolutions=args.dilated_convolutions,
@@ -251,6 +258,7 @@ if __name__ == "__main__":
                 tcn,
                 test_loader,
                 device,
+                embed_sect=args.embed_sector,
                 num_windows=args.num_rolling_periods,
                 tau=args.length_rolling,
             )
@@ -266,18 +274,28 @@ if __name__ == "__main__":
 
             # Visualizing embeddings
             if args.embed is not None:
-                ids = [i for i in range(train_dataset.num_ts)]
-                ids = torch.LongTensor(ids).to(device)
-                meta_sector = [
-                    train_dataset.comp_sect_dict[
-                        train_dataset.companies_id_dict[id.item()]
-                    ][0]
-                    for id in ids
-                ]
-                embds = tcn.embedding(ids)
-                writer.add_embedding(
-                    embds, metadata=meta_sector, global_step=ep, tag="embedded id"
-                )
+                if args.embed_sector:
+                    ids = [i for i in range(train_dataset.num_sect)]
+                    ids = torch.LongTensor(ids).to(device)
+                    d = {v: k for k, v in train_dataset.sect_id_dict.items()}
+                    meta_sector = [d[id.item()] for id in ids]
+                    embds = tcn.embedding(ids)
+                    writer.add_embedding(
+                        embds, metadata=meta_sector, global_step=ep, tag="embedded id"
+                    )
+                else:
+                    ids = [i for i in range(train_dataset.num_ts)]
+                    ids = torch.LongTensor(ids).to(device)
+                    meta_sector = [
+                        train_dataset.comp_sect_dict[
+                            train_dataset.companies_id_dict[id.item()]
+                        ][0]
+                        for id in ids
+                    ]
+                    embds = tcn.embedding(ids)
+                    writer.add_embedding(
+                        embds, metadata=meta_sector, global_step=ep, tag="embedded id"
+                    )
 
         # Early stop
         if ep > args.tenacity + 1:
@@ -304,7 +322,7 @@ if __name__ == "__main__":
     torch.save(tcn.state_dict(), args.model_save_path)
     f = open("_".join([args.model_save_path, "_args.pkl"]), "wb")
     pickle.dump(args, f)
-    f.close(
+    f.close()
     print("Finished Training")
 
 # python revenue/run_revenue.py --num_workers 0 --model_save_path revenue/models/test_local --writer_path revenue/runs/test_local --epochs 1 --tenacity 20 --clip --log_interval 100 --print --train_start 2007-01-01 --train_end 2017-01-01 --num_rolling_periods 2 --length_rolling 4 --v_batch_size 32 --h_batch_size 3 --num_layers 2 --kernel_size 2 --res_block_size 4 --embed post --embedding_dim 2

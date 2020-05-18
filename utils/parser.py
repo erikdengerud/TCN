@@ -34,6 +34,7 @@ def parse():
     parser.add_argument("--embed", type=str, default=None)
     parser.add_argument("--embedding_dim", type=int, default=3)
     add_bool_arg(parser, name="dilated_convolutions", default=True)
+    add_bool_arg(parser, name="embed_sector", default=False)
 
     # Training parameters
     parser.add_argument("--epochs", type=int, default=300)

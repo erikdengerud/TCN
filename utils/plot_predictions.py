@@ -23,6 +23,7 @@ def plot_predictions(
     model: nn.Module,
     data_loader: DataLoader,
     device,
+    embed_sect: bool = False,
     num_windows: int = 7,
     tau: int = 24,
     num_to_plot=4,
@@ -33,18 +34,26 @@ def plot_predictions(
     # Load data to plot. The dataloader should have shuffle=False to get the same time
     # series each time.
     iter_loader = iter(data_loader)
-    x, y, idx, idx_row = iter_loader.next()
-    x = x.to(device)
-    y = y.to(device)
-    idx = idx.to(device)
-    idx_row = idx_row.to(device)
+    d = iter_loader.next()
+    x = d[0].to(device)
+    y = d[1].to(device)
+    idx = d[2].to(device)
+    idx_row = d[3].to(device)
     x = x[:num_to_plot]
     y = y[:num_to_plot]
     idx = idx[:num_to_plot]
     idx_row = idx_row[:num_to_plot]
+    try:
+        id_sect = d[4].to(device)
+        id_sect = id_sect[:num_to_plot]
+    except:
+        id_sect = None
     # Predict using multi step and rolling predictions
     preds, actual = model.rolling_prediction(
-        x, emb_id=idx_row, num_windows=num_windows, tau=tau
+        x,
+        emb_id=idx_row if not embed_sect else id_sect,
+        num_windows=num_windows,
+        tau=tau,
     )
     # plot n series at a time. Real and predicted values
     preds, actual = preds.detach().cpu().numpy(), actual.detach().cpu().numpy()

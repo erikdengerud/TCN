@@ -302,6 +302,9 @@ if __name__ == "__main__":
     writer.close()
     # torch.save(tcn, args.model_save_path)
     torch.save(tcn.state_dict(), args.model_save_path)
+    f = open("_".join([args.model_save_path, "_args.pkl"]), "wb")
+    pickle.dump(args, f)
+    f.close(
     print("Finished Training")
 
 # python revenue/run_revenue.py --num_workers 0 --model_save_path revenue/models/test_local --writer_path revenue/runs/test_local --epochs 1 --tenacity 20 --clip --log_interval 100 --print --train_start 2007-01-01 --train_end 2017-01-01 --num_rolling_periods 2 --length_rolling 4 --v_batch_size 32 --h_batch_size 3 --num_layers 2 --kernel_size 2 --res_block_size 4 --embed post --embedding_dim 2

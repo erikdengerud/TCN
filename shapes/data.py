@@ -158,9 +158,9 @@ class ShapeDataset(Dataset):
         elif shape == "triangle":
             s = self.triangle(length, period, mean, var)
         if noise == "iid":
-            s += self.iid_noise(s)
+            s = self.iid_noise(s)
         elif noise == "matern":
-            s += self.matern_noise(s)
+            s = self.matern_noise(s)
         return s
 
     def sine(self, t, p, mean=0, var=1, start=1):
@@ -241,7 +241,9 @@ class ShapeDataset(Dataset):
 if __name__ == "__main__":
     print("Shape dataset")
     np.random.seed(1729)
-    dataset = ShapeDataset(N=50, t=100, balance=False, predict_ahead=1, h_batch=100,)
+    dataset = ShapeDataset(
+        N=50, t=100, balance=False, predict_ahead=1, h_batch=100, mean=10
+    )
 
     dataset.plot_examples(ids=[], n=5, length_plot=50)
 

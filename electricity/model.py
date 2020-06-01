@@ -84,7 +84,6 @@ class TCN(nn.Module):
         self.init_weights(leveledinit, kernel_size, bias)
         self.lookback = 1 + 2 * (kernel_size - 1) * 2 ** (num_layers - 1)
 
-
     def init_weights(self, leveledinit: bool, kernel_size: int, bias: bool) -> None:
         """ 
         Init the weights in the last layer. The rest is initialized in the residual block. 
@@ -97,7 +96,7 @@ class TCN(nn.Module):
                 self.conv1d.weight[:, 0, :] += 1.0 / kernel_size
         else:
             nn.init.xavier_uniform_(self.conv1d.weight)
-        
+
         if self.embed in ("pre", "post"):
             nn.init.xavier_uniform_(self.embedding.weight)
 
@@ -161,6 +160,9 @@ class TCN(nn.Module):
             x_prev = torch.cat((x_prev, x_next), 2)
         # Return predicted x with covariates and just the predictions
         return x_prev[:, :, -num_steps:], x_prev[:, 0, -num_steps:]
+
+    def recalculate_prototypes():
+        pass
 
 
 if __name__ == "__main__":

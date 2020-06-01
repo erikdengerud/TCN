@@ -45,7 +45,7 @@ def cluster_similarity_matrix(
 
     num_clusters = len(set(clusters))
 
-    return clusters, num_clusters, method.inertia_
+    return clusters, num_clusters
 
 
 def evaluate_clustering(clusters, similarity_matrix):
@@ -159,7 +159,7 @@ def cluster_ts(
     if dist_or_sim_or_feat == "feat":
         # if the algorithm works only on features and not similarities
         D = X
-    clusters, num_clusters, inertia = cluster_similarity_matrix(
+    clusters, num_clusters = cluster_similarity_matrix(
         D, algorithm=algorithm, num_clusters=num_clusters
     )
 
@@ -207,8 +207,6 @@ def cluster_ts(
     ) as handle:
         pickle.dump(cluster_dict, handle)
     handle.close()
-
-    return inertia
 
 
 if __name__ == "__main__":

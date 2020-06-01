@@ -44,7 +44,6 @@ def calculate_sarima(Y, s):
         print(i)
         train = Y[i][~np.isnan(Y[i])].copy()
         print("fitting model")
-        print(train)
         modl = pm.auto_arima(
             train,
             start_p=1,
@@ -77,10 +76,7 @@ def calculate_sarima(Y, s):
         }
         p = {}
         for term, num in arma.items():
-            print(term, num)
-            print("".join([term, str(i + 1)]))
             for i in range(num):
-                print()
                 p["".join([term, str(i + 1)])] = params.pop()
 
         params_list.append(p)
@@ -111,7 +107,10 @@ if __name__ == "__main__":
     # electricity sarima
     Y = np.load("representations/representation_matrices/electricity_train_raw.npy")
     print(calculate_pca(Y, 10))
-    calculate_sarima(Y, 24)
+    X = calculate_sarima(Y, 24)
+    np.save("representations/representation_matrices/electricity_train_sarima.npy")
+
+    """
 
     # electricity pca
     Y = np.load("representations/representation_matrices/electricity_train_scaled.npy")
@@ -167,3 +166,4 @@ if __name__ == "__main__":
     sc = plt.scatter(Y_tsne[:, 0], Y[:, 1], c=mean, cmap=cm)
     plt.colorbar(sc)
     plt.show()
+    """

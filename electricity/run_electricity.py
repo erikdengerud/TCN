@@ -12,6 +12,7 @@ import numpy as np
 import sys
 from typing import List
 import warnings
+import pickle
 
 warnings.filterwarnings("ignore")
 
@@ -97,6 +98,15 @@ def evaluate_final() -> List[float]:
         predictions_tensor = torch.cat(all_predictions, 0)
         real_values_tensor = torch.cat(all_real_values, 0)
 
+        # transform back to original scale
+        if args.scale:
+            predictions = predictions_tensor.detach().numpy()
+            real_values = real_values_tensor.detach().numpy()
+            predictions_inv = train_dataset.scaler.inverse_transform(predictions.T).T
+            real_values_inv = train_dataset.scaler.inverse_transform(real_values.T).T
+            predictions_tensor = torch.from_numpy(predictions_inv)
+            real_values_tensor = torch.from_numpy(real_values_inv)
+
         predictions_tensor = predictions_tensor.cpu()
         real_values_tensor = real_values_tensor.cpu()
 
@@ -150,6 +160,7 @@ if __name__ == "__main__":
         include_time_covariates=args.time_covariates,
         one_hot_id=args.one_hot_id,
         receptive_field=look_back,
+        scale=args.scale,
     )
     print("Test dataset")
     test_dataset = ElectricityDataSet(
@@ -160,6 +171,7 @@ if __name__ == "__main__":
         include_time_covariates=args.time_covariates,
         one_hot_id=args.one_hot_id,
         receptive_field=look_back,
+        scale=False,
     )
     train_loader = DataLoader(
         dataset=train_dataset,
@@ -280,5 +292,13 @@ if __name__ == "__main__":
 
     writer.close()
     # torch.save(tcn, args.model_save_path)
+
+    ids = [i for i in range(370)]
+    ids = torch.LongTensor(ids).to(device)
+    embds = tcn.embedding(ids).detech().numpy()
+    np.save(
+        f"representations/representation_matrices/electricity_train_embedded_id_nc_{args.embedding_dim}.npy",
+        embds,
+    )
     torch.save(tcn.state_dict(), args.model_save_path)
     print("Finished Training")

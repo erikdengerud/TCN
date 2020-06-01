@@ -15,6 +15,8 @@ import torch
 import torch.tensor as Tensor
 from torch.utils.data import Dataset, DataLoader
 
+from sklearn.preprocessing import MinMaxScaler
+
 from utils.time import (
     MinuteOfHour,
     HourOfDay,
@@ -45,6 +47,7 @@ class ElectricityDataSet(Dataset):
         h_batch: int = 0,  # 0 gives the whole time series
         one_hot_id: bool = False,
         receptive_field: int = 385,
+        scale: bool = False,
     ) -> None:
         """ Dates """
         # Check dates
@@ -62,13 +65,19 @@ class ElectricityDataSet(Dataset):
         self.predict_ahead = predict_ahead
         self.h_batch = h_batch
         self.receptive_field = receptive_field
+        if scale:
+            self.scaler = MinMaxScaler()
 
         """ Creating the dataset """
         # Extract the time series from the file and store as tensor X
         df, dates = self.get_time_range_df(
             file_path, start_date=start_date, end_date=end_date
         )
-        X = torch.tensor(df.values)
+        if scale:
+            values = self.scaler.fit_transform(df_values)
+        else:
+            values = df.values
+        X = torch.tensor(scaled_values)
         X = torch.transpose(X, 0, 1)
         self.num_ts = X.shape[0]
         self.length_ts = X.shape[1]

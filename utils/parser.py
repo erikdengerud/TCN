@@ -24,6 +24,7 @@ def parse():
     parser.add_argument("--var", type=float, default=1.0)
     parser.add_argument("--N", type=int, default=100)
     parser.add_argument("--t", type=int, default=1000)
+    add_bool_arg(parser, name="scale", default=False)
 
     # Model architecture
     parser.add_argument("--num_layers", type=int, default=5)

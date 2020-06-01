@@ -291,14 +291,14 @@ if __name__ == "__main__":
     print("RMSE: {:.6f}".format(rmse))
 
     writer.close()
-    # torch.save(tcn, args.model_save_path)
 
-    ids = [i for i in range(370)]
-    ids = torch.LongTensor(ids).to(device)
-    embds = tcn.embedding(ids).detech().numpy()
-    np.save(
-        f"representations/representation_matrices/electricity_train_embedded_id_nc_{args.embedding_dim}.npy",
-        embds,
-    )
+    if args.embed is not None:
+        ids = [i for i in range(370)]
+        ids = torch.LongTensor(ids).to(device)
+        embds = tcn.embedding(ids).detech().numpy()
+        np.save(
+            f"representations/representation_matrices/electricity_train_embedded_id_nc_{args.embedding_dim}.npy",
+            embds,
+        )
     torch.save(tcn.state_dict(), args.model_save_path)
     print("Finished Training")

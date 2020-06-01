@@ -41,6 +41,7 @@ def create_bash_for_jobs(csv_path: str, fn: str) -> None:
             f"--kernel_size {df.kernel_size[i]}",
             f"--res_block_size {df.filter_size[i]}",
             f"{'--' if df.dilations[i] else '--no-'}dilated_convolutions",
+            f"{'--' if df.scale[i] else '--no'}scale",
         ]
         if df.embed[i]:
             command.append("--embed post")

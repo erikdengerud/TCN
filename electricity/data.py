@@ -312,3 +312,16 @@ if __name__ == "__main__":
     print(x[0, 0, -5:])
     print(y[0, 0, -5:])
     print(dataset.__len__())
+
+    print("Electricity dataset test 3: ")
+    dataset = ElectricityDataSet(
+        "representations/representation_matrices/electricity_train_scaled.npy",
+        include_time_covariates=True,
+        start_date="2012-06-01",
+        end_date="2014-12-18",
+        predict_ahead=3,
+        h_batch=0,
+        one_hot_id=True,
+    )
+
+    dataset.plot_examples(ids=[16, 22, 26], n=3, logy=False, length_plot=168)

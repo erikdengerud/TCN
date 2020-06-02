@@ -16,7 +16,10 @@ import torch
 import torch.tensor as Tensor
 from torch.utils.data import Dataset, DataLoader
 
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import RobustScaler
+from sklearn.preprocessing import OneHotEncoder
+
+from clustering.cluster import cluster_dataset
 
 from utils.time import (
     MinuteOfHour,
@@ -27,8 +30,6 @@ from utils.time import (
     MonthOfYear,
     WeekOfYear,
 )
-
-from sklearn.preprocessing import OneHotEncoder
 
 
 class ElectricityDataSet(Dataset):
@@ -41,17 +42,22 @@ class ElectricityDataSet(Dataset):
     def __init__(
         self,
         file_path: str,
-        start_date: str = "2012-01-01",  # YYYY-MM-DD
-        end_date: str = "2014-05-26",  # YYYY-MM-DD
+        scale: bool = True,
+        scaler=None,
+        start_date: str = "2012-01-01",  # yyyy-mm-dd
+        end_date: str = "2014-05-26",  # yyyy-mm-dd
         include_time_covariates: bool = False,
         predict_ahead: int = 1,
         h_batch: int = 0,  # 0 gives the whole time series
         one_hot_id: bool = False,
         receptive_field: int = 385,
-        scale: bool = False,
         cluster_covariate: bool = False,
-        prototypes_dict_path: str = None,
-        cluster_dict_path: str = None,
+        random_covariate: bool = False,
+        representation: str = None,
+        similarity: str = "euclidean",
+        num_clusters: int = 10,
+        num_components: int = None,
+        algorithm: str = "kmeans",
     ) -> None:
         """ Dates """
         # Check dates
@@ -69,26 +75,25 @@ class ElectricityDataSet(Dataset):
         self.predict_ahead = predict_ahead
         self.h_batch = h_batch
         self.receptive_field = receptive_field
-        if scale:
-            self.scaler = MinMaxScaler()
-
-        """ Reading the clusters """
-        self.cluster_covariate = cluster_covariate
-        if cluster_covariate:
-            with open(prototypes_dict_path, "rb") as handle:
-                self.prototypes = pickle.load(handle)
-            with open(cluster_dict_path, "rb") as handle:
-                self.cluster_dict = pickle.load(handle)
+        if scaler is not None:
+            self.scaler = scaler
+        else:
+            self.scaler = RobustScaler()
+        self.scale = scale
 
         """ Creating the dataset """
         # Extract the time series from the file and store as tensor X
         df, dates = self.get_time_range_df(
             file_path, start_date=start_date, end_date=end_date
         )
-        if scale:
-            values = self.scaler.fit_transform(df.values)
+        if self.scale:
+            try:
+                values = self.scaler.transform(df.values)
+            except:
+                values = self.scaler.fit_transform(df.values)
         else:
             values = df.values
+
         X = torch.tensor(values)
         X = torch.transpose(X, 0, 1)
         self.num_ts = X.shape[0]
@@ -102,12 +107,33 @@ class ElectricityDataSet(Dataset):
             dtype=torch.float32
         )
 
-        # Including time covariates
+        """ Clustering """
+        self.cluster_covariate = cluster_covariate
+        self.representation = representation
+        self.similarity = similarity
+        self.algorithm = algorithm
+        self.num_clusters = num_clusters
+        self.num_components = num_components
+        self.random_covariate = random_covariate
+        if cluster_covariate:
+            self.prototypes, self.cluster_dict = cluster_dataset(
+                X.squeeze().detach().numpy(),
+                "electricity",
+                representation,
+                similarity,
+                algorithm,
+                num_clusters,
+                num_components,
+                scale,
+            )
+
+        """ Including time covariates """
         if self.include_time_covariates:
             Z, num_covariates = self.get_time_covariates(dates)
             Z = Z.repeat(self.num_ts, 1, 1)
             X = torch.cat((X, Z), 1)
 
+        """ One hot encoded ID """
         # Using the IDs of the time series as one-hot encoded covariates. The matrix is
         # too big to be stored in memory if we use on-hot encoding, so we specify the
         # encoding here and concatenate the encoding to the time series in the __getitem__
@@ -154,6 +180,17 @@ class ElectricityDataSet(Dataset):
                 encoded = torch.transpose(encoded, 0, 1)
 
                 X = torch.cat((X, encoded), 0)
+            if self.cluster_covariate:
+                # find cluster and prototype
+                # We only append X since appending Y would give look ahead bias
+                c = self.cluster_dict[idx]
+                prototype = self.prototypes[c]
+                prototype = torch.from_numpy(prototype)
+
+                # add prototype to X
+                prototype = prototype.view(1, -1).to(dtype=torch.float32)
+                X = torch.cat((X, prototype), 0)
+
             return X, Y, idx, idx
 
         else:
@@ -373,8 +410,12 @@ if __name__ == "__main__":
         receptive_field=385,
         scale=True,
         cluster_covariate=True,
-        prototypes_dict_path="clustering/clusters/electricity_train_pca_nc_10_euclidean_feat_KMeans_nc_10_prototypes.pkl",
-        cluster_dict_path="clustering/clusters/electricity_train_pca_nc_10_euclidean_feat_KMeans_nc_10_clusters.pkl",
+        random_covariate=False,
+        representation="pca",
+        similarity="euclidean",
+        num_clusters=10,
+        num_components=None,
+        algorithm="KMeans",
     )
 
     # dataset.plot_examples(ids=[16, 22, 26], n=3, logy=False, length_plot=168)

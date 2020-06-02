@@ -34,6 +34,7 @@ class TCN(nn.Module):
         num_embeddings: int = 370,
         embedding_dim: int = 3,
         embed: str = None,
+        clustering_dict: dict = None,
     ) -> None:
         """
         A TCN for the electricity dataset. An additional layer is added to the TCN to get 
@@ -62,9 +63,9 @@ class TCN(nn.Module):
             bias=bias,
         )
 
-        # Embeddings
+        """ Embeddings """
         self.embed = embed
-        if embed == "pre":
+        if embed == "pre":  # this doesn't converge
             self.embedding = nn.Embedding(
                 num_embeddings=num_embeddings, embedding_dim=embedding_dim
             )
@@ -80,6 +81,7 @@ class TCN(nn.Module):
                 kernel_size=kernel_size,
                 bias=bias,
             )
+        self.clustering_dict = clustering_dict
 
         self.init_weights(leveledinit, kernel_size, bias)
         self.lookback = 1 + 2 * (kernel_size - 1) * 2 ** (num_layers - 1)
@@ -154,15 +156,35 @@ class TCN(nn.Module):
         for i in range(num_steps):
             x_next = self.forward(x_prev, emb_id)[:, :, -1]
             # Add covariates
-            x_next = torch.cat((x_next, x_cov_curr[:, :, i]), 1)
-            x_next = x_next.unsqueeze(2)
+            if self.clustering_dict is None:
+                x_next = torch.cat((x_next, x_cov_curr[:, :, i]), 1)
+                x_next = x_next.unsqueeze(2)
+            else:  # calculate prototypes
+                prototypes_next = self.calculate_prototypes(x_next, emb_id)
+                x_next = torch.cat((x_next, prototypes_next), 1)
+                x_next = x_next.unsqueeze(2)
+
             # Add back onto x
             x_prev = torch.cat((x_prev, x_next), 2)
         # Return predicted x with covariates and just the predictions
         return x_prev[:, :, -num_steps:], x_prev[:, 0, -num_steps:]
 
-    def recalculate_prototypes():
-        pass
+    def calculate_prototypes(self, x_next, emb_id):
+        """ Calculates the prototypes values at the time step """
+        x_next_numpy = x_next.detach().numpy()
+        emb_id_numpy = emb_id.detach().numpy()
+        x_next_cov = np.zeros(x_next.shape[0])
+        for c in set(self.clustering_dict.values()):
+            # p = np.where()
+            p = np.mean(
+                x_next_numpy[[self.clustering_dict[emb] == c for emb in emb_id_numpy]]
+            )
+            x_next_cov[[self.clustering_dict[emb] == c for emb in emb_id_numpy]] = p
+
+        prototypes_next = torch.from_numpy(x_next_cov).to(dtype=torch.float32)
+        prototypes_next = prototypes_next.unsqueeze(1)
+
+        return prototypes_next  # n_samples x 1
 
 
 if __name__ == "__main__":
@@ -177,17 +199,29 @@ if __name__ == "__main__":
         include_time_covariates=False,
         start_date="2014-06-01",
         end_date="2014-12-18",
-        predict_ahead=3,
-        h_batch=0,
+        scale=True,
+        scaler=None,
+        predict_ahead=1,
+        h_batch=0,  # 0 gives the whole time series
         one_hot_id=False,
+        receptive_field=385,
+        cluster_covariate=True,
+        random_covariate=False,
+        representation="pca",
+        similarity="euclidean",
+        num_clusters=10,
+        num_components=None,
+        algorithm="KMeans",
     )
-    data_loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
+    data_loader = DataLoader(
+        dataset, batch_size=len(dataset), num_workers=0, shuffle=True
+    )
     dataiter = iter(data_loader)
-    x, y, idx = dataiter.next()
+    x, y, idx, idx_row = dataiter.next()
 
     tcn = TCN(
         num_layers=5,
-        in_channels=1,
+        in_channels=2,
         out_channels=1,
         kernel_size=3,
         residual_blocks_channel_size=[16, 16, 16, 16, 16],
@@ -195,19 +229,21 @@ if __name__ == "__main__":
         dropout=0.5,
         stride=1,
         leveledinit=False,
-        embed="pre",
+        embed=None,
+        clustering_dict=dataset.cluster_dict,
     )
 
     pytorch_total_params = sum(p.numel() for p in tcn.parameters() if p.requires_grad)
     print(f"Number of learnable parameters : {pytorch_total_params}")
 
-    for i, data in enumerate(data_loader):
-        x, y, idx = data[0], data[1], data[2]
-        print(x.shape)
-        print(y.shape)
-        print("i=", i)
-        preds, real = tcn.rolling_prediction(x, tau=24, num_windows=7, emb_id=idx)
-        print(preds.shape)
-        print(real.shape)
-        if i == 0:
-            break
+    with torch.no_grad():
+        for i, data in enumerate(data_loader):
+            x, y, idx = data[0], data[1], data[2]
+            print(x.shape)
+            print(y.shape)
+            print("i=", i)
+            preds, real = tcn.rolling_prediction(x, tau=24, num_windows=7, emb_id=idx)
+            print(preds.shape)
+            print(real.shape)
+            if i == 0:
+                break

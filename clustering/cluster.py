@@ -209,12 +209,128 @@ def cluster_ts(
     handle.close()
 
 
+def cluster_dataset(
+    dataset: np.array,
+    dataset_name: str,
+    representation: str,
+    similarity: str,
+    algorithm: str,
+    num_clusters: int = 10,
+    num_components: int = None,
+    scaled: bool = True,
+    **kwargs,
+) -> tuple:
+
+    if algorithm in ("KMeans", "Mean-shift"):
+        dist_or_sim_or_feat = "feat"
+    elif algorithm in ("Agglomerative", "DBSCAN", "OPTICS"):
+        dist_or_sim_or_feat = "dist"
+    elif algorithm in ("Affinity propogation", "Spectral clustering"):
+        dist_or_sim_or_feat = "sim"
+    else:
+        raise RuntimeError("No valid algorithm specified.")
+
+    if num_components is None:
+        num_components = num_clusters
+    try:
+        # write clustering and prototypes
+        with open(
+            f"clustering/clusters/{dataset_name}{'_scaled_' if scaled else '_'}{dataset.shape[1]}_{representation}_nc_{num_components}_{similarity}_{dist_or_sim_or_feat}_{algorithm}_nc_{num_clusters}_prototypes.pkl",
+            "rb",
+        ) as handle:
+            prototypes = pickle.load(handle)
+        handle.close()
+
+        with open(
+            f"clustering/clusters/{dataset_name}{'_scaled_' if scaled else '_'}{dataset.shape[1]}_{representation}_nc_{num_components}_{similarity}_{dist_or_sim_or_feat}_{algorithm}_nc_{num_clusters}_clusters.pkl",
+            "rb",
+        ) as handle:
+            cluster_dict = pickle.load(handle)
+        handle.close()
+    except Exception as e:
+        print("Did not find pre computed clustering.")
+        print(e)
+        # Get ts from dataset
+        Y = dataset
+        # read similarity matrix if it exists, compute if not
+        rep_path = f"representations/representation_matrices/{dataset_name}{'_scaled_' if scaled else '_'}{dataset.shape[1]}_{representation}_nc_{num_components}.npy"
+        sim_path = f"similarities/similarity_matrices/{dataset}{'_scaled_' if scaled else '_'}{dataset.shape[1]}_{representation}_nc_{num_components}_{similarity}_{dist_or_sim_or_feat}.npy"
+
+        try:
+            X = np.load(rep_path)
+        except:
+            X = calculate_representation(
+                Y, representation=representation, num_components=num_components
+            )
+            np.save(rep_path, X)
+        if dist_or_sim_or_feat in ("dist or sim"):
+            try:
+                D = np.load(sim_path)
+            except:
+                D = calculate_similarity_matrix(
+                    X, metric=similarity, dist_or_sim=dist_or_sim_or_feat
+                )
+                np.save(sim_path, D)
+        else:
+            # if the algorithm works only on features and not similarities
+            D = X
+
+        # cluster the time series
+        clusters, num_clusters = cluster_similarity_matrix(
+            D, algorithm=algorithm, num_clusters=num_clusters
+        )
+
+        cluster_dist = {
+            c: len(clusters[np.where(clusters == c)]) for c in range(num_clusters)
+        }
+        for k, v in cluster_dist.items():
+            print(f"{k:2} : {v}")
+
+        if clusters is None:
+            raise RuntimeError("Clusters is None. It probably didn't converge!")
+
+        # create prototypes
+        prototypes, examples, sizes = create_prototypes(clusters, Y, num_examples=3)
+
+        # write clustering and prototypes
+        with open(
+            f"clustering/clusters/{dataset_name}{'_scaled_' if scaled else '_'}{dataset.shape[1]}_{representation}_nc_{num_components}_{similarity}_{dist_or_sim_or_feat}_{algorithm}_nc_{num_clusters}_prototypes.pkl",
+            "wb",
+        ) as handle:
+            pickle.dump(prototypes, handle)
+        handle.close()
+
+        cluster_dict = {i: clusters[i] for i in range(len(clusters))}
+
+        with open(
+            f"clustering/clusters/{dataset_name}{'_scaled_' if scaled else '_'}{dataset.shape[1]}_{representation}_nc_{num_components}_{similarity}_{dist_or_sim_or_feat}_{algorithm}_nc_{num_clusters}_clusters.pkl",
+            "wb",
+        ) as handle:
+            pickle.dump(cluster_dict, handle)
+        handle.close()
+
+    return prototypes, cluster_dict
+
+
 if __name__ == "__main__":
     np.random.seed(1729)
-    # cluster_ts(
-    #    "electricity", "pca", "euclidean", "KMeans", num_clusters=10, plot=True,
-    # )
+    cluster_ts(
+        "electricity", "pca", "euclidean", "KMeans", num_clusters=10, plot=False,
+    )
 
+    Y = np.random.randn(100, 200)
+    p, c = cluster_dataset(
+        dataset=Y,
+        dataset_name="test",
+        representation="pca",
+        similarity="euclidean",
+        algorithm="KMeans",
+    )
+
+    print(p)
+    print(c)
+
+    """
     inertias = []
     for i in range(3, 20):
         inertia = cluster_ts(
@@ -224,3 +340,4 @@ if __name__ == "__main__":
     print(inertias)
     plt.plot(inertias)
     plt.show()
+    """

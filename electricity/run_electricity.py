@@ -172,6 +172,7 @@ if __name__ == "__main__":
         one_hot_id=args.one_hot_id,
         receptive_field=look_back,
         scale=False,
+        scaler=train_dataset.scaler,
     )
     train_loader = DataLoader(
         dataset=train_dataset,
@@ -179,9 +180,13 @@ if __name__ == "__main__":
         shuffle=True,
         num_workers=args.num_workers,
     )
+    # If we use clustering covariates we have to recalculate the prototypes at each time
+    # step. We therefore need the full dataset as batch size. This should be done in
+    # another way if the dataset is huge.
+    v_test_batch = len(test_dataset) if args.cluster_covariate else args.v_batch_size
     test_loader = DataLoader(
         dataset=test_dataset,
-        batch_size=args.v_batch_size,
+        batch_size=v_test_batch,
         shuffle=True,
         num_workers=args.num_workers,
     )

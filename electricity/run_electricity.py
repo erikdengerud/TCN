@@ -192,7 +192,7 @@ if __name__ == "__main__":
         num_clusters=args.num_clusters,
         num_components=args.num_components,
         algorithm=args.clustering,
-        cluster_dict=train_dataset.cluster_dict,
+        cluster_dict=train_dataset.cluster_dict if args.cluster_covariate else None,
     )
     train_loader = DataLoader(
         dataset=train_dataset,

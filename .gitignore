@@ -12,7 +12,7 @@ shapes/models/*
 shapes/runs/*
 
 clustering/clusters/*
-representation/representation_matrices/*
+representations/representation_matrices/*
 similarities/similarity_matrices/*
 
 # Byte-compiled / optimized / DLL files

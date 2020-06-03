@@ -100,8 +100,8 @@ def evaluate_final() -> List[float]:
 
         # transform back to original scale
         if args.data_scale:
-            predictions = predictions_tensor.detach().numpy()
-            real_values = real_values_tensor.detach().numpy()
+            predictions = predictions_tensor.cpu().detach().numpy()
+            real_values = real_values_tensor.cpu().detach().numpy()
             predictions_inv = train_dataset.data_scaler.inverse_transform(
                 predictions.T
             ).T
@@ -322,7 +322,7 @@ if __name__ == "__main__":
     if args.embed is not None:
         ids = [i for i in range(370)]
         ids = torch.LongTensor(ids).to(device)
-        embds = tcn.embedding(ids).detach().numpy()
+        embds = tcn.embedding(ids).detach().cpu().numpy()
         np.save(
             f"representations/representation_matrices/electricity{'_scaled_' if args.data_scale else '_'}embedded_id_nc_{args.embedding_dim}.npy",
             embds,

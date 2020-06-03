@@ -59,7 +59,6 @@ class ElectricityDataSet(Dataset):
         num_components: int = None,
         algorithm: str = "kmeans",
         cluster_dict=None,
-        prototypes=None,
     ) -> None:
         """ Dates """
         # Check dates
@@ -118,9 +117,10 @@ class ElectricityDataSet(Dataset):
         self.num_components = num_components
         self.random_covariate = random_covariate
         if cluster_covariate:
-            if prototypes is not None and cluster_dict is not None:
-                self.prototypes = prototypes
-                self.cluster_dict = cluster_dict
+            if cluster_dict is not None:
+                self.prototypes, self.cluster_dict = self.prototypes_from_cluster_dict(
+                    X.squeeze().detach().numpy(), cluster_dict
+                )
             else:
                 self.prototypes, self.cluster_dict = cluster_dataset(
                     X.squeeze().detach().numpy(),
@@ -231,6 +231,16 @@ class ElectricityDataSet(Dataset):
                 X = torch.cat((X, prototype), 0)
 
             return X, Y, idx, row
+
+    def prototypes_from_cluster_dict(self, X, cluster_dict):
+        """ Calculates prototypes given X and a cluster dict """
+        prototypes = {}
+        for c in set(cluster_dict.values()):
+            # p = np.where()
+            p = np.mean(X[[cluster_dict[i] == c for i in range(X.shape[0])]], axis=0)
+            prototypes[c] = p
+
+        return prototypes, cluster_dict
 
     def get_row_column(self, idx: int) -> List[int]:
         """ Gets row and column based on idx, num_ts and length_ts """

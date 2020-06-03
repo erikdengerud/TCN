@@ -192,7 +192,6 @@ if __name__ == "__main__":
         num_clusters=args.num_clusters,
         num_components=args.num_components,
         algorithm=args.clustering,
-        prototypes=train_dataset.prototypes,
         cluster_dict=train_dataset.cluster_dict,
     )
     train_loader = DataLoader(

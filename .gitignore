@@ -4,6 +4,17 @@
 #models/
 revenue/data/
 
+electricity/models/*
+electricity/runs/*
+revenue/models/*
+revenue/runs/*
+shapes/models/*
+shapes/runs/*
+
+clustering/clusters/*
+representation/representation_matrices/*
+similarities/similarity_matrices/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

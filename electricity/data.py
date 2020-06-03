@@ -42,8 +42,8 @@ class ElectricityDataSet(Dataset):
     def __init__(
         self,
         file_path: str,
-        scale: bool = True,
-        scaler=None,
+        data_scale: bool = True,
+        data_scaler=None,
         start_date: str = "2012-01-01",  # yyyy-mm-dd
         end_date: str = "2014-05-26",  # yyyy-mm-dd
         include_time_covariates: bool = False,
@@ -77,22 +77,22 @@ class ElectricityDataSet(Dataset):
         self.predict_ahead = predict_ahead
         self.h_batch = h_batch
         self.receptive_field = receptive_field
-        if scaler is not None:
-            self.scaler = scaler
+        if data_scaler is not None:
+            self.data_scaler = data_scaler
         else:
-            self.scaler = RobustScaler()
-        self.scale = scale
+            self.data_scaler = RobustScaler()
+        self.data_scale = data_scale
 
         """ Creating the dataset """
         # Extract the time series from the file and store as tensor X
         df, dates = self.get_time_range_df(
             file_path, start_date=start_date, end_date=end_date
         )
-        if self.scale:
+        if self.data_scale:
             try:
-                values = self.scaler.transform(df.values)
+                values = self.data_scaler.transform(df.values)
             except:
-                values = self.scaler.fit_transform(df.values)
+                values = self.data_scaler.fit_transform(df.values)
         else:
             values = df.values
 
@@ -130,7 +130,7 @@ class ElectricityDataSet(Dataset):
                     algorithm,
                     num_clusters,
                     num_components,
-                    scale,
+                    data_scale,
                 )
 
         """ Including time covariates """
@@ -414,7 +414,7 @@ if __name__ == "__main__":
         h_batch=256,
         one_hot_id=False,
         receptive_field=385,
-        scale=True,
+        data_scale=True,
         cluster_covariate=True,
         random_covariate=False,
         representation="pca",

@@ -99,11 +99,15 @@ def evaluate_final() -> List[float]:
         real_values_tensor = torch.cat(all_real_values, 0)
 
         # transform back to original scale
-        if args.scale:
+        if args.data_scale:
             predictions = predictions_tensor.detach().numpy()
             real_values = real_values_tensor.detach().numpy()
-            predictions_inv = train_dataset.scaler.inverse_transform(predictions.T).T
-            real_values_inv = train_dataset.scaler.inverse_transform(real_values.T).T
+            predictions_inv = train_dataset.data_scaler.inverse_transform(
+                predictions.T
+            ).T
+            real_values_inv = train_dataset.data_scaler.inverse_transform(
+                real_values.T
+            ).T
             predictions_tensor = torch.from_numpy(predictions_inv)
             real_values_tensor = torch.from_numpy(real_values_inv)
 
@@ -160,8 +164,8 @@ if __name__ == "__main__":
         include_time_covariates=args.time_covariates,
         one_hot_id=args.one_hot_id,
         receptive_field=look_back,
-        scale=args.scale,
-        scaler=None,
+        data_scale=args.data_scale,
+        data_scaler=None,
         cluster_covariate=args.cluster_covariate,
         random_covariate=args.random_covariate,
         representation=args.representation,
@@ -179,8 +183,8 @@ if __name__ == "__main__":
         include_time_covariates=args.time_covariates,
         one_hot_id=args.one_hot_id,
         receptive_field=look_back,
-        scale=False,
-        scaler=train_dataset.scaler,
+        data_scale=False,
+        data_scaler=train_dataset.data_scaler,
         cluster_covariate=args.cluster_covariate,
         random_covariate=args.random_covariate,
         representation=args.representation,
@@ -321,7 +325,7 @@ if __name__ == "__main__":
         ids = torch.LongTensor(ids).to(device)
         embds = tcn.embedding(ids).detach().numpy()
         np.save(
-            f"representations/representation_matrices/electricity{'_scaled_' if args.scale else '_'}embedded_id_nc_{args.embedding_dim}.npy",
+            f"representations/representation_matrices/electricity{'_scaled_' if args.data_scale else '_'}embedded_id_nc_{args.embedding_dim}.npy",
             embds,
         )
     torch.save(tcn.state_dict(), args.model_save_path)

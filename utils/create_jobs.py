@@ -44,7 +44,7 @@ def create_bash_for_jobs(csv_path: str, fn: str) -> None:
             f"--v_batch_size {df.v_batch_size[i]}",
             f"--h_batch_size {df.h_batch_size[i]}",
             f"{'--' if df.dilations[i] else '--no-'}dilated_convolutions",
-            f"{'--' if df.scale[i] else '--no-'}scale",
+            f"{'--' if df.scale[i] else '--no-'}scale_data",
             f"{'--' if df.time_covariates[i] else '--no-'}time_covariates",
             f"{'--' if df.one_hot_id[i] else '--no-'}one_hot_id",
             f"{'--' if df.cluster_covariate[i] else '--no-'}cluster_covariate",

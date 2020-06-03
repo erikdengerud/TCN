@@ -24,7 +24,7 @@ def parse():
     parser.add_argument("--var", type=float, default=1.0)
     parser.add_argument("--N", type=int, default=100)
     parser.add_argument("--t", type=int, default=1000)
-    add_bool_arg(parser, name="scale", default=False)
+    add_bool_arg(parser, name="scale_data", default=False)
     add_bool_arg(parser, name="cluster_covariate", default=False)
     add_bool_arg(parser, name="random_covariate", default=False)
     parser.add_argument("--representation", type=str, default="pca")

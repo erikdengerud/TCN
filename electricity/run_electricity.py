@@ -161,6 +161,14 @@ if __name__ == "__main__":
         one_hot_id=args.one_hot_id,
         receptive_field=look_back,
         scale=args.scale,
+        scaler=None,
+        cluster_covariate=args.cluster_covariate,
+        random_covariate=args.random_covariate,
+        representation=args.representation,
+        similarity=args.similarity,
+        num_clusters=args.num_clusters,
+        num_components=args.num_components,
+        algorithm=args.clustering,
     )
     print("Test dataset")
     test_dataset = ElectricityDataSet(
@@ -173,6 +181,15 @@ if __name__ == "__main__":
         receptive_field=look_back,
         scale=False,
         scaler=train_dataset.scaler,
+        cluster_covariate=args.cluster_covariate,
+        random_covariate=args.random_covariate,
+        representation=args.representation,
+        similarity=args.similarity,
+        num_clusters=args.num_clusters,
+        num_components=args.num_components,
+        algorithm=args.clustering,
+        prototypes=train_dataset.prototypes,
+        cluster_dict=train_dataset.cluster_dict,
     )
     train_loader = DataLoader(
         dataset=train_dataset,
@@ -201,6 +218,8 @@ if __name__ == "__main__":
     x, y, _, _ = load_iter.next()
     in_channels = x.shape[1]
     out_channels = y.shape[1]
+    print("In channels ", in_channels)
+    print("Out channels ", out_channels)
     """
     MODEL
     """
@@ -300,9 +319,9 @@ if __name__ == "__main__":
     if args.embed is not None:
         ids = [i for i in range(370)]
         ids = torch.LongTensor(ids).to(device)
-        embds = tcn.embedding(ids).detech().numpy()
+        embds = tcn.embedding(ids).detach().numpy()
         np.save(
-            f"representations/representation_matrices/electricity_train_embedded_id_nc_{args.embedding_dim}.npy",
+            f"representations/representation_matrices/electricity{'_scaled_' if args.scale else '_'}embedded_id_nc_{args.embedding_dim}.npy",
             embds,
         )
     torch.save(tcn.state_dict(), args.model_save_path)

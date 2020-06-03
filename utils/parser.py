@@ -25,11 +25,13 @@ def parse():
     parser.add_argument("--N", type=int, default=100)
     parser.add_argument("--t", type=int, default=1000)
     add_bool_arg(parser, name="scale", default=False)
-    add_bool_arg(parser, name="cluster_covariate", defaiult=False)
+    add_bool_arg(parser, name="cluster_covariate", default=False)
     add_bool_arg(parser, name="random_covariate", default=False)
     parser.add_argument("--representation", type=str, default="pca")
     parser.add_argument("--similarity", type=str, default="euclidean")
     parser.add_argument("--clustering", type=str, default="KMeans")
+    parser.add_argument("--num_clusters", type=int, default=10)
+    parser.add_argument("--num_components", type=int, default=10)
 
     # Model architecture
     parser.add_argument("--num_layers", type=int, default=5)

@@ -58,6 +58,8 @@ class ElectricityDataSet(Dataset):
         num_clusters: int = 10,
         num_components: int = None,
         algorithm: str = "kmeans",
+        cluster_dict=None,
+        prototypes=None,
     ) -> None:
         """ Dates """
         # Check dates
@@ -116,16 +118,20 @@ class ElectricityDataSet(Dataset):
         self.num_components = num_components
         self.random_covariate = random_covariate
         if cluster_covariate:
-            self.prototypes, self.cluster_dict = cluster_dataset(
-                X.squeeze().detach().numpy(),
-                "electricity",
-                representation,
-                similarity,
-                algorithm,
-                num_clusters,
-                num_components,
-                scale,
-            )
+            if prototypes is not None and cluster_dict is not None:
+                self.prototypes = prototypes
+                self.cluster_dict = cluster_dict
+            else:
+                self.prototypes, self.cluster_dict = cluster_dataset(
+                    X.squeeze().detach().numpy(),
+                    "electricity",
+                    representation,
+                    similarity,
+                    algorithm,
+                    num_clusters,
+                    num_components,
+                    scale,
+                )
 
         """ Including time covariates """
         if self.include_time_covariates:

@@ -51,6 +51,8 @@ def create_bash_for_jobs(csv_path: str, fn: str) -> None:
             f"--representation {df.representation[i]}",
             f"--similarity {df.similarity[i]}",
             f"--clustering {df.clustering[i]}",
+            f"--num_clusters {df.num_clusters[i]}",
+            f"--num_components {df.num_components[i]}",
             f"--num_layers {df.num_layers[i]}",
             f"--kernel_size {df.kernel_size[i]}",
             f"--res_block_size {df.res_block_size[i]}",

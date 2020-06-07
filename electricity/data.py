@@ -329,9 +329,21 @@ class ElectricityDataSet(Dataset):
         d_range = pd.date_range(start=start_date, end=end_date, freq="H")[:-1]
         df.index = d_range
 
-        df.plot(subplots=True, figsize=(10, 2), logy=logy)
+        size = 2 * 4.77
+        ax = df.plot(
+            subplots=True,
+            figsize=(size, 2),
+            logy=logy,
+            color="black",
+            legend=False,
+            linewidth=1,
+            rot=0,
+        )
+        for i in range(ax.shape[0]):
+            x1, x2 = ax[i].get_xlim()
+            ax[i].set_xlim((x1, x2 + 1))
         if save_path is not None:
-            plt.savefig(save_path)
+            plt.savefig(save_path, bbox_inches="tight")
         plt.show()
 
 
@@ -414,6 +426,20 @@ if __name__ == "__main__":
 
     #dataset.plot_examples(ids=[16, 22, 26], n=3, logy=False, length_plot=168)
     """
+    from matplotlib import rc
+
+    rc("text", usetex=True)
+
+    mystyle = {
+        "axes.spines.left": True,
+        "axes.spines.right": False,
+        "axes.spines.bottom": True,
+        "axes.spines.top": False,
+        "axes.grid": False,
+        "xtick.bottom": True,
+        "ytick.left": True,
+    }
+
     print("Electricity dataset test 4: ")
     dataset = ElectricityDataSet(
         "electricity/data/electricity.npy",
@@ -424,8 +450,8 @@ if __name__ == "__main__":
         h_batch=256,
         one_hot_id=False,
         receptive_field=385,
-        data_scale=True,
-        cluster_covariate=True,
+        data_scale=False,
+        cluster_covariate=False,
         random_covariate=False,
         representation="pca",
         similarity="euclidean",
@@ -433,11 +459,33 @@ if __name__ == "__main__":
         num_components=None,
         algorithm="KMeans",
     )
+    with plt.style.context(mystyle):
+        dataset.plot_examples(
+            ids=[316, 20],
+            n=3,
+            logy=False,
+            length_plot=120,
+            # save_path="electricity_example_316.pdf",
+        )
+        dataset.plot_examples(
+            ids=[16],
+            n=3,
+            logy=False,
+            length_plot=120,
+            save_path="electricity_example_16.pdf",
+        )
+        dataset.plot_examples(
+            ids=[176],
+            n=3,
+            logy=False,
+            length_plot=120,
+            save_path="electricity_example_176.pdf",
+        )
 
-    # dataset.plot_examples(ids=[16, 22, 26], n=3, logy=False, length_plot=168)
-
+    """
     data_loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
     dataiter = iter(data_loader)
     x, y, idx, idx_row = dataiter.next()
     print(x.shape)
     print(y.shape)
+    """

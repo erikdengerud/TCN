@@ -24,13 +24,16 @@ def create_job_file(run_command: str, fn: str, time_limit: str) -> None:
 def create_model_name(df, i):
     model_name_list = []
     for c in df.columns:
-        model_name.append(f"{c}-{df.c[i]}")
+        print(c)
+        print(df[[c]].values)
+        model_name_list.append(f"{c}-{df[[c]].values[i][0]}")
     model_name = "_".join(model_name_list)
     return model_name
 
 
 def create_bash_for_jobs(csv_path: str, fn: str) -> None:
     # read csv
+
     df = pd.read_csv(csv_path)
     jobs = {}
     for i in range(len(df)):

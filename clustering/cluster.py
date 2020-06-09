@@ -314,6 +314,7 @@ def cluster_dataset(
 
 if __name__ == "__main__":
     np.random.seed(1729)
+    """
     cluster_ts(
         "electricity", "pca", "euclidean", "KMeans", num_clusters=10, plot=False,
     )
@@ -329,7 +330,7 @@ if __name__ == "__main__":
 
     print(p)
     print(c)
-
+    """
     """
     inertias = []
     for i in range(3, 20):
@@ -341,3 +342,24 @@ if __name__ == "__main__":
     plt.plot(inertias)
     plt.show()
     """
+    from electricity.data import ElectricityDataSet
+
+    dataset = ElectricityDataSet(
+        "electricity/data/electricity.npy",
+        data_scaler=None,
+        start_date="2012-01-01",
+        end_date="2014-12-16",
+        include_time_covariates=False,
+        predict_ahead=1,
+        h_batch=0,
+        one_hot_id=False,
+        receptive_field=385,
+        cluster_covariate=False,
+        random_covariate=False,
+        representation=None,
+        similarity=None,
+        num_clusters=10,
+        num_components=None,
+        algorithm="kmeans",
+        cluster_dict=None,
+    )

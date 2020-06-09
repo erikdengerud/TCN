@@ -1,5 +1,6 @@
 import pandas as pd
 import argparse
+import uuid
 
 
 def create_job_file(run_command: str, fn: str, time_limit: str) -> None:
@@ -22,13 +23,13 @@ def create_job_file(run_command: str, fn: str, time_limit: str) -> None:
 
 
 def create_model_name(df, i):
-    model_name_list = []
-    for c in df.columns:
-        print(c)
-        print(df[[c]].values)
-        model_name_list.append(f"{c}-{df[[c]].values[i][0]}")
-    model_name = "_".join(model_name_list)
-    return model_name
+    # model_name_list = []
+    # for c in df.columns:
+    #    print(c)
+    #    print(df[[c]].values)
+    #    model_name_list.append(f"{c}-{df[[c]].values[i][0]}")
+    # model_name = "_".join(model_name_list)
+    return uuid.uuid4().hex  # model_name
 
 
 def create_bash_for_jobs(csv_path: str, fn: str) -> None:
@@ -36,8 +37,10 @@ def create_bash_for_jobs(csv_path: str, fn: str) -> None:
 
     df = pd.read_csv(csv_path)
     jobs = {}
+    model_names = {}
     for i in range(len(df)):
         model_name = create_model_name(df, i)
+        model_names[i] = model_name
         command = [
             "python3",
             f"{df.dataset[i]}/run_{df.dataset[i]}.py",
@@ -94,7 +97,7 @@ def create_bash_for_jobs(csv_path: str, fn: str) -> None:
             f.write(f"RES{i}=$(sbatch --parsable {job})")
         f.write('\necho "')
         for i, _ in enumerate(jobs.keys()):
-            f.write(f"$RES{i}\\n")
+            f.write(f"$RES{i},{model_names[i]},")
         f.write('" >> created_jobs_names.log')
 
 

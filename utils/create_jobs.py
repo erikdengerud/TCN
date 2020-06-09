@@ -21,17 +21,26 @@ def create_job_file(run_command: str, fn: str, time_limit: str) -> None:
         f.write(command)
 
 
+def create_model_name(df, i):
+    model_name_list = []
+    for c in df.columns:
+        model_name.append(f"{c}-{df.c[i]}")
+    model_name = "_".join(model_name_list)
+    return model_name
+
+
 def create_bash_for_jobs(csv_path: str, fn: str) -> None:
     # read csv
     df = pd.read_csv(csv_path)
     jobs = {}
     for i in range(len(df)):
+        model_name = create_model_name(df, i)
         command = [
             "python3",
             f"{df.dataset[i]}/run_{df.dataset[i]}.py",
             f"--num_workers {df.num_workers[i]}",
-            f"--model_save_path {df.dataset[i]}/models/{df.model[i]}_{df.num_layers[i]}_{df.kernel_size[i]}_{df.res_block_size[i]}_{df.dilations[i]}_embed_{df.embed[i]}_dim_{df.embed_dim[i]}",
-            f"--writer_path {df.dataset[i]}/runs/{df.model[i]}_{df.num_layers[i]}_{df.kernel_size[i]}_{df.res_block_size[i]}_{df.   dilations[i]}_embed_{df.embed[i]}_dim_{df.embed_dim[i]}",
+            f"--model_save_path {df.dataset[i]}/models/{model_name}.pt",
+            f"--writer_path {df.dataset[i]}/runs/{model_name}",
             f"--epochs {df.epochs[i]}",
             f"--tenacity {df.tenacity[i]}",
             f"{'--' if df.clip_gradient[i] else '--no-'}clip",

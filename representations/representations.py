@@ -12,6 +12,7 @@ import pmdarima as pm
 
 
 def calculate_representation(Y, representation, num_components, **kwargs):
+    print("Num components ", num_components)
     if representation == "pca":
         Y_rep = calculate_pca(Y, num_components=num_components)
     elif representation == "tsne":
@@ -25,6 +26,7 @@ def calculate_representation(Y, representation, num_components, **kwargs):
 
 
 def calculate_pca(Y, num_components):
+    print("Num components ", num_components)
     pca = PCA(n_components=num_components)
     Y_pca = pca.fit_transform(Y)
     print(f"Explained variance ratio: {np.sum(pca.explained_variance_ratio_)}")

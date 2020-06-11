@@ -16,20 +16,10 @@ import torch
 import torch.tensor as Tensor
 from torch.utils.data import Dataset, DataLoader
 
-from sklearn.preprocessing import RobustScaler
+from sklearn.preprocessing import RobustScaler, StandardScaler
 from sklearn.preprocessing import OneHotEncoder
 
 from clustering.cluster import cluster_dataset
-
-from utils.time import (
-    MinuteOfHour,
-    HourOfDay,
-    DayOfWeek,
-    DayOfMonth,
-    DayOfYear,
-    MonthOfYear,
-    WeekOfYear,
-)
 
 
 class ElectricityDataSet(Dataset):
@@ -75,7 +65,8 @@ class ElectricityDataSet(Dataset):
         if data_scaler is not None:
             self.data_scaler = data_scaler
         else:
-            self.data_scaler = RobustScaler()
+            # self.data_scaler = RobustScaler()
+            self.data_scaler = StandardScaler()
         self.data_scale = data_scale
 
         """ Creating the dataset """
@@ -157,6 +148,11 @@ class ElectricityDataSet(Dataset):
                 zero = zero.view(1, -1).to(dtype=torch.float32)
                 X = torch.cat((X, zero), 0)
 
+            if self.random_covariate:
+                r = torch.randn(X.shape[1], dtype=torch.float32)
+                r = r.view(1, -1)
+                X = torch.cat((X, r), 0)
+
             return X, Y, idx, idx
 
         else:
@@ -188,6 +184,13 @@ class ElectricityDataSet(Dataset):
                 zero = zero.view(1, -1).to(dtype=torch.float32)
                 X = torch.cat((X, zero), 0)
 
+            if self.random_covariate:
+                r = torch.randn(
+                    self.receptive_field + self.h_batch, dtype=torch.float32
+                )
+                r = r.view(1, -1)
+                X = torch.cat((X, r), 0)
+
             return X, Y, idx, row
 
     def prototypes_from_cluster_dict(self, X, cluster_dict):
@@ -196,9 +199,7 @@ class ElectricityDataSet(Dataset):
         Uses the scaler to scale before taking the mean
         """
         prototypes = {}
-        print(X.shape)
-        X_scaled = self.data_scaler.transform(X.T).T
-        print(X_scaled.shape)
+        X_scaled = self.data_scaler.transform(X.squeeze().detach().numpy().T).T
         for c in set(cluster_dict.values()):
             # p = np.where()
             p = np.mean(
@@ -207,7 +208,7 @@ class ElectricityDataSet(Dataset):
             )
             prototypes[c] = p
 
-        return prototypes, cluster_dict
+        return prototypes
 
     def get_row_column(self, idx: int) -> List[int]:
         """ Gets row and column based on idx, num_ts and length_ts """
@@ -235,25 +236,6 @@ class ElectricityDataSet(Dataset):
         dates = df.index
         df = df.reset_index(drop=True)
         return df, dates
-
-    def get_time_covariates(self, dates: pd.Series) -> Tuple[Tensor, int]:
-        """ Creating time covariates normalized to the range [-0.5, 0.5] using GluonTS. """
-        time_index = pd.DatetimeIndex(dates)
-        time_index = pd.DatetimeIndex(time_index)
-        Z = np.matrix(
-            [
-                MinuteOfHour(time_index),
-                HourOfDay(time_index),
-                DayOfWeek(time_index),
-                DayOfMonth(time_index),
-                DayOfYear(time_index),
-                MonthOfYear(time_index),
-                WeekOfYear(time_index),
-            ]
-        )
-        Z = torch.from_numpy(Z)
-        num_covariates = Z.shape[0]
-        return Z, num_covariates
 
     def plot_examples(
         self,
@@ -326,8 +308,8 @@ if __name__ == "__main__":
         h_batch=0,  # 0 gives the whole time series
         receptive_field=385,
         cluster_covariate=False,
-        random_covariate=False,
-        zero_covariate=True,
+        random_covariate=True,
+        zero_covariate=False,
         cluster_dict_path="test_cluster_dict.pkl",
     )
     data_loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
@@ -344,9 +326,12 @@ if __name__ == "__main__":
     print("Length of dataset: ", dataset.__len__())
     print("Type x : ", x.dtype)
     print("Type y : ", y.dtype)
+    # print(*[dataset.cluster_dict[i] for i in idx.detach().numpy()])
     print(x[:, :, -5:])
     print(y[:, :, -5:])
     print(dataset.__len__())
+    print(np.sum(x[:, 1, :].detach().numpy()))
+    print(torch.sum(torch.randn(4, 21000)).item())
     """
     # Electricity dataset
     print("Electricity dataset: ")

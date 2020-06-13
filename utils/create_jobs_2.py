@@ -37,7 +37,7 @@ def create_bash_for_jobs(csv_path: str, fn: str) -> None:
         model_names[i] = model_name
         command = [
             "python3",
-            f"{df.dataset[i]}/run_{df.dataset[i]}.py",
+            f"{df.dataset[i]}/run_{df.dataset[i]}_2.py",
             f"--num_workers {df.num_workers[i]}",
             f"--model_save_path {df.dataset[i]}/models/{model_name}.pt",
             f"--writer_path {df.dataset[i]}/runs/{model_name}",
@@ -46,8 +46,8 @@ def create_bash_for_jobs(csv_path: str, fn: str) -> None:
             f"{'--' if df.clip_gradient[i] else '--no-'}clip",
             f"--log_interval {df.log_interval[i]}",
             f"{'--' if df.print[i] else '--no-'}print",
-            f"--train_start {"-".join(df.train_start[i].split("/")[::-1])}",
-            f"--train_end {"-".join(df.train_end[i].split("/")[::-1])}",
+            f"--train_start {'-'.join(df.train_start[i].split('/')[::-1])}",
+            f"--train_end {'-'.join(df.train_end[i].split('/')[::-1])}",
             f"--num_rolling_periods {df.num_rolling_periods[i]}",
             f"--length_rolling {df.length_rolling[i]}",
             f"--v_batch_size {df.v_batch_size[i]}",
@@ -56,7 +56,7 @@ def create_bash_for_jobs(csv_path: str, fn: str) -> None:
             f"{'--' if df.cluster_covariate[i] else '--no-'}cluster_covariate",
             f"{'--' if df.cluster_covariate[i] else '--no-'}zero_covariate",
             f"{'--' if df.cluster_covariate[i] else '--no-'}random_covariate",
-            f"--cluster_dict_path {df.cluster_dict_path[i]}""
+            f"--cluster_dict_path {df.cluster_dict_path[i]}",
             f"--lr {df.lr[i]}",
             f"--dropout {df.dropout[i]}",
             f"{'--' if df.leveledinit[i] else '--no-'}leveledinit",

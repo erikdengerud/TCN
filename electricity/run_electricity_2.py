@@ -104,16 +104,17 @@ def evaluate_final() -> List[float]:
                     print(x_scaled.shape)
                     print(x[:, 1, :].unsqueeze(1).shape)
                     # add cluster to scaled. this worked. smthn else wrong
-                    x_scaled = torch.cat((x_scaled, x[:, 1, :].unsqueeze(1)), 1)
+                    x_scaled = torch.cat((x_scaled, x[:, 1, :].unsqueeze(1)), 1).to(device)
                     print(x_scaled.shape)
                     print(x_scaled[0, :, :7])
+                   
                 else:
-                    x_np[idx_row._list] = x.squeeze().cpu().numpy()
+                    x_np[idx_row_list] = x.squeeze().cpu().numpy()
                     x_scaled = test_dataset.data_scaler.transform(x_np.T).T
                     x_scaled = (
                         torch.from_numpy(x_scaled).to(dtype=torch.float32).unsqueeze(1)
                     )
-                    x_scaled = x_scaled[idx_row_list]
+                    x_scaled = x_scaled[idx_row_list].to(device)
 
                 predictions, _ = tcn.rolling_prediction(
                     x_scaled, idx_row, args.length_rolling, args.num_rolling_periods
@@ -125,7 +126,7 @@ def evaluate_final() -> List[float]:
                         args.num_rolling_periods * args.length_rolling,
                     )
                 )
-                predictions_rescaled[idx_row_list] = predictions..cpu().numpy()
+                predictions_rescaled[idx_row_list] = predictions.cpu().numpy()
                 predictions_rescaled = test_dataset.data_scaler.inverse_transform(
                     predictions_rescaled.T
                 ).T
@@ -149,7 +150,7 @@ def evaluate_final() -> List[float]:
                     output_rescaled.T
                 ).T
                 output = output_rescaled[idx_row_list]
-                output = torch.from_numpy(output).to(dtype=torch.float32)
+                output = torch.from_numpy(output).to(dtype=torch.float32, device=device)
 
                 y = y[:, :, -args.num_rolling_periods * args.length_rolling :]
 

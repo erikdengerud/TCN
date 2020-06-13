@@ -332,7 +332,7 @@ class ElectricityDataSet(Dataset):
         size = 2 * 4.77
         ax = df.plot(
             subplots=True,
-            figsize=(size, 2),
+            figsize=(size, 1.5),
             logy=logy,
             color="black",
             legend=False,
@@ -461,11 +461,11 @@ if __name__ == "__main__":
     )
     with plt.style.context(mystyle):
         dataset.plot_examples(
-            ids=[316, 20],
+            ids=[316],
             n=3,
             logy=False,
             length_plot=120,
-            # save_path="electricity_example_316.pdf",
+            save_path="electricity_example_316.pdf",
         )
         dataset.plot_examples(
             ids=[16],

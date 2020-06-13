@@ -289,7 +289,7 @@ if __name__ == "__main__":
                 print("RMSE: {:.6f}".format(rmse))
 
             # Visualizing embeddings
-            if args.embed is not None:
+            if args.embed in ("post", "pre"):
                 ids = [i for i in range(370)]
                 ids = torch.LongTensor(ids).to(device)
                 embds = tcn.embedding(ids)
@@ -319,7 +319,7 @@ if __name__ == "__main__":
 
     writer.close()
 
-    if args.embed is not None:
+    if args.embed in ("post", "pre"):
         ids = [i for i in range(370)]
         ids = torch.LongTensor(ids).to(device)
         embds = tcn.embedding(ids).detach().cpu().numpy()

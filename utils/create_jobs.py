@@ -4,7 +4,7 @@ import uuid
 
 
 def create_job_file(run_command: str, fn: str, time_limit: str) -> None:
-    top = f"""#!/bin/sh\n#SBATCH --partition=GPUQ\n#SBATCH --account=share-ie-imf\n#SBATCH --time={time_limit}\n#SBATCH --nodes=1\n#SBATCH --ntasks-per-node=1\n#SBATCH --mem=20000\n#SBATCH --job-name=revenue\n#SBATCH --mail-user=eriko1306@gmail.com\n#SBATCH --mail-type=ALL\n#SBATCH --gres=gpu:1\n#SBATCH --output=/tmp/$SLURM_JOB_ID.out
+    top = f"""#!/bin/sh\n#SBATCH --partition=GPUQ\n#SBATCH --account=share-ie-imf\n#SBATCH --time={time_limit}\n#SBATCH --nodes=1\n#SBATCH --ntasks-per-node=1\n#SBATCH --mem=20000\n#SBATCH --job-name=revenue\n#SBATCH --mail-user=eriko1306@gmail.com\n#SBATCH --mail-type=ALL\n#SBATCH --gres=gpu:1\n
     """
     venv = "source venv/bin/activate"
     modules = (
@@ -77,7 +77,7 @@ def create_bash_for_jobs(csv_path: str, fn: str) -> None:
             f"{'--' if df.leveledinit[i] else '--no-'}leveledinit",
             f"--stride {df.stride[i]}",
         ]
-        if df.embed[i]:
+        if df.embed[i] in ("post", "pre"):
             command.append("--embed post")
             command.append(f"--embedding_dim {df.embed_dim[i]}")
 

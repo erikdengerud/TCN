@@ -20,8 +20,8 @@ def calculate_representation(Y, representation, num_components, **kwargs):
     elif representation == "sarima":
         Y_rep = calculate_sarima(Y, num_components=num_components, **kwargs)
     else:
-        print("No such representation available")
-        Y_rep = None
+        print("No such representation available. Using raw.")
+        Y_rep = Y
     return Y_rep
 
 

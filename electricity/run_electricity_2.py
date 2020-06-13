@@ -88,18 +88,19 @@ def evaluate_final() -> List[float]:
             )
             if args.data_scale:
                 x_np = np.zeros((test_dataset.num_ts, test_dataset.length_ts))
+                idx_row_list = idx_row.detach().cpu().numpy()
                 if (
                     args.cluster_covariate
                     or args.zero_covariate
                     or args.random_covariate
                 ):
                     print("args.data_scale w cluster cov")
-                    x_np[idx_row.detach().numpy()] = x[:, 0, :].squeeze().numpy()
+                    x_np[idx_row_list] = x[:, 0, :].squeeze().cpu().numpy()
                     x_scaled = test_dataset.data_scaler.transform(x_np.T).T
                     x_scaled = (
                         torch.from_numpy(x_scaled).to(dtype=torch.float32).unsqueeze(1)
                     )
-                    x_scaled = x_scaled[idx_row.detach().numpy()]
+                    x_scaled = x_scaled[idx_row_list]
                     print(x_scaled.shape)
                     print(x[:, 1, :].unsqueeze(1).shape)
                     # add cluster to scaled. this worked. smthn else wrong
@@ -107,12 +108,12 @@ def evaluate_final() -> List[float]:
                     print(x_scaled.shape)
                     print(x_scaled[0, :, :7])
                 else:
-                    x_np[idx_row.detach().numpy()] = x.squeeze().numpy()
+                    x_np[idx_row._list] = x.squeeze().cpu().numpy()
                     x_scaled = test_dataset.data_scaler.transform(x_np.T).T
                     x_scaled = (
                         torch.from_numpy(x_scaled).to(dtype=torch.float32).unsqueeze(1)
                     )
-                    x_scaled = x_scaled[idx_row.detach().numpy()]
+                    x_scaled = x_scaled[idx_row_list]
 
                 predictions, _ = tcn.rolling_prediction(
                     x_scaled, idx_row, args.length_rolling, args.num_rolling_periods
@@ -124,11 +125,11 @@ def evaluate_final() -> List[float]:
                         args.num_rolling_periods * args.length_rolling,
                     )
                 )
-                predictions_rescaled[idx_row.detach().numpy()] = predictions.numpy()
+                predictions_rescaled[idx_row_list] = predictions..cpu().numpy()
                 predictions_rescaled = test_dataset.data_scaler.inverse_transform(
                     predictions_rescaled.T
                 ).T
-                predictions = predictions_rescaled[idx_row.detach().numpy()]
+                predictions = predictions_rescaled[idx_row_list]
                 predictions = torch.from_numpy(predictions).to(dtype=torch.float32)
                 real_values = x[:, 0, -args.num_rolling_periods * args.length_rolling :]
 
@@ -143,11 +144,11 @@ def evaluate_final() -> List[float]:
                         args.num_rolling_periods * args.length_rolling,
                     )
                 )
-                output_rescaled[idx_row.detach().numpy()] = output.squeeze().numpy()
+                output_rescaled[idx_row_list] = output.squeeze().cpu().numpy()
                 output_rescaled = test_dataset.data_scaler.inverse_transform(
                     output_rescaled.T
                 ).T
-                output = output_rescaled[idx_row.detach().numpy()]
+                output = output_rescaled[idx_row_list]
                 output = torch.from_numpy(output).to(dtype=torch.float32)
 
                 y = y[:, :, -args.num_rolling_periods * args.length_rolling :]

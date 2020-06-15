@@ -81,11 +81,24 @@ if __name__ == "__main__":
     X = ds.X.detach().cpu().squeeze(1).numpy()
     X_test = ds_test.X.detach().cpu().squeeze(1).numpy()
     d_list = []
+    order_list = []
     all_predictions = []
     for ts in range(X.shape[0])[:1]:
         endog = X[ts, -200:]
         print(f"Fitting {ts+1:3} of {X.shape[0]}")
         order = brute(objfunc, grid, args=(endog,), finish=None)
+        order_list.append(
+            {
+                "name": ts,
+                "p": order[0],
+                "d": order[1],
+                "q": order[2],
+                "P": order[3],
+                "D": order[4],
+                "Q": order[5],
+                "s": 24,
+            }
+        )
         pdq = order[:3]
         PDQ = order[3:]
         PDQs = np.append(PDQ, 24)
@@ -115,10 +128,11 @@ if __name__ == "__main__":
     df = pd.DataFrame(d_list)
     df.to_csv("representations/representation_matrices/electricity_sarima.csv")
 
+    df = pd.DataFrame(order_list)
+    df.to_csv("representations/representation_matrices/electricity_sarima_order.csv")
+
     predictions = np.stack(all_predictions, axis=0)
-    print(predictions.shape)
     actual = X_test[:1, -24 * 7 :]
-    print(actual.shape)
 
     wape = WAPE(actual, predictions)
     mape = MAPE(actual, predictions)
@@ -144,6 +158,4 @@ if __name__ == "__main__":
         f.write(f"MAE = {mae:.3f}")
         f.write("\n")
         f.write(f"RMSE = {rmse:.3f}")
-    print(
-        f"One time series takes {datetime.timedelta(seconds=round((time.time() - t0), 1))} "
-    )
+    print(f"Total time: {datetime.timedelta(seconds=round((time.time() - t0), 1))} ")

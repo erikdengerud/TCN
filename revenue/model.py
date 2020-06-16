@@ -31,16 +31,13 @@ class TCN(nn.Module):
         stride: int = 1,
         leveledinit: bool = False,
         type_res_blocks: str = "erik",
-        num_embeddings: int = 370,
+        num_embeddings: int = 15500,
         embedding_dim: int = 2,
         embed: str = None,
         dilated_convolutions: bool = True,
+        clustering_dict: dict = None,
     ) -> None:
-        """
-        A TCN for the electricity dataset. An additional layer is added to the TCN to get 
-        the correct number of output channels. The residual_blocks_channel_size parameter
-        does therefore not have to end with the out_channel size.
-        """
+
         super(TCN, self).__init__()
         in_channels = in_channels + embedding_dim if embed == "pre" else in_channels
         if dilated_convolutions is False:
@@ -84,6 +81,8 @@ class TCN(nn.Module):
                 kernel_size=kernel_size,
                 bias=bias,
             )
+
+        self.clustering_dict = clustering_dict
 
         self.init_weights(leveledinit, kernel_size, bias)
         if dilated_convolutions is True:
@@ -130,7 +129,7 @@ class TCN(nn.Module):
         self, x: Tensor, emb_id: Tensor, tau: int = 4, num_windows: int = 2
     ) -> List[Tensor]:
         """
-        Rolling prediction. Returns MAPE, SMAPE, WAPE on the predictions.
+        Rolling prediction. 
         x is the matrix of the test set. Needs the covariates.
         """
         net_lookback = self.lookback
@@ -138,7 +137,8 @@ class TCN(nn.Module):
         real_values = []
         # Divide x into the rolling windows
         for i in range(num_windows):
-            t_i = net_lookback + i * tau
+            # t_i = net_lookback + i * tau
+            t_i = x.shape[2] - num_windows * tau + i * tau
             x_prev_window = x[:, :, :t_i]
             x_cov_curr_window = x[:, 1:, t_i : (t_i + tau)]
             assert x_cov_curr_window.shape[2] == tau
@@ -161,12 +161,35 @@ class TCN(nn.Module):
         for i in range(num_steps):
             x_next = self.forward(x_prev, emb_id)[:, :, -1]
             # Add covariates
-            x_next = torch.cat((x_next, x_cov_curr[:, :, i]), 1)
-            x_next = x_next.unsqueeze(2)
+            if self.clustering_dict is None:
+                x_next = torch.cat((x_next, x_cov_curr[:, :, i]), 1)
+                x_next = x_next.unsqueeze(2)
+            else:  # calculate prototypes
+                prototypes_next = self.calculate_prototypes(x_next, emb_id)
+                x_next = torch.cat((x_next, prototypes_next), 1)
+                x_next = x_next.unsqueeze(2)
+                print(x_next.shape)
             # Add back onto x
             x_prev = torch.cat((x_prev, x_next), 2)
         # Return predicted x with covariates and just the predictions
         return x_prev[:, :, -num_steps:], x_prev[:, 0, -num_steps:]
+
+    def calculate_prototypes(self, x_next, emb_id):
+        """ Calculates the prototypes values at the time step """
+        x_next_numpy = x_next.detach().numpy()
+        emb_id_numpy = emb_id.detach().numpy()
+        x_next_cov = np.zeros(x_next.shape[0])
+        for c in set(self.clustering_dict.values()):
+            # p = np.where()
+            p = np.mean(
+                x_next_numpy[[self.clustering_dict[emb] == c for emb in emb_id_numpy]]
+            )
+            x_next_cov[[self.clustering_dict[emb] == c for emb in emb_id_numpy]] = p
+
+        prototypes_next = torch.from_numpy(x_next_cov).to(dtype=torch.float32)
+        prototypes_next = prototypes_next.unsqueeze(1)
+
+        return prototypes_next  # n_samples x 1
 
 
 if __name__ == "__main__":

@@ -155,7 +155,7 @@ class TCN(nn.Module):
     ) -> List[Tensor]:
         """ x_cov should be the covariates for the next num_steps """
         for i in range(num_steps):
-            x_next = self.forward(x_prev, emb_id)[:, :, -1]  # wrong shape
+            x_next = self.forward(x_prev, emb_id)[:, :, -1]
             # Add covariates
             if self.clustering_dict is None:
                 x_next = torch.cat((x_next, x_cov_curr[:, :, i]), 1)

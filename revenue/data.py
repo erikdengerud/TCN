@@ -57,7 +57,7 @@ class RevenueDataset(Dataset):
         self.zero_covariate = zero_covariate
         self.random_covariate = random_covariate
         self.data_scale = data_scale
-        if data_scaler is not None:
+        if data_scaler is None:
             self.data_scaler = StandardScaler()
         else:
             self.data_scaler = data_scaler
@@ -310,14 +310,14 @@ if __name__ == "__main__":
     dataset = RevenueDataset(
         file_path="revenue/data/processed_companies.csv",
         meta_path="revenue/data/comp_sect_meta.csv",
-        data_scale=False,
+        data_scale=True,
         start_date="2007-01-01",
         end_date="2017-01-01",
         cluster_covariate=False,
-        random_covariate=True,
+        random_covariate=False,
         zero_covariate=False,
     )
-    data_loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
+    data_loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=False)
     dataiter = iter(data_loader)
     x, y, idx, idx_row, id_sect = dataiter.next()
     data = dataiter.next()

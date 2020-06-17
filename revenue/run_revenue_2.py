@@ -348,6 +348,7 @@ if __name__ == "__main__":
             )
             writer.add_figure("predictions", fig, global_step=ep)
 
+            """
             # Visualizing embeddings
             if args.embed is not None:
                 if args.embed_sector:
@@ -364,7 +365,8 @@ if __name__ == "__main__":
                     ids = torch.LongTensor(ids).to(device)
                     meta_sector = [
                         train_dataset.comp_sect_dict[
-                            train_dataset.companies_id_dict[id.item()]
+                            #train_dataset.companies_id_dict[id.item()]
+                            train_dataset.id_companies_dict[id.item()]
                         ][0]
                         for id in ids
                     ]
@@ -372,6 +374,7 @@ if __name__ == "__main__":
                     writer.add_embedding(
                         embds, metadata=meta_sector, global_step=ep, tag="embedded id"
                     )
+            """
 
         # Early stop
         if ep > args.tenacity + 1:
@@ -412,11 +415,12 @@ if __name__ == "__main__":
             ids = torch.LongTensor(ids).to(device)
             meta_sector = [
                 train_dataset.comp_sect_dict[
-                    train_dataset.companies_id_dict[id.item()]
+                    # train_dataset.companies_id_dict[id.item()]
+                    train_dataset.id_companies_dict[id.item()]
                 ][0]
                 for id in ids
             ]
-            embds = tcn.embedding(ids)
+            embds = tcn.embedding(ids).detach().cpu().numpy()
             np.save(
                 f"representations/representation_matrices/revenue{'_scaled_' if args.data_scale else '_'}embedded_id_nc_{args.embedding_dim}.npy",
                 embds,

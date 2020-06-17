@@ -164,7 +164,7 @@ class TCN(nn.Module):
                 prototypes_next = self.calculate_prototypes(x_next, emb_id)
                 x_next = torch.cat((x_next, prototypes_next), 1)
                 x_next = x_next.unsqueeze(2)
-                print(x_next.shape)
+                #print(x_next.shape)
 
             # Add back onto x
             x_prev = torch.cat((x_prev, x_next), 2)

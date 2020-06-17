@@ -1,13 +1,17 @@
+import sys
+
+sys.path.append("")
+sys.path.append("../../")
 import numpy as np
 import pandas as pd
-import torch
-from data import ElectricityDataSet
+from electricity.data import ElectricityDataSet
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from scipy.optimize import brute
 import matplotlib.pyplot as plt
 import warnings
 import time
 import datetime
+import torch
 
 warnings.filterwarnings("ignore")
 
@@ -39,7 +43,7 @@ def RMSE(Y, Y_hat):
 
 
 def objfunc(order, endog):
-    print(order)
+    #print(order)
     pdq = order[:3]
     PDQ = order[3:]
     PDQs = np.append(PDQ, 24)
@@ -70,7 +74,7 @@ if __name__ == "__main__":
     print("Fitting SARIMA models:")
     grid = (
         slice(1, 4, 1),
-        slice(1, 3, 1),
+        slice(1, 2, 1),
         slice(1, 4, 1),
         slice(0, 2, 1),
         slice(1, 2, 1),
@@ -83,10 +87,14 @@ if __name__ == "__main__":
     d_list = []
     order_list = []
     all_predictions = []
-    for ts in range(X.shape[0])[:1]:
+    for ts in range(X.shape[0]):
         endog = X[ts, -200:]
         print(f"Fitting {ts+1:3} of {X.shape[0]}")
-        order = brute(objfunc, grid, args=(endog,), finish=None)
+        try:
+            order = brute(objfunc, grid, args=(endog,), finish=None)
+        except Exception as e:
+            print(e)
+            order=np.array([1,0,0,0,0,0]) # Using this as a backup if stuff fails.
         order_list.append(
             {
                 "name": ts,
@@ -132,7 +140,7 @@ if __name__ == "__main__":
     df.to_csv("representations/representation_matrices/electricity_sarima_order.csv")
 
     predictions = np.stack(all_predictions, axis=0)
-    actual = X_test[:1, -24 * 7 :]
+    actual = X_test[:, -24 * 7 :]
 
     wape = WAPE(actual, predictions)
     mape = MAPE(actual, predictions)

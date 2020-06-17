@@ -117,7 +117,10 @@ if __name__ == "__main__":
             )
             pred = model.forecast(steps=24)
             predictions = np.append(predictions, pred)
-            real = X_test[ts, -(7 - i) * 24 : -(7 - i + 1) * 24].flatten()
+            if -(7 - i + 1) * 24 == 0:
+                real = X_test[ts, -(7 - i) * 24 :].flatten()
+            else:
+                real = X_test[ts, -(7 - i) * 24 : -(7 - i + 1) * 24].flatten()
             hist = np.append(hist, real)
         all_predictions.append(predictions)
         # plt.plot(predictions)
@@ -148,7 +151,7 @@ if __name__ == "__main__":
     # calculate metrics all
 
     # save all the stuff
-    with open("sarima.txt", "w") as f:
+    with open("sarima_electricity.txt", "w") as f:
         f.write(f"WAPE = {wape:.3f}")
         f.write("\n")
         f.write(f"MAPE = {mape:.3f}")

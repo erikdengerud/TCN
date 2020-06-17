@@ -43,7 +43,7 @@ def RMSE(Y, Y_hat):
 
 
 def objfunc(order, endog):
-    #print(order)
+    # print(order)
     pdq = order[:3]
     PDQ = order[3:]
     PDQs = np.append(PDQ, 4)
@@ -90,13 +90,15 @@ if __name__ == "__main__":
     order_list = []
     all_predictions = []
     for ts in range(X.shape[0]):
-        endog = X[ts,:]
+        endog = X[ts, :]
         print(f"Fitting {ts+1:3} of {X.shape[0]}")
         try:
             order = brute(objfunc, grid, args=(endog,), finish=None)
         except Exception as e:
             print(e)
-            order=np.array([1,0,0,0,0,0]) # Using this as a backup if stuff fails.
+            order = np.array(
+                [1, 0, 0, 0, 0, 0]
+            )  # Using this as a backup if stuff fails.
         order_list.append(
             {
                 "name": ts,
@@ -127,12 +129,16 @@ if __name__ == "__main__":
             )
             pred = model.forecast(steps=4)
             predictions = np.append(predictions, pred)
-            real = X_test[ts, -(2 - i) * 4 : -(2 - i + 1) * 4].flatten()
+            if -(2 - i - 1) * 4 == 0:
+                real = X_test[ts, -(2 - i) * 4 :].flatten()
+            else:
+                real = X_test[ts, -(2 - i) * 4 : -(2 - i - 1) * 4].flatten()
             hist = np.append(hist, real)
         all_predictions.append(predictions)
-        # plt.plot(predictions)
-        # plt.plot(hist[-24 * 7 :])
-        # plt.legend(["preds", "orig"])
+        # plt.plot((ds.dates.tolist() + ds_test.dates.tolist()), hist)
+        # plt.plot(ds_test.dates.tolist(), predictions)
+        # plt.xticks(rotate=45)
+        # plt.legend(["orig", "pred"])
         # plt.show()
 
     df = pd.DataFrame(d_list)
@@ -158,7 +164,7 @@ if __name__ == "__main__":
     # calculate metrics all
 
     # save all the stuff
-    with open("sarima.txt", "w") as f:
+    with open("sarima_revenue.txt", "w") as f:
         f.write(f"WAPE = {wape:.3f}")
         f.write("\n")
         f.write(f"MAPE = {mape:.3f}")

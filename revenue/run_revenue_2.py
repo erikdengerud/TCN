@@ -365,7 +365,8 @@ if __name__ == "__main__":
                     ids = torch.LongTensor(ids).to(device)
                     meta_sector = [
                         train_dataset.comp_sect_dict[
-                            train_dataset.companies_id_dict[id.item()]
+                            #train_dataset.companies_id_dict[id.item()]
+                            train_dataset.id_companies_dict[id.item()]
                         ][0]
                         for id in ids
                     ]

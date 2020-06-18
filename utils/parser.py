@@ -34,6 +34,7 @@ def parse():
     parser.add_argument("--num_clusters", type=int, default=10)
     parser.add_argument("--num_components", type=int, default=10)
     parser.add_argument("--cluster_dict_path", type=str, default=None)
+    parser.add_argument("--prototypes_file_path", type=str, default=None)
 
     # Model architecture
     parser.add_argument("--num_layers", type=int, default=5)

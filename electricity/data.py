@@ -19,8 +19,6 @@ from torch.utils.data import Dataset, DataLoader
 from sklearn.preprocessing import RobustScaler, StandardScaler
 from sklearn.preprocessing import OneHotEncoder
 
-from clustering.cluster import cluster_dataset
-
 
 class ElectricityDataSet(Dataset):
     """
@@ -43,6 +41,7 @@ class ElectricityDataSet(Dataset):
         random_covariate: bool = False,
         zero_covariate: bool = False,
         cluster_dict_path: str = None,
+        prototypes_file_path: str = None,
     ) -> None:
         """ Dates """
         # Check dates
@@ -104,9 +103,24 @@ class ElectricityDataSet(Dataset):
                         self.cluster_dict = pickle.load(handle)
                 except Exception as e:
                     print(e)
-                self.prototypes = self.prototypes_from_cluster_dict(
-                    self.X, self.cluster_dict
-                )
+                try:
+                    mat = np.load(prototypes_file_path)
+                    df = pd.DataFrame(mat.T)
+                    dates_index = pd.date_range(
+                        start="2012/01/01", periods=mat.shape[1], freq="H"
+                    )
+                    df.index = dates_index
+                    df = df.loc[str(start_date) : str(end_date)]
+                    dates = df.index
+                    df = df.reset_index(drop=True)
+
+                    self.prototypes = df.values.T
+
+                # Create the  date range
+                # Cut off at start and end date
+
+                except Exception as e:
+                    print(e)
             else:
                 print("No clustering path given.")
 
@@ -192,23 +206,6 @@ class ElectricityDataSet(Dataset):
                 X = torch.cat((X, r), 0)
 
             return X, Y, idx, row
-
-    def prototypes_from_cluster_dict(self, X, cluster_dict):
-        """ 
-        Calculates prototypes given X and a cluster dict.
-        Uses the scaler to scale before taking the mean
-        """
-        prototypes = {}
-        X_scaled = self.data_scaler.transform(X.squeeze().detach().numpy().T).T
-        for c in set(cluster_dict.values()):
-            # p = np.where()
-            p = np.mean(
-                X_scaled[[cluster_dict[i] == c for i in range(X_scaled.shape[0])]],
-                axis=0,
-            )
-            prototypes[c] = p
-
-        return prototypes
 
     def get_row_column(self, idx: int) -> List[int]:
         """ Gets row and column based on idx, num_ts and length_ts """
@@ -307,11 +304,13 @@ if __name__ == "__main__":
         predict_ahead=1,
         h_batch=0,  # 0 gives the whole time series
         receptive_field=385,
-        cluster_covariate=False,
-        random_covariate=True,
+        cluster_covariate=True,
+        random_covariate=False,
         zero_covariate=False,
-        cluster_dict_path="test_cluster_dict.pkl",
+        cluster_dict_path="prototypes/cluster_dicts/electricity_pca_scaled_nc_10_euclidean_KMeans_nc_10.pkl",
+        prototypes_file_path="prototypes/prototypes_matrices/electricity_pca_scaled_nc_10_euclidean_KMeans_nc_10.npy",
     )
+
     data_loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
     dataiter = iter(data_loader)
     x, y, idx, idx_row = dataiter.next()
@@ -328,6 +327,10 @@ if __name__ == "__main__":
     print("Type y : ", y.dtype)
     # print(*[dataset.cluster_dict[i] for i in idx.detach().numpy()])
     print(x[:, :, -5:])
+    print(x.shape)
+    print(x[1, 1, -24 * 7 :].shape)
+    # plt.plot(x[1, 1, -24 * 7 :].squeeze(0).detach().numpy())
+    # plt.show()
     print(y[:, :, -5:])
     print(dataset.__len__())
     print(np.sum(x[:, 1, :].detach().numpy()))

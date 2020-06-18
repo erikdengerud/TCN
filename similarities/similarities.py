@@ -10,7 +10,7 @@ def calculate_similarity_matrix(
     X: np.array, metric: str = "euclidean", dist_or_sim: str = "sim"
 ) -> np.array:
     if metric == "dtw":
-        S = distance_matrix_fast(X)
+        S = distance_matrix_fast(X[:, -200:])
         S[np.isinf(S)] = 0
         S = S + S.T
     else:
@@ -26,6 +26,12 @@ def calculate_similarity_matrix(
 if __name__ == "__main__":
     import time
 
+    X = np.load("representations/representation_matrices/electricity_train_scaled.npy")
+
+    S = calculate_similarity_matrix(X, metric="dtw", dist_or_sim="dist")
+    print(S.shape)
+    print(S)
+    """
     X = np.load("representations/representation_matrices/electricity_train_scaled.npy")
     print(X)
     t1 = time.time()
@@ -47,3 +53,4 @@ if __name__ == "__main__":
     print(f"Euclidean: {t2-t1:.2f} sec")
     print(f"dtw: {t3-t2:.2f} sec")
     print(f"Correlation: {t4-t3:.2f} sec")
+    """

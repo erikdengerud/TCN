@@ -11,20 +11,18 @@ from sklearn.manifold import TSNE
 import pmdarima as pm
 
 
-def calculate_representation(Y, representation, num_components, **kwargs):
+def calculate_representation(Y, representation, num_components, dataset, sector_or_id="id"):
     print("Num components ", num_components)
     if representation == "pca":
         Y_rep = calculate_pca(Y, num_components=num_components)
     elif representation == "tsne":
         Y_rep = calculate_tsne(Y, num_components=num_components)
     elif representation == "sarima":
-        Y_rep = calculate_sarima(Y, num_components=num_components, **kwargs)
+        Y_rep = calculate_sarima(dataset=dataset)
+    elif representation == "embedded_id":
+        Y_rep = calculate_embedded_id(dataset=dataset, num_components=num_components, sector_or_id=sector_or_id)
     else:
-<<<<<<< HEAD
-        print("No such representation available. Using raw.")
-=======
         print("No such representation available, Rep = raw.")
->>>>>>> 511988fa0d10ef07142d1b649b8950037a1086a9
         Y_rep = Y
     return Y_rep
 
@@ -37,60 +35,41 @@ def calculate_pca(Y, num_components):
     return Y_pca
 
 
-def calculate_sarima(Y, s):
-    if Y.shape[1] > 200:
-        Y = Y[:, -200:]
-    params_list = []
-    print(Y.shape)
-    print(Y.shape[0])
-    print(Y[1].shape)
-    for i in range(Y.shape[0]):
-        if i > 10:
-            break
-        print(i)
-        train = Y[i][~np.isnan(Y[i])].copy()
-        print("fitting model")
-        modl = pm.auto_arima(
-            train,
-            start_p=1,
-            start_q=1,
-            start_P=1,
-            start_Q=1,
-            max_p=5,
-            max_q=5,
-            max_P=5,
-            max_Q=5,
-            seasonal=True,
-            stepwise=True,
-            suppress_warnings=False,
-            D=1,
-            max_D=3,
-            m=s,
-            error_action="ignore",
-        )
-        print("done fit")
+def calculate_sarima(Y, num_components=num_components):
+    """ Get the pre fitted parameters """
+    try:
+        if dataset == "electricity":
+            df = pd.read_csv(
+                "representations/representation_matrices/electricity_sarima.csv",
+                index_col=0,
+            ).fillna(0)
+        elif dataset == "revenue":
+            df = pd.read_csv(
+                "Z:\TCN_clone\TCN\\representations\\representation_matrices\revenue_sarima.csv",
+                index_col=0,
+            ).fillna(0)
+    except Exception as e:
+        print(e)
+    df = df.set_index("id")
+    df = df.drop(columns=["sigma2"])
+    rep = df.values
+    return rep
 
-        d = modl.to_dict()
-        params = list(d["params"][1:-1])  # not intercept and variance. list to pop
-        order = d["order"]
-        seasonal_order = d["seasonal_order"]
-        arma = {
-            "ar": order[0],
-            "ma": order[2],
-            "AR": seasonal_order[0],
-            "MA": seasonal_order[2],
-        }
-        p = {}
-        for term, num in arma.items():
-            for i in range(num):
-                p["".join([term, str(i + 1)])] = params.pop()
 
-        params_list.append(p)
-
-    df = pd.DataFrame(params_list)
-    print(df.head())
-    ret = df.values
-    return ret
+def calculate_embedded_id(dataset, num_components, sector_or_id="id"):
+    """ Precomputed embeddings """
+    try:
+        if dataset == "electricity":
+            Y = np.load(
+                f"representations/representation_matrices/electricity_scaled_embedded_id_nc_{num_components}.npy"
+            )
+        elif dataset == "revenue":
+            Y = np.load(
+                f"representations/representation_matrices/revenue_embedded_{sector_or_id}_nc_{num_components}.npy"
+            )
+    except Exception as e:
+        print(e)
+    return Y
 
 
 def calculate_tsne(Y, num_components):

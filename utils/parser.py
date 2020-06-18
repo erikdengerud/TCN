@@ -16,7 +16,7 @@ def parse():
     parser.add_argument("--train_start", type=str, default="2012-01-01")
     parser.add_argument("--train_end", type=str, default="2014-12-16")
     parser.add_argument("--v_batch_size", type=int, default=32)
-    parser.add_argument("--h_batch_size", type=int, default=256)
+    parser.add_argument("--h_batch_size", type=int, default=128)
     parser.add_argument("--num_workers", type=int, default=0)
     add_bool_arg(parser, name="time_covariates", default=False)
     add_bool_arg(parser, name="one_hot_id", default=False)
@@ -27,11 +27,13 @@ def parse():
     add_bool_arg(parser, name="data_scale", default=False)
     add_bool_arg(parser, name="cluster_covariate", default=False)
     add_bool_arg(parser, name="random_covariate", default=False)
+    add_bool_arg(parser, name="zero_covariate", default=False)
     parser.add_argument("--representation", type=str, default="pca")
     parser.add_argument("--similarity", type=str, default="euclidean")
     parser.add_argument("--clustering", type=str, default="KMeans")
     parser.add_argument("--num_clusters", type=int, default=10)
     parser.add_argument("--num_components", type=int, default=10)
+    parser.add_argument("--cluster_dict_path", type=str, default=None)
 
     # Model architecture
     parser.add_argument("--num_layers", type=int, default=5)
@@ -59,9 +61,9 @@ def parse():
 
     # Logging
     parser.add_argument(
-        "--model_save_path", type=str, default="electricity/models/tcn_electricity.pt"
+        "--model_save_path", type=str, default="electricity/models/test.pt"
     )
-    parser.add_argument("--writer_path", type=str, default="electricity/runs/")
+    parser.add_argument("--writer_path", type=str, default="electricity/runs/test/")
     parser.add_argument("--log_interval", type=int, default=1)
     add_bool_arg(parser, name="print", default=False)
 

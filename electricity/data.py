@@ -16,20 +16,10 @@ import torch
 import torch.tensor as Tensor
 from torch.utils.data import Dataset, DataLoader
 
-from sklearn.preprocessing import RobustScaler
+from sklearn.preprocessing import RobustScaler, StandardScaler
 from sklearn.preprocessing import OneHotEncoder
 
 from clustering.cluster import cluster_dataset
-
-from utils.time import (
-    MinuteOfHour,
-    HourOfDay,
-    DayOfWeek,
-    DayOfMonth,
-    DayOfYear,
-    MonthOfYear,
-    WeekOfYear,
-)
 
 
 class ElectricityDataSet(Dataset):
@@ -46,19 +36,13 @@ class ElectricityDataSet(Dataset):
         data_scaler=None,
         start_date: str = "2012-01-01",  # yyyy-mm-dd
         end_date: str = "2014-05-26",  # yyyy-mm-dd
-        include_time_covariates: bool = False,
         predict_ahead: int = 1,
         h_batch: int = 0,  # 0 gives the whole time series
-        one_hot_id: bool = False,
         receptive_field: int = 385,
         cluster_covariate: bool = False,
         random_covariate: bool = False,
-        representation: str = None,
-        similarity: str = "euclidean",
-        num_clusters: int = 10,
-        num_components: int = None,
-        algorithm: str = "kmeans",
-        cluster_dict=None,
+        zero_covariate: bool = False,
+        cluster_dict_path: str = None,
     ) -> None:
         """ Dates """
         # Check dates
@@ -71,15 +55,18 @@ class ElectricityDataSet(Dataset):
         self.daterange = pd.date_range(start=start_date, end=end_date, freq="H")
 
         """ Input parameters """
-        self.one_hot_id = one_hot_id
-        self.include_time_covariates = include_time_covariates
+        assert cluster_covariate + zero_covariate + random_covariate <= 1
+        self.cluster_covariate = cluster_covariate
+        self.zero_covariate = zero_covariate
+        self.random_covariate = random_covariate
         self.predict_ahead = predict_ahead
         self.h_batch = h_batch
         self.receptive_field = receptive_field
         if data_scaler is not None:
             self.data_scaler = data_scaler
         else:
-            self.data_scaler = RobustScaler()
+            # self.data_scaler = RobustScaler()
+            self.data_scaler = StandardScaler()
         self.data_scale = data_scale
 
         """ Creating the dataset """
@@ -107,49 +94,21 @@ class ElectricityDataSet(Dataset):
         self.Y = Y.copy_(torch.cat((X[:, :, self.predict_ahead :], pad_end), 2)).to(
             dtype=torch.float32
         )
+        self.X = X.to(dtype=torch.float32)
 
         """ Clustering """
-        self.cluster_covariate = cluster_covariate
-        self.representation = representation
-        self.similarity = similarity
-        self.algorithm = algorithm
-        self.num_clusters = num_clusters
-        self.num_components = num_components
-        self.random_covariate = random_covariate
         if cluster_covariate:
-            if cluster_dict is not None:
-                self.prototypes, self.cluster_dict = self.prototypes_from_cluster_dict(
-                    X.squeeze().detach().numpy(), cluster_dict
+            if cluster_dict_path:
+                try:
+                    with open(cluster_dict_path, "rb") as handle:
+                        self.cluster_dict = pickle.load(handle)
+                except Exception as e:
+                    print(e)
+                self.prototypes = self.prototypes_from_cluster_dict(
+                    self.X, self.cluster_dict
                 )
             else:
-                self.prototypes, self.cluster_dict = cluster_dataset(
-                    X.squeeze().detach().numpy(),
-                    "electricity",
-                    representation,
-                    similarity,
-                    algorithm,
-                    num_clusters,
-                    num_components,
-                    data_scale,
-                )
-
-        """ Including time covariates """
-        if self.include_time_covariates:
-            Z, num_covariates = self.get_time_covariates(dates)
-            Z = Z.repeat(self.num_ts, 1, 1)
-            X = torch.cat((X, Z), 1)
-
-        """ One hot encoded ID """
-        # Using the IDs of the time series as one-hot encoded covariates. The matrix is
-        # too big to be stored in memory if we use on-hot encoding, so we specify the
-        # encoding here and concatenate the encoding to the time series in the __getitem__
-        # method.
-        if self.one_hot_id:
-            ids = [[i] for i in range(self.num_ts)]
-            self.enc = OneHotEncoder(handle_unknown="ignore")
-            self.enc.fit(ids)
-
-        self.X = X.to(dtype=torch.float32)
+                print("No clustering path given.")
 
         print("Dimension of X : ", self.X.shape)
         print("Dimension of Y : ", self.Y.shape)
@@ -164,7 +123,6 @@ class ElectricityDataSet(Dataset):
         """ 
         Returns a batch of the dataset (X and Y), the ids of the batch and the time series
         id of the batch.  
-        One hot encoded IDs are also added here.
         """
         # We get a random index in the range [0, int(num_ts * lenght_ts) / h_batch)].
         # Then we create the sample for that index. The sample is the next h_batch and
@@ -174,18 +132,6 @@ class ElectricityDataSet(Dataset):
             X = self.X[idx]
             Y = self.Y[idx]
 
-            if self.one_hot_id:
-                if isinstance(idx, (list, np.ndarray)):
-                    idx_enc = [[d] for d in idx]
-                else:
-                    idx_enc = [idx]
-                """ Could store all encodings as a matrix E ?"""
-                encoded = torch.from_numpy(self.enc.transform([idx_enc]).toarray())
-                encoded = encoded.repeat(self.length_ts, 1)
-                encoded = encoded.float()
-                encoded = torch.transpose(encoded, 0, 1)
-
-                X = torch.cat((X, encoded), 0)
             if self.cluster_covariate:
                 # find cluster and prototype
                 # We only append X since appending Y would give look ahead bias
@@ -196,6 +142,16 @@ class ElectricityDataSet(Dataset):
                 # add prototype to X
                 prototype = prototype.view(1, -1).to(dtype=torch.float32)
                 X = torch.cat((X, prototype), 0)
+
+            if self.zero_covariate:
+                zero = torch.from_numpy(np.zeros(X.shape[1]))
+                zero = zero.view(1, -1).to(dtype=torch.float32)
+                X = torch.cat((X, zero), 0)
+
+            if self.random_covariate:
+                r = torch.randn(X.shape[1], dtype=torch.float32)
+                r = r.view(1, -1)
+                X = torch.cat((X, r), 0)
 
             return X, Y, idx, idx
 
@@ -209,14 +165,7 @@ class ElectricityDataSet(Dataset):
 
             X = self.X[row, :, column - self.receptive_field : column + self.h_batch]
             Y = self.Y[row, :, column : column + self.h_batch]
-            if self.one_hot_id:
-                row_enc = [row]
-                encoded = torch.from_numpy(self.enc.transform([row_enc]).toarray())
-                encoded = encoded.repeat(self.h_batch + self.receptive_field, 1)
-                encoded = encoded.float()
-                encoded = torch.transpose(encoded, 0, 1)
 
-                X = torch.cat((X, encoded), 0)
             if self.cluster_covariate:
                 # find cluster and prototype
                 # We only append X since appending Y would give look ahead bias
@@ -230,17 +179,36 @@ class ElectricityDataSet(Dataset):
                 prototype = prototype.view(1, -1).to(dtype=torch.float32)
                 X = torch.cat((X, prototype), 0)
 
+            if self.zero_covariate:
+                zero = torch.from_numpy(np.zeros(self.receptive_field + self.h_batch))
+                zero = zero.view(1, -1).to(dtype=torch.float32)
+                X = torch.cat((X, zero), 0)
+
+            if self.random_covariate:
+                r = torch.randn(
+                    self.receptive_field + self.h_batch, dtype=torch.float32
+                )
+                r = r.view(1, -1)
+                X = torch.cat((X, r), 0)
+
             return X, Y, idx, row
 
     def prototypes_from_cluster_dict(self, X, cluster_dict):
-        """ Calculates prototypes given X and a cluster dict """
+        """ 
+        Calculates prototypes given X and a cluster dict.
+        Uses the scaler to scale before taking the mean
+        """
         prototypes = {}
+        X_scaled = self.data_scaler.transform(X.squeeze().detach().numpy().T).T
         for c in set(cluster_dict.values()):
             # p = np.where()
-            p = np.mean(X[[cluster_dict[i] == c for i in range(X.shape[0])]], axis=0)
+            p = np.mean(
+                X_scaled[[cluster_dict[i] == c for i in range(X_scaled.shape[0])]],
+                axis=0,
+            )
             prototypes[c] = p
 
-        return prototypes, cluster_dict
+        return prototypes
 
     def get_row_column(self, idx: int) -> List[int]:
         """ Gets row and column based on idx, num_ts and length_ts """
@@ -268,25 +236,6 @@ class ElectricityDataSet(Dataset):
         dates = df.index
         df = df.reset_index(drop=True)
         return df, dates
-
-    def get_time_covariates(self, dates: pd.Series) -> Tuple[Tensor, int]:
-        """ Creating time covariates normalized to the range [-0.5, 0.5] using GluonTS. """
-        time_index = pd.DatetimeIndex(dates)
-        time_index = pd.DatetimeIndex(time_index)
-        Z = np.matrix(
-            [
-                MinuteOfHour(time_index),
-                HourOfDay(time_index),
-                DayOfWeek(time_index),
-                DayOfMonth(time_index),
-                DayOfYear(time_index),
-                MonthOfYear(time_index),
-                WeekOfYear(time_index),
-            ]
-        )
-        Z = torch.from_numpy(Z)
-        num_covariates = Z.shape[0]
-        return Z, num_covariates
 
     def plot_examples(
         self,
@@ -348,6 +297,41 @@ class ElectricityDataSet(Dataset):
 
 
 if __name__ == "__main__":
+    print("Electricity Dataset")
+    dataset = ElectricityDataSet(
+        file_path="electricity/data/electricity.npy",
+        data_scale=True,
+        data_scaler=None,
+        start_date="2012-01-01",  # yyyy-mm-dd
+        end_date="2014-05-26",  # yyyy-mm-dd
+        predict_ahead=1,
+        h_batch=0,  # 0 gives the whole time series
+        receptive_field=385,
+        cluster_covariate=False,
+        random_covariate=True,
+        zero_covariate=False,
+        cluster_dict_path="test_cluster_dict.pkl",
+    )
+    data_loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
+    dataiter = iter(data_loader)
+    x, y, idx, idx_row = dataiter.next()
+    data = dataiter.next()
+    print(type(data))
+    # print(data)
+    print("idx", idx)
+    # print('Samples : ', x)
+    print("Shape of samples : ", x.shape)
+    # print('Labels : ', y)
+    print("Shape of labels : ", y.shape)
+    print("Length of dataset: ", dataset.__len__())
+    print("Type x : ", x.dtype)
+    print("Type y : ", y.dtype)
+    # print(*[dataset.cluster_dict[i] for i in idx.detach().numpy()])
+    print(x[:, :, -5:])
+    print(y[:, :, -5:])
+    print(dataset.__len__())
+    print(np.sum(x[:, 1, :].detach().numpy()))
+    print(torch.sum(torch.randn(4, 21000)).item())
     """
     # Electricity dataset
     print("Electricity dataset: ")
@@ -425,7 +409,7 @@ if __name__ == "__main__":
     )
 
     #dataset.plot_examples(ids=[16, 22, 26], n=3, logy=False, length_plot=168)
-    """
+
     from matplotlib import rc
 
     rc("text", usetex=True)
@@ -482,7 +466,6 @@ if __name__ == "__main__":
             save_path="electricity_example_176.pdf",
         )
 
-    """
     data_loader = DataLoader(dataset, batch_size=4, num_workers=0, shuffle=True)
     dataiter = iter(data_loader)
     x, y, idx, idx_row = dataiter.next()

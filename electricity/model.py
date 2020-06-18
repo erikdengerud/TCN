@@ -133,12 +133,15 @@ class TCN(nn.Module):
         real_values = []
         # Divide x into the rolling windows
         for i in range(num_windows):
-            t_i = net_lookback + i * tau
+            # t_i = net_lookback + i * tau
+            t_i = x.shape[2] - num_windows * tau + i * tau
             x_prev_window = x[:, :, :t_i]
-            x_cov_curr_window = x[:, 1:, t_i : (t_i + tau)]
+            x_cov_curr_window = x[
+                :, 1:, t_i : (t_i + tau)
+            ]  # change to be up to t_i ? No, contained in x_prev.
             assert x_cov_curr_window.shape[2] == tau
             # Multi step prediction of current window
-            _, preds = self.multi_step_prediction(
+            x_cov, preds = self.multi_step_prediction(
                 x_prev_window, x_cov_curr_window, tau, emb_id
             )
             predictions_list.append(preds)
@@ -163,6 +166,7 @@ class TCN(nn.Module):
                 prototypes_next = self.calculate_prototypes(x_next, emb_id)
                 x_next = torch.cat((x_next, prototypes_next), 1)
                 x_next = x_next.unsqueeze(2)
+                # print(x_next.shape)
 
             # Add back onto x
             x_prev = torch.cat((x_prev, x_next), 2)

@@ -94,19 +94,21 @@ def evaluate_final() -> List[float]:
                     or args.zero_covariate
                     or args.random_covariate
                 ):
-                    print("args.data_scale w cluster cov")
+                    #print("args.data_scale w cluster cov")
                     x_np[idx_row_list] = x[:, 0, :].squeeze().cpu().numpy()
                     x_scaled = test_dataset.data_scaler.transform(x_np.T).T
                     x_scaled = (
                         torch.from_numpy(x_scaled).to(dtype=torch.float32).unsqueeze(1)
                     )
-                    x_scaled = x_scaled[idx_row_list]
-                    print(x_scaled.shape)
-                    print(x[:, 1, :].unsqueeze(1).shape)
+                    x_scaled = x_scaled[idx_row_list].to(device)
+                    #print(x_scaled.shape)
+                    #print(x[:, 1, :].unsqueeze(1).shape)
                     # add cluster to scaled. this worked. smthn else wrong
+                    #print(x_scaled.device)
+                    #print(x[:,1,:].unsqueeze(1).device)
                     x_scaled = torch.cat((x_scaled, x[:, 1, :].unsqueeze(1)), 1).to(device)
-                    print(x_scaled.shape)
-                    print(x_scaled[0, :, :7])
+                    #print(x_scaled.shape)
+                    #print(x_scaled[0, :, :7])
                    
                 else:
                     x_np[idx_row_list] = x.squeeze().cpu().numpy()

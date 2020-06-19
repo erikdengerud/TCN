@@ -30,13 +30,26 @@ if __name__ == "__main__":
     sys.path.append("")
     sys.path.append("../../")
 
-    from sklearn.preprocessing import StandardScaler
+    from electricity.data import ElectricityDataSet
 
-    X = np.load("electricity/data/electricity.npy")
+    ds = ElectricityDataSet(
+        file_path="electricity/data/electricity.npy",
+        data_scaler=None,
+        data_scale=True,
+        start_date="2012-01-01",
+        end_date="2014-12-16",
+    )
+    X = ds.X.squeeze(1).detach().cpu().double().numpy()
 
-    X = StandardScaler().fit_transform(X)
+    print(X.shape)
+    X = X[:, -500:]
+    print(X.shape)
+    print(X)
 
-    S = calculate_similarity_matrix(X, metric="dtw", dist_or_sim="dist")
+    S = distance_matrix_fast(X)
+    S[np.isinf(S)] = 0
+    S = S + S.T
+    np.save("similarities/similarity_matrices/dtw.npy", S)
     print(S.shape)
     print(S)
     """

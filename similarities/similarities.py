@@ -10,9 +10,10 @@ def calculate_similarity_matrix(
     X: np.array, metric: str = "euclidean", dist_or_sim: str = "sim"
 ) -> np.array:
     if metric == "dtw":
-        S = distance_matrix_fast(X[:, -500:])
-        S[np.isinf(S)] = 0
-        S = S + S.T
+        S = np.load("similarities/similarity_matrices/dtw.npy")
+        #S = distance_matrix_fast(X[:, -500:])
+        #S[np.isinf(S)] = 0
+        #S = S + S.T
     else:
         S = pairwise_distances(X, metric=metric)
 

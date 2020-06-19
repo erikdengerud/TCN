@@ -159,7 +159,6 @@ for i, row in tqdm(df.iterrows(), total=df.shape[0], ascii=True, desc="Rows in d
     if os.path.isfile(dict_path):
         print("Dict file exists!")
 
-    prots_path = f"prototypes/prototypes_matrices/{args.dataset}_{df.representation[i]}_{'scaled_' if df.scaled_representation[i] else 'unscaled_'}nc_{df.num_components[i]}_{df.similarity[i]}_{df.algorithm[i]}_nc_{df.num_clusters[i]}.npy"
     """ Algorithm """
     if df.algorithm[i] in ("KMeans"):
         method = KMeans(n_clusters=df.num_clusters[i])

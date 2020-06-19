@@ -10,7 +10,7 @@ def calculate_similarity_matrix(
     X: np.array, metric: str = "euclidean", dist_or_sim: str = "sim"
 ) -> np.array:
     if metric == "dtw":
-        S = distance_matrix_fast(X[:, -200:])
+        S = distance_matrix_fast(X[:, -500:])
         S[np.isinf(S)] = 0
         S = S + S.T
     else:
@@ -25,8 +25,16 @@ def calculate_similarity_matrix(
 
 if __name__ == "__main__":
     import time
+    import sys
 
-    X = np.load("representations/representation_matrices/electricity_train_scaled.npy")
+    sys.path.append("")
+    sys.path.append("../../")
+
+    from sklearn.preprocessing import StandardScaler
+
+    X = np.load("electricity/data/electricity.npy")
+
+    X = StandardScaler().fit_transform(X)
 
     S = calculate_similarity_matrix(X, metric="dtw", dist_or_sim="dist")
     print(S.shape)

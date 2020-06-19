@@ -11,7 +11,9 @@ from sklearn.manifold import TSNE
 import pmdarima as pm
 
 
-def calculate_representation(Y, representation, num_components, dataset, sector_or_id="id"):
+def calculate_representation(
+    Y, representation, num_components, dataset, sector_or_id="id"
+):
     print("Num components ", num_components)
     if representation == "pca":
         Y_rep = calculate_pca(Y, num_components=num_components)
@@ -20,7 +22,9 @@ def calculate_representation(Y, representation, num_components, dataset, sector_
     elif representation == "sarima":
         Y_rep = calculate_sarima(dataset=dataset)
     elif representation == "embedded_id":
-        Y_rep = calculate_embedded_id(dataset=dataset, num_components=num_components, sector_or_id=sector_or_id)
+        Y_rep = calculate_embedded_id(
+            dataset=dataset, num_components=num_components, sector_or_id=sector_or_id
+        )
     else:
         print("No such representation available, Rep = raw.")
         Y_rep = Y
@@ -45,7 +49,7 @@ def calculate_sarima(Y, num_components=num_components):
             ).fillna(0)
         elif dataset == "revenue":
             df = pd.read_csv(
-                "Z:\TCN_clone\TCN\\representations\\representation_matrices\revenue_sarima.csv",
+                "representations/representation_matrices/revenue_sarima.csv",
                 index_col=0,
             ).fillna(0)
     except Exception as e:

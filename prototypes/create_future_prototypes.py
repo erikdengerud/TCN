@@ -37,7 +37,7 @@ else:
 
 # read in arguments from df
 try:
-    df = pd.read_csv(args.df_path)
+    df = pd.read_csv(args.df_path).dropna(how="all")
 except Exception as e:
     print(e)
     print("Not able to read df.")
@@ -52,12 +52,12 @@ assert set(
         "num_clusters",
     ]
 ).issubset(set(df.columns))
-assert set(df.representation).issubset(set(["sarima", "pca", "embedded_id"]))
+assert set(df.representation).issubset(set(["sarima", "pca", "embedded_id", "raw"]))
 assert set(df.similarity).issubset(set(["euclidean", "correlation", "dtw"]))
 assert set(df.algorithm).issubset(
     set(["KMeans", "Agglomerative", "Spectral clustering"])
 )
-
+df = df.astype({"representation":str, "scaled_representation":bool, "num_components":int, "algorithm":str, "similarity":str, "num_clusters":int})
 
 # datasets
 if args.dataset == "electricity":
@@ -179,12 +179,14 @@ for i, row in tqdm(df.iterrows(), total=df.shape[0], ascii=True, desc="Rows in d
             X_train_scaled,
             representation=df.representation[i],
             num_components=df.num_components[i],
+            dataset=args.dataset
         )
     else:
         rep = calculate_representation(
             X_train_unscaled,
             representation=df.representation[i],
             num_components=df.num_components[i],
+            dataset=args.dataset
         )
 
     """ Representation """

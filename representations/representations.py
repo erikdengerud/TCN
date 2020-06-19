@@ -39,7 +39,7 @@ def calculate_pca(Y, num_components):
     return Y_pca
 
 
-def calculate_sarima(Y, num_components=num_components):
+def calculate_sarima(dataset):
     """ Get the pre fitted parameters """
     try:
         if dataset == "electricity":

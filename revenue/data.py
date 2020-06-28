@@ -1,7 +1,8 @@
 # data.py
 
 from datetime import date, timedelta
-import matplotlib.pyplot as plt
+
+# import matplotlib.pyplot as plt
 import numpy as np
 import os
 import pandas as pd
@@ -15,8 +16,8 @@ import torch
 import torch.tensor as Tensor
 from torch.utils.data import Dataset, DataLoader
 
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.preprocessing import StandardScaler, RobustScaler
+# from sklearn.preprocessing import OneHotEncoder
+# from sklearn.preprocessing import StandardScaler, RobustScaler
 
 
 class RevenueDataset(Dataset):

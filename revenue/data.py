@@ -6,6 +6,7 @@ import numpy as np
 import os
 import pandas as pd
 import sys
+import pickle
 
 sys.path.append("./")
 sys.path.append("../../")
@@ -39,6 +40,7 @@ class RevenueDataset(Dataset):
         random_covariate: bool = False,
         zero_covariate: bool = False,
         cluster_dict_path: str = None,
+        prototypes_file_path:str=None,
     ) -> None:
         """ Dates """
         # Check dates
@@ -100,9 +102,19 @@ class RevenueDataset(Dataset):
                         self.cluster_dict = pickle.load(handle)
                 except Exception as e:
                     print(e)
-                self.prototypes = self.prototypes_from_cluster_dict(
-                    self.X, self.cluster_dict
-                )
+                try:
+                    mat = np.load(prototypes_file_path)
+                    df = pd.DataFrame(mat.T)
+                    dates_index = pd.date_range(start="2007-01-01", periods=mat.shape[1], freq="Q")
+                    df.index = dates_index
+                    df = df.loc[str(start_date) : str(end_date)]
+                    dates = df.index
+                    df = df.reset_index(drop=True)
+                    
+                    self.prototypes = df.values.T
+                
+                except Exception as e:
+                    print(e)
             else:
                 print("No clustering path given.")
 
@@ -136,9 +148,9 @@ class RevenueDataset(Dataset):
 
             if self.cluster_covariate:
                 c = self.cluster_dict[idx]
-                prototype = self.prototype[c]
+                prototype = self.prototypes[c]
                 prototype = torch.from_numpy(prototype)
-                prototype.view(1, -1).to(dtype=torch.float32)
+                prototype = prototype.view(1, -1).to(dtype=torch.float32)
                 X = torch.cat((X, prototype), 0)
 
             if self.zero_covariate:
@@ -194,21 +206,6 @@ class RevenueDataset(Dataset):
 
             return X, Y, idx, row, sect
 
-    def prototypes_from_cluster_dict(self, X, cluster_dict):
-        """ 
-        Calculates prototypes given X and a cluster dict.
-        Uses the scaler to scale before taking the mean
-        """
-        prototypes = {}
-        X_scaled = self.data_scaler.transform(X.squeeze().detach().numpy().T).T
-        for c in set(cluster_dict.values()):
-            p = np.mean(
-                X_scaled[[cluster_dict[i] == c for i in range(X_scaled.shape[0])]],
-                axis=0,
-            )
-            prototypes[c] = p
-
-        return prototypes
 
     def get_row_column(self, idx: int) -> List[int]:
         """ Gets row and column based on idx, num_ts and length_ts """

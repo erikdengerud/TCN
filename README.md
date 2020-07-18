@@ -1,11 +1,11 @@
 # Cluster Covariates for a TCN 
 A clustering approach to capture global information as covariates for a Temporal Convolutional Network (TCN) in a multi time series setting. The cluster covariates are useful on some datasets, but not on others. They are useful on the datasets where the prototypes show different characteristics.
 
-![Clustering of the time series in the Electricity dataset](https://github.com/erikdengerud/TCN/blob/master/Figures/electricity_best_clustering_edges.pdf)
+![Clustering of the time series in the Electricity dataset](https://github.com/erikdengerud/TCN/blob/master/Figures/electricity_best_clustering_edges-1.png)
 
-![Prototype 0](https://github.com/erikdengerud/TCN/blob/master/Figures/electricity_best_cluster_0.pdf)
-![Prototype 1](https://github.com/erikdengerud/TCN/blob/master/Figures/electricity_best_cluster_1.pdf)
-![Prototype 8](https://github.com/erikdengerud/TCN/blob/master/Figures/electricity_best_cluster_8.pdf)
+![Prototype 0](https://github.com/erikdengerud/TCN/blob/master/Figures/electricity_best_cluster_0-1.png)
+![Prototype 1](https://github.com/erikdengerud/TCN/blob/master/Figures/electricity_best_cluster_1-1.png)
+![Prototype 8](https://github.com/erikdengerud/TCN/blob/master/Figures/electricity_best_cluster_8-1.png)
 
 The prototypes are the black lines, and the filled area is the mid 80\% quantile.
 

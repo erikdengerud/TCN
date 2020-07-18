@@ -1,0 +1,106 @@
+.
+├── adding_problem
+│   ├── data.py
+│   ├── __init__.py
+│   ├── model.py
+│   ├── README.md
+│   └── run_adding.py
+├── clustering
+│   ├── cluster.py
+│   ├── clusters
+│   │   └── electricity_scaled_25944_pca_nc_10_euclidean_feat_KMeans_nc_10_prototypes.pkl
+│   ├── README.md
+│   └── test_clustering.ipynb
+├── electricity
+│   ├── data
+│   │   ├── download_data.sh
+│   │   └── electricity.npy
+│   ├── data.py
+│   ├── figures
+│   │   └── ts_examples.pdf
+│   ├── __init__.py
+│   ├── model.py
+│   ├── README.md
+│   ├── run_electricity_2.py
+│   ├── run_electricity_3.py
+│   ├── run_electricity.py
+│   ├── run_naive.py
+│   ├── run_sarima.py
+│   └── run_sarimax.py
+├── Figures
+│   └── test_scale.pdf
+├── __init__.py
+├── notebooks
+│   └── visualize_embeddings.ipynb
+├── prototypes
+│   ├── create_future_prototypes_electricity.py
+│   ├── create_future_prototypes.py
+│   └── create_future_prototypes_revenue.py
+├── README.md
+├── representation_job.sh
+├── representations
+│   ├── prototypes.csv
+│   ├── README.md
+│   ├── representation_matrices
+│   │   └── revenue_sarimax_order.csv
+│   ├── representations.py
+│   ├── rep_sarima_revenue.npy
+│   └── to_r_revenue.csv
+├── requirements.txt
+├── revenue
+│   ├── data
+│   │   ├── comp_sect_meta.csv
+│   │   ├── describe_data.csv
+│   │   └── processed_companies.csv
+│   ├── data_prep.py
+│   ├── data.py
+│   ├── figures
+│   │   └── ts_examples.pdf
+│   ├── __init__.py
+│   ├── model.py
+│   ├── README.md
+│   ├── run_naive.py
+│   ├── run_revenue_2.py
+│   ├── run_revenue_3.py
+│   ├── run_revenue.py
+│   ├── run_sarima.py
+│   ├── run_sarimax.py
+│   └── test.ipynb
+├── sarima_revenue.txt
+├── sarima.txt
+├── sarimax_electricity.txt
+├── shapes
+│   ├── data.py
+│   ├── figures
+│   │   └── ts_examples.pdf
+│   ├── __init__.py
+│   ├── model.py
+│   ├── README.md
+│   └── run_shapes.py
+├── similarities
+│   ├── README.md
+│   ├── similarities.py
+│   └── similarity_matrices
+│       ├── dtw.npy
+│       ├── dtw_revenue_scaled.npy
+│       └── dtw_revenue_unscaled.npy
+├── TCN
+│   ├── __init__.py
+│   ├── layers.py
+│   └── tcn.py
+└── utils
+    ├── calculate_dtw.py
+    ├── create_jobs_2.py
+    ├── create_jobs.py
+    ├── create_jobs_revenue.py
+    ├── cs_clustering_example.py
+    ├── __init__.py
+    ├── losses.py
+    ├── metrics.py
+    ├── parser.py
+    ├── plot_predictions.py
+    ├── sarima_rolling_val_electricity.py
+    ├── sarima_rolling_val_revenue.py
+    └── time.py
+
+29 directories, 356 files

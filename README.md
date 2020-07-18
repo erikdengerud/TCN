@@ -1,51 +1,106 @@
-# TCN
-An implementation of a Temporal Convolutional Network.
+# Cluster Covariates for a TCN 
+A clustering approach to capture global information as covariates for a Temporal Convolutional Network (TCN) in a multi time series setting. The cluster covariates are useful on some datasets, but not on others. They are useful on the datasets where the prototypes show different characteristics.
+
+![Clustering of the time series in the Electricity dataset](https://github.com/erikdengerud/TCN/blob/master/Figures/electricity_best_clustering_edges-1.png)
+
+![Prototype 0](https://github.com/erikdengerud/TCN/blob/master/Figures/electricity_best_cluster_0-1.png)
+![Prototype 1](https://github.com/erikdengerud/TCN/blob/master/Figures/electricity_best_cluster_1-1.png)
+![Prototype 8](https://github.com/erikdengerud/TCN/blob/master/Figures/electricity_best_cluster_8-1.png)
+
+The prototypes are the black lines, and the filled area is the mid 80\% quantile.
 
 ## Folder structure
 
 ```bash
 .
+├── __init__.py
+├── adding_problem
+│   ├── __init__.py
+│   ├── data.py
+│   ├── model.py
+│   ├── run_adding.py
+│   └── README.md
+├── clustering
+│   ├── cluster.py
+│   ├── clusters
+│   │   └── ...
+│   └── README.md
+├── electricity
+│   ├── __init__.py
+│   ├── data
+│   │   └── ...
+│   ├── data.py
+│   ├── figures
+│   │   └── ...
+│   ├── model.py
+│   ├── run_electricity_2.py
+│   ├── run_electricity_3.py
+│   ├── run_electricity.py
+│   ├── run_naive.py
+│   ├── run_sarima.py
+│   ├── run_sarimax.py
+│   └── README.md
+├── Figures
+│   └── ...
+├── notebooks
+│   └── ...
+├── prototypes
+│   ├── create_future_prototypes_electricity.py
+│   ├── create_future_prototypes.py
+│   └── create_future_prototypes_revenue.py
+├── representations
+│   ├── representation_matrices
+│   │   └── ...
+│   ├── representations.py
+│   ├── rep_sarima_revenue.npy
+│   └── README.md
+├── revenue
+│   ├── __init__.py
+│   ├── data
+│   │   └── ...
+│   ├── data_prep.py
+│   ├── data.py
+│   ├── figures
+│   │   └── ...
+│   ├── model.py
+│   ├── run_naive.py
+│   ├── run_revenue_2.py
+│   ├── run_revenue_3.py
+│   ├── run_revenue.py
+│   ├── run_sarima.py
+│   ├── run_sarimax.py
+│   └── README.md
+├── shapes
+│   ├── __init__.py
+│   ├── data.py
+│   ├── figures
+│   │   └── ...
+│   ├── model.py
+│   ├── run_shapes.py
+│   └── README.md
+├── similarities
+│   ├── similarities.py
+│   ├── similarity_matrices
+│       └── ...
+│   └── README.md
 ├── TCN
 │   ├── __init__.py
 │   ├── layers.py
 │   └── tcn.py
-├── adding_problem
-│   ├── __init__.py
-│   ├── README.md
-│   ├── data.py
-│   ├── model.py
-│   └── run_adding.py
-├── electricity
-│   ├── __init__.py
-│   ├── README.md
-│   ├── data
-│   │   └── download_data.sh
-│   ├── data.py
-│   ├── model.py
-│   └── run_electricity.py
-├── utils
-│   ├── __init__.py
-│   ├── metrics.py
-│   ├── parser.py
-│   ├── plot_predictions.py
-│   ├── time.py
-│   └── utils.py
-├── __init__.py
-├── README.md
+└── utils
+    └── ...
 ├── requirements.txt
-└── electricity_job.sh
+├── README.md
 ```
 
 ## Run experiments
-Run experiments like this `python electricity\run_electricity.py`.
 
-The run program takes in parsed arguments. Options are in `utils\parser`.
+Each dataset has a `dataset\run_dataset.py` file that can be used to recreate the experiments. The run program takes in parsed arguments. Options are in `utils\parser`.
 
 Each dataset has a dataset class in the `data.py` file in the speciific folder. The model
 for the dataset is in the `model.py` file and it uses the TCN in the `TCN` folder. The `TCN`
 uses the Dilated Causal 1D convolutional layer and the residual block in the `layers.py` file.
 Training and evaluation of models happens in the `run_dataset.py` file in each folder.
-To run experiments on Idun one can use the script `electricity_job.sh`.
 
 ## Datasets
 
@@ -56,7 +111,6 @@ This dataset has samples length T  and width 2. The first channel is random samp
 This dataset consists of time series of hourly electricity consumption of 370 houses <https://archive.ics.uci.edu/ml/datasets/ElectricityLoadDiagrams20112014>. Data are from the DeepGLO paper and can be 
 downloaded usin the `download_data.sh` script in the data folder.
 
-## Resources
+### Revenue
+A private dataset with total quarterly revenue for ~30,000 companies from 2007-2020.
 
-https://arxiv.org/pdf/1901.10738.pdf Unsupervised representation learning.
-https://arxiv.org/pdf/1603.04713.pdf Modeling time series similarity with siamese recurrent networks.

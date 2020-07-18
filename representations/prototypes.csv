@@ -1,0 +1,2 @@
+﻿representation,scaled_representation,num_components,similarity,algorithm,num_clusters
+pca,TRUE,10,euclidean,KMeans,10

@@ -1,0 +1,13 @@
+﻿dataset,model,num_layers,res_block_size,kernel_size,dilations,stride,time_covariates,train_start,train_end,length_rolling,num_rolling_periods,scale,embed,embed_dim,one_hot_id,cluster_covariate,representation,similarity,clustering,num_clusters,num_components,bias,clip_gradient,epochs,dropout,h_batch_size,v_batch_size,leveledinit,lr,num_workers,tenacity,log_interval,print,time_limit
+electricity,tcn,5,32,7,TRUE,1,FALSE,2012-01-01,2014-12-16,24,7,FALSE,None,10,FALSE,FALSE,pca,euclidean,KMeans,10,10,TRUE,TRUE,100,0.2,256,32,FALSE,0.0005,4,10,200,TRUE,06:00:00
+electricity,tcn,5,32,7,TRUE,1,FALSE,2012-01-01,2014-12-16,24,7,TRUE,None,10,FALSE,FALSE,pca,euclidean,KMeans,10,10,TRUE,TRUE,100,0.2,256,32,FALSE,0.0005,4,10,200,TRUE,06:00:00
+electricity,tcn,5,32,7,TRUE,1,FALSE,2012-01-01,2014-12-16,24,7,FALSE,post,10,FALSE,FALSE,pca,euclidean,KMeans,10,10,TRUE,TRUE,100,0.2,256,32,FALSE,0.0005,4,10,200,TRUE,06:00:00
+electricity,tcn,5,32,7,TRUE,1,FALSE,2012-01-01,2014-12-16,24,7,TRUE,post,10,FALSE,FALSE,pca,euclidean,KMeans,10,10,TRUE,TRUE,100,0.2,256,32,FALSE,0.0005,4,10,200,TRUE,06:00:00
+electricity,tcn,5,32,7,TRUE,1,FALSE,2012-01-01,2014-12-16,24,7,FALSE,post,5,FALSE,FALSE,pca,euclidean,KMeans,10,10,TRUE,TRUE,100,0.2,256,32,FALSE,0.0005,4,10,200,TRUE,06:00:00
+electricity,tcn,5,32,7,TRUE,1,FALSE,2012-01-01,2014-12-16,24,7,TRUE,post,5,FALSE,FALSE,pca,euclidean,KMeans,10,10,TRUE,TRUE,100,0.2,256,32,FALSE,0.0005,4,10,200,TRUE,06:00:00
+electricity,tcn,5,32,7,TRUE,1,FALSE,2012-01-01,2014-12-16,24,7,FALSE,post,20,FALSE,FALSE,pca,euclidean,KMeans,10,10,TRUE,TRUE,100,0.2,256,32,FALSE,0.0005,4,10,200,TRUE,06:00:00
+electricity,tcn,5,32,7,TRUE,1,FALSE,2012-01-01,2014-12-16,24,7,TRUE,post,20,FALSE,FALSE,pca,euclidean,KMeans,10,10,TRUE,TRUE,100,0.2,256,32,FALSE,0.0005,4,10,200,TRUE,06:00:00
+electricity,tcn,5,32,7,TRUE,1,FALSE,2012-01-01,2014-12-16,24,7,FALSE,None,10,FALSE,TRUE,pca,euclidean,KMeans,10,10,TRUE,TRUE,200,0.2,256,32,FALSE,0.0005,4,20,200,TRUE,06:00:00
+electricity,tcn,5,32,7,TRUE,1,FALSE,2012-01-01,2014-12-16,24,7,TRUE,None,10,FALSE,TRUE,pca,euclidean,KMeans,10,10,TRUE,TRUE,200,0.2,256,32,FALSE,0.0005,4,20,200,TRUE,06:00:00
+electricity,tcn,5,32,7,TRUE,1,FALSE,2012-01-01,2014-12-16,24,7,FALSE,None,10,FALSE,TRUE,raw,corr,KMeans,10,10,TRUE,TRUE,200,0.2,256,32,FALSE,0.0005,4,20,200,TRUE,06:00:00
+electricity,tcn,5,32,7,TRUE,1,FALSE,2012-01-01,2014-12-16,24,7,TRUE,None,10,FALSE,TRUE,raw,corr,KMeans,10,10,TRUE,TRUE,200,0.2,256,32,FALSE,0.0005,4,20,200,TRUE,06:00:00

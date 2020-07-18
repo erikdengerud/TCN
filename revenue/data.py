@@ -41,7 +41,7 @@ class RevenueDataset(Dataset):
         random_covariate: bool = False,
         zero_covariate: bool = False,
         cluster_dict_path: str = None,
-        prototypes_file_path:str=None,
+        prototypes_file_path: str = None,
     ) -> None:
         """ Dates """
         # Check dates
@@ -61,7 +61,7 @@ class RevenueDataset(Dataset):
         self.random_covariate = random_covariate
         self.data_scale = data_scale
         if data_scaler is None:
-            self.data_scaler = StandardScaler()
+            self.data_scaler = None  # StandardScaler()
         else:
             self.data_scaler = data_scaler
 
@@ -106,14 +106,16 @@ class RevenueDataset(Dataset):
                 try:
                     mat = np.load(prototypes_file_path)
                     df = pd.DataFrame(mat.T)
-                    dates_index = pd.date_range(start="2007-01-01", periods=mat.shape[1], freq="Q")
+                    dates_index = pd.date_range(
+                        start="2007-01-01", periods=mat.shape[1], freq="Q"
+                    )
                     df.index = dates_index
                     df = df.loc[str(start_date) : str(end_date)]
                     dates = df.index
                     df = df.reset_index(drop=True)
-                    
+
                     self.prototypes = df.values.T
-                
+
                 except Exception as e:
                     print(e)
             else:
@@ -206,7 +208,6 @@ class RevenueDataset(Dataset):
                 X = torch.cat((X, r), 0)
 
             return X, Y, idx, row, sect
-
 
     def get_row_column(self, idx: int) -> List[int]:
         """ Gets row and column based on idx, num_ts and length_ts """
